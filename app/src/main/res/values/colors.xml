@@ -3,4 +3,10 @@
     <color name="colorPrimary">#1565c0</color>
     <color name="colorPrimaryDark">#0d47a1</color>
     <color name="colorAccent">#FFFFFF</color>
+
+    <color name="colorStarContacts">#424242</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="background_holo_light">#fff3f3f3</color>
+    <color name="background_holo_dark">#ff000000</color>
+
 </resources>

@@ -2,12 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.nudge.nudge.StarActivity">
+    tools:context="com.nudge.nudge.StarContacts.StarActivity">
 
     <item
         android:id="@+id/action_search"
         android:icon="@mipmap/icon_search"
         android:title="@string/action_star"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        android:actionViewClass="android.widget.SearchView"/>
 
 </menu>
