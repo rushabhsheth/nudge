@@ -2,9 +2,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.nudge.nudge.MainActivity">
+
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:id="@+id/action_star"
+        android:icon="@mipmap/icon_star"
+        android:title="@string/action_star"
+        app:showAsAction="always"
+    />
+
+    <item
+        android:id="@+id/action_profile"
+        android:icon="@mipmap/icon_profile"
+        android:title="@string/action_profile"
+        app:showAsAction="always"/>
+
 </menu>
