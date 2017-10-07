@@ -40,7 +40,7 @@ public class FriendsFragment extends Fragment {
         mContext = rootView.getContext();
 
         mSwipeView.getBuilder()
-                .setDisplayViewCount(3)
+                .setDisplayViewCount(2)
                 .setSwipeDecor(new SwipeDecor()
                         .setPaddingTop(20)
                         .setRelativeScale(0.01f)

@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new NudgesFragment(), "NUDGES");
         adapter.addFragment(new FriendsFragment(), "FRIENDS");
-        adapter.addFragment(new CalendarFragment(), "CALENDAR");
+        adapter.addFragment(new CalendarFragment(), "CALL ME");
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(1);
     }

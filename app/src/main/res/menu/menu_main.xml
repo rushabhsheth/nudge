@@ -11,6 +11,13 @@
     />
 
     <item
+        android:id="@+id/action_schedule"
+        android:icon="@drawable/ic_schedule_white"
+        android:title="@string/action_star"
+        app:showAsAction="always"
+        />
+
+    <item
         android:id="@+id/action_profile"
         android:icon="@mipmap/icon_profile"
         android:title="@string/action_profile"
