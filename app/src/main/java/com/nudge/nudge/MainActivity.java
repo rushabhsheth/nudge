@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.nudge.nudge.FriendsTab.FriendsFragment;
 import com.nudge.nudge.Nudges.NudgesFragment;
 import com.nudge.nudge.StarContacts.StarActivity;
 
