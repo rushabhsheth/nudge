@@ -32,7 +32,7 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.nudge.nudge.MainActivity" />
+                android:value="com.nudge.nudge.MainActivity.MainActivity" />
         </activity>
 
         <activity android:name=".ProfileActivity"
@@ -42,7 +42,7 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.nudge.nudge.MainActivity" />
+                android:value="com.nudge.nudge.MainActivity.MainActivity" />
 
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable_starcontacts" />

@@ -20,6 +20,7 @@ android {
 
     sourceSets {
         main {
+            assets.srcDirs = ['src/main/assets', 'src/main/assets/']
             res.srcDirs =
                     [
                             'src/main/res/layouts/StarContacts',
@@ -50,6 +51,9 @@ dependencies {
 
     //SwipeCards
     compile 'com.mindorks:placeholderview:0.7.1'
+
+    //Java to JSON
+    compile 'com.google.code.gson:gson:2.8.2'
 
 }
 
