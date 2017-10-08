@@ -27,6 +27,7 @@ public class StarContactsClass {
     public StarContactsClass(String profile_image_uri, String contact_name){
         this.profile_image_uri = profile_image_uri;
         this.contact_name = contact_name;
+        this.mStarPressed = false;
     }
 
     //Getter Functions

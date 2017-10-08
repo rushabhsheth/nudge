@@ -28,6 +28,8 @@ public class StarContactsFragment extends Fragment {
     private List<StarContactsClass> mStarContactsData;
     private StarContactsAdapter mStarContactsAdapter;
 
+    private StarContactsRead mStarContactsRead;
+
 
 
     public StarContactsFragment(){
@@ -65,10 +67,13 @@ public class StarContactsFragment extends Fragment {
     }
 
     private void getContacts(){
-        int id = getResources().getIdentifier("rushabh_sheth", "drawable", getContext().getPackageName());
-        String path = "android.resource://" + getContext().getPackageName() + "/" + id;
-        mStarContactsData.add(0, new StarContactsClass(path, "Archana Das"));
-        mStarContactsData.add(1, new StarContactsClass(path, "Mahek Shah"));
-        mStarContactsData.add(2, new StarContactsClass(path, "Daniel Topolanek"));
+        mStarContactsRead = new StarContactsRead(getContext(),getLoaderManager());
+        mStarContactsData = mStarContactsRead.loadContacts();
+
+//        int id = getResources().getIdentifier("rushabh_sheth", "drawable", getContext().getPackageName());
+//        String path = "android.resource://" + getContext().getPackageName() + "/" + id;
+//        mStarContactsData.add(0, new StarContactsClass(path, "Archana Das"));
+//        mStarContactsData.add(1, new StarContactsClass(path, "Mahek Shah"));
+//        mStarContactsData.add(2, new StarContactsClass(path, "Daniel Topolanek"));
     }
 }
