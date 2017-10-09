@@ -24,6 +24,7 @@ android {
             res.srcDirs =
                     [
                             'src/main/res/layouts/StarContacts',
+                            'src/main/res/layouts/NudgesTab',
                             'src/main/res/layouts/FriendsTab',
                             'src/main/res/layouts',
                             'src/main/res'

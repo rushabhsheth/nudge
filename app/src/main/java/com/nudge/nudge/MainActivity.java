@@ -17,18 +17,20 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.nudge.nudge.FriendsTab.FriendsFragment;
-import com.nudge.nudge.Nudges.NudgesFragment;
+import com.nudge.nudge.NudgesTab.NudgesFragment;
 import com.nudge.nudge.StarContacts.StarActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import MainActivityUtils.NudgeNonSwipableViewPager;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivityUtils";
 
     private TabLayout tabLayout;
-    private ViewPager viewPager;
+    private NudgeNonSwipableViewPager mNudgeViewPager;
 
     // Request code for READ_CONTACTS. It can be any number > 0.
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
@@ -41,23 +43,23 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
+        mNudgeViewPager = (NudgeNonSwipableViewPager) findViewById(R.id.nudge_viewpager);
+        setupViewPager(mNudgeViewPager);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setupWithViewPager(mNudgeViewPager);
 
         readContactsPersmission();
 
     }
 
-    private void setupViewPager(ViewPager viewPager) {
+    private void setupViewPager(NudgeNonSwipableViewPager nudgeNonSwipableViewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new NudgesFragment(), "NUDGES");
         adapter.addFragment(new FriendsFragment(), "FRIENDS");
         adapter.addFragment(new CalendarFragment(), "FREE");
-        viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(1);
+        nudgeNonSwipableViewPager.setAdapter(adapter);
+        nudgeNonSwipableViewPager.setCurrentItem(1);
     }
 
    private class ViewPagerAdapter extends FragmentPagerAdapter {

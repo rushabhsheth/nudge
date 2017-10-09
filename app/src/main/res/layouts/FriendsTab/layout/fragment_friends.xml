@@ -5,13 +5,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.nudge.nudge.FriendsTab.FriendsFragment"
-    tools:showIn="@layout/activity_main">
+    tools:showIn="@layout/activity_main"
+    android:background="@color/colorBackground">
+
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="80dp"
         android:layout_gravity="bottom"
+        android:background="@color/colorBackground"
         android:gravity="center"
         android:orientation="horizontal">
         <ImageButton
@@ -39,10 +43,11 @@
             android:background="@drawable/ic_schedule"/>
     </LinearLayout>
 
-
     <com.mindorks.placeholderview.SwipePlaceHolderView
         android:id="@+id/swipeView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:background="@color/colorBackground" />
+
 
 </FrameLayout>

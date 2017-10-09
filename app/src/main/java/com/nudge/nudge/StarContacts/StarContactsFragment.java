@@ -60,8 +60,8 @@ public class StarContactsFragment extends Fragment {
         mStarContactsAdapter = new StarContactsAdapter(getContext(),mStarContactsData);
         mRecyclerView.setAdapter(mStarContactsAdapter);
 
-        SnapHelper snapHelper = new LinearSnapHelper();
-        snapHelper.attachToRecyclerView(mRecyclerView);
+//        SnapHelper snapHelper = new LinearSnapHelper();
+//        snapHelper.attachToRecyclerView(mRecyclerView);
 
         return rootView;
     }
