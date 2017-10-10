@@ -7,9 +7,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.nudge.nudge.FriendsTab.FriendsFragment"
-    tools:showIn="@layout/activity_main"
-    android:background="@color/colorBackground">
+    tools:showIn="@layout/activity_main">
 
+    <com.mindorks.placeholderview.SwipePlaceHolderView
+        android:id="@+id/swipeView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,34 +23,36 @@
         android:orientation="horizontal">
         <ImageButton
             android:id="@+id/callBtn"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginRight="10dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="5dp"
             android:background="@drawable/ic_call"/>
         <ImageButton
             android:id="@+id/rejectBtn"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_marginRight="10dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginRight="5dp"
             android:background="@drawable/ic_cancel"/>
         <ImageButton
+            android:id="@+id/messageBtn"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/ic_message"/>
+        <ImageButton
             android:id="@+id/nudgeBtn"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_marginRight="10dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginRight="5dp"
             android:background="@drawable/ic_nudge"/>
         <ImageButton
             android:id="@+id/scheduleBtn"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:background="@drawable/ic_schedule"/>
     </LinearLayout>
 
-    <com.mindorks.placeholderview.SwipePlaceHolderView
-        android:id="@+id/swipeView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorBackground" />
+
 
 
 </FrameLayout>

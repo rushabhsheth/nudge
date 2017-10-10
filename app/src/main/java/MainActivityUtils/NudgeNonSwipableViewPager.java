@@ -17,12 +17,12 @@ public class NudgeNonSwipableViewPager extends ViewPager {
 
     public NudgeNonSwipableViewPager(Context context) {
         super(context);
-        setMyScroller();
+        //setMyScroller();
     }
 
     public NudgeNonSwipableViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setMyScroller();
+        //setMyScroller();
     }
 
     @Override

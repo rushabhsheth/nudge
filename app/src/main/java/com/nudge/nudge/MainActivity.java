@@ -9,13 +9,13 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.nudge.nudge.FreeTab.FreeFragment;
 import com.nudge.nudge.FriendsTab.FriendsFragment;
 import com.nudge.nudge.NudgesTab.NudgesFragment;
 import com.nudge.nudge.StarContacts.StarActivity;
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new NudgesFragment(), "NUDGES");
         adapter.addFragment(new FriendsFragment(), "FRIENDS");
-        adapter.addFragment(new CalendarFragment(), "FREE");
+        adapter.addFragment(new FreeFragment(), "FREE");
         nudgeNonSwipableViewPager.setAdapter(adapter);
         nudgeNonSwipableViewPager.setCurrentItem(1);
     }

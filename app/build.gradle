@@ -23,6 +23,7 @@ android {
             assets.srcDirs = ['src/main/assets', 'src/main/assets/']
             res.srcDirs =
                     [
+                            'src/main/res/layouts/FreeTab',
                             'src/main/res/layouts/StarContacts',
                             'src/main/res/layouts/NudgesTab',
                             'src/main/res/layouts/FriendsTab',

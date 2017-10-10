@@ -1,4 +1,4 @@
-package com.nudge.nudge;
+package com.nudge.nudge.FreeTab;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -6,12 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.nudge.nudge.R;
+
 /**
  * A placeholder fragment containing a simple view.
  */
-public class CalendarFragment extends Fragment {
+public class FreeFragment extends Fragment {
 
-    public CalendarFragment() {
+    public FreeFragment() {
     }
 
     @Override
@@ -22,6 +24,6 @@ public class CalendarFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_calendar, container, false);
+        return inflater.inflate(R.layout.fragment_free, container, false);
     }
 }
