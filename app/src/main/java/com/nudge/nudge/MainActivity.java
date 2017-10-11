@@ -15,10 +15,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.nudge.nudge.Calendar.CalendarActivity;
 import com.nudge.nudge.FreeTab.FreeFragment;
 import com.nudge.nudge.FriendsTab.FriendsFragment;
 import com.nudge.nudge.NudgesTab.NudgesFragment;
 import com.nudge.nudge.StarContacts.StarActivity;
+import com.nudge.nudge.UserProfile.ProfileActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,17 +109,31 @@ public class MainActivity extends AppCompatActivity {
 
         switch (id) {
             case (R.id.action_profile):
+                startProfileActivity();
                 return true;
             case (R.id.action_star):
                 startStarActivity();
+                return true;
+            case (R.id.action_calendar):
+                startCalendarActivity();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    public void startStarActivity(){
+    private void startStarActivity(){
         Intent intent = new Intent(this, StarActivity.class);
+        startActivity(intent);
+    }
+
+    private void startProfileActivity(){
+        Intent intent = new Intent(this, ProfileActivity.class);
+        startActivity(intent);
+    }
+
+    private void startCalendarActivity(){
+        Intent intent = new Intent(this, CalendarActivity.class);
         startActivity(intent);
     }
 

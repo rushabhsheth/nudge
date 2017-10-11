@@ -32,20 +32,34 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.nudge.nudge.MainActivity.MainActivity" />
+                android:value="com.nudge.nudge.MainActivity" />
+
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable_starcontacts" />
+
         </activity>
 
-        <activity android:name=".ProfileActivity"
+        <activity android:name=".UserProfile.ProfileActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".MainActivity" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.nudge.nudge.MainActivity.MainActivity" />
+                android:value="com.nudge.nudge.MainActivity" />
 
-            <meta-data android:name="android.app.searchable"
-                android:resource="@xml/searchable_starcontacts" />
+        </activity>
+
+        <activity android:name=".Calendar.CalendarActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".MainActivity" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.nudge.nudge.MainActivity" />
 
         </activity>
 

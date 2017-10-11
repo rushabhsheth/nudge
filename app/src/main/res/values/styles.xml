@@ -8,8 +8,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/colorBackground</item>
 
-        <item name="android:actionButtonStyle">@style/myActionButtonStyle</item>
-        <item name="actionButtonStyle">@style/myActionButtonStyle</item>
+        <!--<item name="android:actionButtonStyle">@style/myActionButtonStyle</item>-->
+        <!--<item name="actionButtonStyle">@style/myActionButtonStyle</item>-->
 
         <!--<item name="switchStyle">@style/MySwitch</item>-->
         <!--<item name="android:switchStyle">@style/MySwitch</item>-->
@@ -17,15 +17,15 @@
 
     </style>
 
-    <style name="myActionButtonStyle" parent="Widget.AppCompat.ActionButton">
-        <!--<item name="android:minWidth">24dp</item>-->
-        <!--<item name="android:maxWidth">48dp</item>-->
-        <!--<item name="android:width">24dp</item>-->
-        <!--<item name="android:layout_marginTop">10dp</item>-->
-        <!--<item name="android:layout_marginRight">10dp</item>-->
-        <!--<item name="android:layout_marginBottom">10dp</item>-->
-        <!--<item name="android:layout_marginLeft">10dp</item>-->
-    </style>
+    <!--<style name="myActionButtonStyle" parent="Widget.AppCompat.ActionButton">-->
+        <!--&lt;!&ndash;<item name="android:minWidth">24dp</item>&ndash;&gt;-->
+        <!--&lt;!&ndash;<item name="android:maxWidth">48dp</item>&ndash;&gt;-->
+        <!--&lt;!&ndash;<item name="android:width">24dp</item>&ndash;&gt;-->
+        <!--&lt;!&ndash;<item name="android:layout_marginTop">10dp</item>&ndash;&gt;-->
+        <!--&lt;!&ndash;<item name="android:layout_marginRight">10dp</item>&ndash;&gt;-->
+        <!--&lt;!&ndash;<item name="android:layout_marginBottom">10dp</item>&ndash;&gt;-->
+        <!--&lt;!&ndash;<item name="android:layout_marginLeft">10dp</item>&ndash;&gt;-->
+    <!--</style>-->
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>

@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Nudge</string>
+    <string name="activity_userprofile">Profile</string>
+    <string name="activity_calendar">Calendar</string>
     <string name="action_settings">Settings</string>
     <string name="action_star">Star Contacts</string>
     <string name="action_profile">My Profile</string>

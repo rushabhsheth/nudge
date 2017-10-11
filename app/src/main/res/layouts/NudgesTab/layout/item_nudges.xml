@@ -51,7 +51,7 @@
                     android:id="@+id/nudges_nameTextView"
                     android:layout_width="wrap_content"
                     android:textColor="@color/colorPrimaryDark"
-                    android:background="@color/background_holo_dark"
+                    android:background="@color/colorBackground"
                     android:textSize="14dp"
                     android:textStyle="bold"
                     android:layout_height="0dp"

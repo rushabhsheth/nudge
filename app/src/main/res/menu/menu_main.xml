@@ -11,7 +11,7 @@
     />
 
     <item
-        android:id="@+id/action_schedule"
+        android:id="@+id/action_calendar"
         android:icon="@drawable/ic_schedule_white"
         android:title="@string/action_star"
         app:showAsAction="always"
