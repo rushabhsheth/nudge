@@ -5,5 +5,6 @@
     <string name="action_profile">My Profile</string>
     <string name="activity_starcontacts">Star Contacts</string>
     <string name="search_hint">Type the name of your friend</string>
+    <string name="stringUserName" type="id">Rushabh Sheth</string>
     <string name="callMeDeafault">None of your friends are available right now. Invite a few friends to nudge and know when then go live</string>
 </resources>

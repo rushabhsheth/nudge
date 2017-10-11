@@ -36,7 +36,7 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center_vertical"
-                    app:civ_border_color="@color/colorStarContacts"
+                    app:civ_border_color="@color/colorText"
                     app:civ_border_width="0dp" />
 
             </FrameLayout>

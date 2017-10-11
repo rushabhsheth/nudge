@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,15 +8,93 @@
     android:layout_height="match_parent"
     tools:context="com.nudge.nudge.FreeTab.FreeFragment"
     tools:showIn="@layout/activity_main"
-    android:layout_margin="20dp">
+    android:orientation="vertical"
+    android:paddingRight="20dp"
+    android:paddingLeft="20dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/callMeDeafault"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal">
 
-</android.support.constraint.ConstraintLayout>
+        <!--View for holding Profile Image-->
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="left|center_vertical"
+            android:background="@color/colorBackground"
+            android:paddingBottom="0dp"
+            android:paddingTop="0dp"
+            android:layout_marginLeft="0dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/free_selfImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                app:civ_border_color="@color/colorText"
+                app:civ_border_width="0dp" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/free_selfTextView"
+            android:layout_width="wrap_content"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:layout_height="match_parent"
+            android:gravity="left|center_vertical"
+            android:layout_marginLeft="20dp"
+            android:layout_gravity="left"/>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="left|center_vertical"
+            android:layout_marginLeft="10dp"
+            android:background="@color/colorBackground"
+            android:paddingBottom="0dp"
+            android:paddingTop="0dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/free_greenCirleImageView"
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:src="@drawable/green_square"
+                android:layout_gravity="center_vertical"
+                app:civ_border_color="@color/colorWhite"
+                app:civ_border_width="1dp" />
+
+        </FrameLayout>
+
+
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/free_switch"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            app:showText="false"
+            android:checked="false"
+            android:theme="@style/MySwitch"/>
+
+    </LinearLayout>
+
+    <!--Thin line above Free -->
+    <View
+        android:id="@+id/thinLine"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="top"
+        android:background="@color/colorMaterialGreyTransparent" />
+
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerview_free"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="5dp"/>
+
+</LinearLayout>
