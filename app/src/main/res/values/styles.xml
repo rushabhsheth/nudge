@@ -18,8 +18,8 @@
     </style>
 
     <style name="myActionButtonStyle" parent="Widget.AppCompat.ActionButton">
-        <item name="android:minWidth">24dp</item>
-        <item name="android:maxWidth">48dp</item>
+        <!--<item name="android:minWidth">24dp</item>-->
+        <!--<item name="android:maxWidth">48dp</item>-->
         <!--<item name="android:width">24dp</item>-->
         <!--<item name="android:layout_marginTop">10dp</item>-->
         <!--<item name="android:layout_marginRight">10dp</item>-->
