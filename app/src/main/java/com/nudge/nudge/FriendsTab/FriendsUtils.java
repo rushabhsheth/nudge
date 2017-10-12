@@ -22,14 +22,14 @@ public class FriendsUtils {
 
     private static final String TAG = "FriendsUtils";
 
-    public static List<FriendsProfile> loadProfiles(Context context){
+    public static List<FriendsProfileClass> loadProfiles(Context context){
         try{
             GsonBuilder builder = new GsonBuilder();
             Gson gson = builder.create();
             JSONArray array = new JSONArray(loadJSONFromAsset(context, "profiles.json"));
-            List<FriendsProfile> profileList = new ArrayList<>();
+            List<FriendsProfileClass> profileList = new ArrayList<>();
             for(int i=0;i<array.length();i++){
-                FriendsProfile profile = gson.fromJson(array.getString(i), FriendsProfile.class);
+                FriendsProfileClass profile = gson.fromJson(array.getString(i), FriendsProfileClass.class);
                 profileList.add(profile);
             }
             return profileList;

@@ -17,7 +17,9 @@ import android.widget.Toast;
 
 import com.nudge.nudge.Calendar.CalendarActivity;
 import com.nudge.nudge.FreeTab.FreeFragment;
+import com.nudge.nudge.FriendProfile.FriendActivity;
 import com.nudge.nudge.FriendsTab.FriendsFragment;
+import com.nudge.nudge.FriendsTab.FriendsUtils;
 import com.nudge.nudge.NudgesTab.NudgesFragment;
 import com.nudge.nudge.StarContacts.StarActivity;
 import com.nudge.nudge.UserProfile.ProfileActivity;
@@ -108,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         switch (id) {
-            case (R.id.action_profile):
+            case (R.id.action_userprofile):
                 startProfileActivity();
                 return true;
             case (R.id.action_star):
@@ -116,6 +118,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case (R.id.action_calendar):
                 startCalendarActivity();
+                return true;
+            case (R.id.action_friendprofile):
+                startFriendProfileActivity();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -134,6 +139,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void startCalendarActivity(){
         Intent intent = new Intent(this, CalendarActivity.class);
+        startActivity(intent);
+    }
+
+
+    private void startFriendProfileActivity(){
+        Intent intent = new Intent(this, FriendActivity.class);
         startActivity(intent);
     }
 

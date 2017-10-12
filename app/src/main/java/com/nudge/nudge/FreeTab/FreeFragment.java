@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.nudge.nudge.FriendsTab.FriendsProfile;
+import com.nudge.nudge.FriendsTab.FriendsProfileClass;
 import com.nudge.nudge.FriendsTab.FriendsUtils;
 import com.nudge.nudge.R;
 
@@ -29,7 +29,7 @@ public class FreeFragment extends Fragment {
     private Context mContext;
     private RecyclerView mRecyclerView;
     private android.support.v7.widget.LinearLayoutManager mLayoutManager;
-    private List<FriendsProfile> mFreeData;
+    private List<FriendsProfileClass> mFreeData;
     private FreeAdapter mFreeAdapter;
 
 

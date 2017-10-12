@@ -3,13 +3,12 @@ package com.nudge.nudge.StarContacts;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SnapHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.nudge.nudge.ContactsData.ContactsClass;
 import com.nudge.nudge.R;
 
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ public class StarContactsFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private android.support.v7.widget.LinearLayoutManager mLayoutManager;
-    private List<StarContactsClass> mStarContactsData;
+    private List<ContactsClass> mStarContactsData;
     private StarContactsAdapter mStarContactsAdapter;
 
     private StarContactsRead mStarContactsRead;
@@ -72,8 +71,8 @@ public class StarContactsFragment extends Fragment {
 
 //        int id = getResources().getIdentifier("rushabh_sheth", "drawable", getContext().getPackageName());
 //        String path = "android.resource://" + getContext().getPackageName() + "/" + id;
-//        mStarContactsData.add(0, new StarContactsClass(path, "Archana Das"));
-//        mStarContactsData.add(1, new StarContactsClass(path, "Mahek Shah"));
-//        mStarContactsData.add(2, new StarContactsClass(path, "Daniel Topolanek"));
+//        mStarContactsData.add(0, new ContactsClass(path, "Archana Das"));
+//        mStarContactsData.add(1, new ContactsClass(path, "Mahek Shah"));
+//        mStarContactsData.add(2, new ContactsClass(path, "Daniel Topolanek"));
     }
 }

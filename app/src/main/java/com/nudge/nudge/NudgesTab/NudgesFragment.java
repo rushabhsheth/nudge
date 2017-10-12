@@ -4,20 +4,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SnapHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.nudge.nudge.FriendsTab.FriendsCard;
-import com.nudge.nudge.FriendsTab.FriendsProfile;
-import com.nudge.nudge.FriendsTab.FriendsUtils;
 import com.nudge.nudge.R;
-import com.nudge.nudge.StarContacts.StarContactsAdapter;
-import com.nudge.nudge.StarContacts.StarContactsClass;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.nudge.nudge.R;
-import com.nudge.nudge.StarContacts.StarContactsClass;
 
 import java.util.List;
 

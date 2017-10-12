@@ -48,9 +48,7 @@ public class StarActivity extends AppCompatActivity{
         int id = item.getItemId();
 
         switch (id) {
-            case (R.id.action_profile):
-                return true;
-            case (R.id.action_star):
+            case (R.id.action_search):
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

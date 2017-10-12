@@ -15,6 +15,7 @@ import com.mindorks.placeholderview.annotations.swipe.SwipeIn;
 import com.mindorks.placeholderview.annotations.swipe.SwipeInState;
 import com.mindorks.placeholderview.annotations.swipe.SwipeOut;
 import com.mindorks.placeholderview.annotations.swipe.SwipeOutState;
+import com.mindorks.placeholderview.annotations.swipe.SwipeTouch;
 import com.nudge.nudge.R;
 
 /**
@@ -33,11 +34,11 @@ public class FriendsCard {
     @View(R.id.locationNameTxt)
     private TextView locationNameTxt;
 
-    private FriendsProfile mProfile;
+    private FriendsProfileClass mProfile;
     private Context mContext;
     private SwipePlaceHolderView mSwipeView;
 
-    public FriendsCard(Context context, FriendsProfile profile, SwipePlaceHolderView swipeView) {
+    public FriendsCard(Context context, FriendsProfileClass profile, SwipePlaceHolderView swipeView) {
         mContext = context;
         mProfile = profile;
         mSwipeView = swipeView;
@@ -75,4 +76,5 @@ public class FriendsCard {
     private void onSwipeOutState(){
         Log.d("EVENT", "onSwipeOutState");
     }
+
 }

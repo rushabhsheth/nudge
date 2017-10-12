@@ -3,9 +3,13 @@
     <string name="activity_userprofile">Profile</string>
     <string name="activity_calendar">Calendar</string>
     <string name="action_settings">Settings</string>
-    <string name="action_star">Star Contacts</string>
-    <string name="action_profile">My Profile</string>
     <string name="activity_starcontacts">Star Contacts</string>
+    <string name="activity_friendprofile">Archana\'s Profile</string>
+
+    <string name="action_star">Star Contacts</string>
+    <string name="action_userprofile">My Profile</string>
+    <string name="action_friendprofile">Friend Profile</string>
+
     <string name="search_hint">Type the name of your friend</string>
     <string name="stringUserName" type="id">Rushabh Sheth</string>
     <string name="callMeDeafault">None of your friends are available right now. Invite a few friends to nudge and know when then go live</string>

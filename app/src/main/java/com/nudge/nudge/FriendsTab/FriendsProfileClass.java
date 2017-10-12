@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by rushabh on 07/10/17.
  */
 
-public class FriendsProfile {
+public class FriendsProfileClass {
 
     @SerializedName("name")
     @Expose

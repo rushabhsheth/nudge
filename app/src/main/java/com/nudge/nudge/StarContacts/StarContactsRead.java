@@ -9,10 +9,9 @@ import android.provider.ContactsContract;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.widget.CursorAdapter;
 
 
-import com.nudge.nudge.FriendsTab.FriendsProfile;
+import com.nudge.nudge.ContactsData.ContactsClass;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,7 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private Context mContext;
 
-    List<StarContactsClass> contactList;
+    List<ContactsClass> contactList;
     LoaderManager mLoaderManager;
 
     private static final Uri CONTENT_URI = ContactsContract.Contacts.CONTENT_URI;
@@ -55,7 +54,7 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
         this.mLoaderManager = loaderManager;
     }
 
-    public List<StarContactsClass> loadContacts(){
+    public List<ContactsClass> loadContacts(){
         contactList = new ArrayList<>();
         mLoaderManager.initLoader(0, null, this);
         return contactList;
@@ -79,7 +78,7 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
         if (cursor != null && cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
 
-                StarContactsClass singleContact = getSingleContact(cursor);
+                ContactsClass singleContact = getSingleContact(cursor);
                 contactList.add(singleContact);
                 cursor.moveToNext();
             }
@@ -92,12 +91,12 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
 
     }
 
-    private StarContactsClass getSingleContact (Cursor c){
-        StarContactsClass mStarContactsClass =  new StarContactsClass();
-        mStarContactsClass.setContact_name(c.getString(c.getColumnIndexOrThrow(DISPLAY_NAME)));
-        mStarContactsClass.setProfile_image_uri(c.getString(c.getColumnIndexOrThrow(PHOTO_URI)));
+    private ContactsClass getSingleContact (Cursor c){
+        ContactsClass mContactsClass =  new ContactsClass();
+        mContactsClass.setContact_name(c.getString(c.getColumnIndexOrThrow(DISPLAY_NAME)));
+        mContactsClass.setProfile_image_uri(c.getString(c.getColumnIndexOrThrow(PHOTO_URI)));
 
-        return mStarContactsClass;
+        return mContactsClass;
     }
 
 }

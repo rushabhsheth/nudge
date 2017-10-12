@@ -1,4 +1,5 @@
-package com.nudge.nudge.UserProfile;
+package com.nudge.nudge.ActionFragments;
+
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,29 +10,26 @@ import android.view.ViewGroup;
 import com.nudge.nudge.R;
 
 /**
- * Created by rushabh on 06/10/17.
+ * Created by rushabh on 11/10/17.
  */
 
-public class UserProfileFragment extends Fragment {
+public class ActionButtonsFragment extends Fragment {
 
-    private static final String TAG = "CalendarFragment";
+    private static final String TAG = "ActionButtons";
 
-    public UserProfileFragment(){
+    public ActionButtonsFragment() {
         //Empty Constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_userprofile, container, false);
-        rootView.setTag(TAG);
+        View rootView = inflater.inflate(R.layout.fragment_actionbuttons, container, false);
 
         return rootView;
     }

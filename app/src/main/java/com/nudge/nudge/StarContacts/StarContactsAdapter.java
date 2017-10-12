@@ -8,10 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.nudge.nudge.ContactsData.ContactsClass;
 import com.nudge.nudge.R;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class StarContactsAdapter extends RecyclerView.Adapter<StarContactsAdapte
     private static final String TAG = "StarContactsAdapter";
 
     Context mContext;
-    private List<StarContactsClass> mDataSet;
+    private List<ContactsClass> mDataSet;
 
     //Viewholder to hold item_main
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -63,7 +63,7 @@ public class StarContactsAdapter extends RecyclerView.Adapter<StarContactsAdapte
     }
 
     //Constructor
-    public StarContactsAdapter(Context context,List<StarContactsClass> dataSet) {
+    public StarContactsAdapter(Context context,List<ContactsClass> dataSet) {
         this.mDataSet = dataSet;
         this.mContext = context;
     }
@@ -85,7 +85,7 @@ public class StarContactsAdapter extends RecyclerView.Adapter<StarContactsAdapte
         Context context = finalHolder.itemView.getContext();
         Resources res = finalHolder.itemView.getContext().getResources();
 
-        final StarContactsClass starContact = mDataSet.get(position);
+        final ContactsClass starContact = mDataSet.get(position);
 
         String userName = starContact.getContact_name();
         if(userName != null){
@@ -127,7 +127,7 @@ public class StarContactsAdapter extends RecyclerView.Adapter<StarContactsAdapte
         return mDataSet.size();
     }
 
-    public void addItem(StarContactsClass dataObj, int index) {
+    public void addItem(ContactsClass dataObj, int index) {
         mDataSet.add(dataObj);
         notifyItemInserted(index);
     }

@@ -1,30 +1,33 @@
-package com.nudge.nudge.StarContacts;
+package com.nudge.nudge.ContactsData;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by rushabh on 06/10/17.
  */
 
-public class StarContactsClass {
+public class ContactsClass {
 
-    private static final String TAG = "StarContactsClass";
+    private static final String TAG = "ContactsClass";
 
-
+    private List<String> profileImageList;
     private String profile_image_uri;
     private String contact_name;
 
     boolean mStarPressed;
 
 
-    public StarContactsClass(){
+    public ContactsClass(){
 
         this.profile_image_uri = null;
         this.contact_name = null;
-
+        this.profileImageList = new ArrayList<>();
         mStarPressed = false;
 
     }
 
-    public StarContactsClass(String profile_image_uri, String contact_name){
+    public ContactsClass(String profile_image_uri, String contact_name){
         this.profile_image_uri = profile_image_uri;
         this.contact_name = contact_name;
         this.mStarPressed = false;
@@ -44,6 +47,10 @@ public class StarContactsClass {
         return mStarPressed;
     }
 
+    public List<String> getProfileImageList() {
+        return profileImageList;
+    }
+
     //Setter Functions
     public void setProfile_image_uri(String profile_image_uri){
         this.profile_image_uri = profile_image_uri;
@@ -55,6 +62,10 @@ public class StarContactsClass {
 
     public void setStarPressed(boolean pressed){
         this.mStarPressed = pressed;
+    }
+
+    public void setProfileImageList (List<String> profileImageList) {
+        this.profileImageList = profileImageList;
     }
 
 }

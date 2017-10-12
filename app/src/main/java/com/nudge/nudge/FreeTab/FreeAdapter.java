@@ -11,7 +11,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.nudge.nudge.FriendsTab.FriendsProfile;
+import com.nudge.nudge.FriendsTab.FriendsProfileClass;
 import com.nudge.nudge.R;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class FreeAdapter extends RecyclerView.Adapter<FreeAdapter.ViewHolder> {
     private static final String TAG = "FreeAdapter";
 
     Context mContext;
-    private List<FriendsProfile> mDataSet;
+    private List<FriendsProfileClass> mDataSet;
 
     //Viewholder to hold item_main
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -69,7 +69,7 @@ public class FreeAdapter extends RecyclerView.Adapter<FreeAdapter.ViewHolder> {
     }
 
     //Constructor
-    public FreeAdapter(Context context, List<FriendsProfile> dataSet) {
+    public FreeAdapter(Context context, List<FriendsProfileClass> dataSet) {
         this.mDataSet = dataSet;
         this.mContext = context;
     }
@@ -91,15 +91,15 @@ public class FreeAdapter extends RecyclerView.Adapter<FreeAdapter.ViewHolder> {
         Context context = finalHolder.itemView.getContext();
         Resources res = finalHolder.itemView.getContext().getResources();
 
-        final FriendsProfile friendsProfile = mDataSet.get(position);
+        final FriendsProfileClass friendsProfileClass = mDataSet.get(position);
 
-        String userName = friendsProfile.getName();
+        String userName = friendsProfileClass.getName();
         if(userName != null){
             finalHolder.getFree_nameView().setText(userName);
         }
 
 
-        String userProfileImage = friendsProfile.getImageUrl();
+        String userProfileImage = friendsProfileClass.getImageUrl();
         if(userProfileImage!=null){
             Uri uri = Uri.parse(userProfileImage);
             Glide.with(context)
@@ -115,7 +115,7 @@ public class FreeAdapter extends RecyclerView.Adapter<FreeAdapter.ViewHolder> {
         return mDataSet.size();
     }
 
-    public void addView(FriendsProfile dataObj, int index) {
+    public void addView(FriendsProfileClass dataObj, int index) {
         mDataSet.add(dataObj);
         notifyItemInserted(index);
     }

@@ -3,13 +3,14 @@ package com.nudge.nudge.FriendsTab;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.mindorks.placeholderview.SwipeDecor;
 import com.mindorks.placeholderview.SwipePlaceHolderView;
-import com.mindorks.placeholderview.Utils;
+import com.nudge.nudge.ActionFragments.ActionButtonsFragment;
 import com.nudge.nudge.R;
 
 /**
@@ -48,25 +49,29 @@ public class FriendsFragment extends Fragment {
                         .setSwipeOutMsgLayoutId(R.layout.nudge_swipe_out_msg_view));
 
 
-        for(FriendsProfile profile : FriendsUtils.loadProfiles(this.getContext())){
+        for(FriendsProfileClass profile : FriendsUtils.loadProfiles(this.getContext())){
             mSwipeView.addView(new FriendsCard(mContext, profile, mSwipeView));
         }
 
-        rootView.findViewById(R.id.rejectBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mSwipeView.doSwipe(false);
-            }
-        });
 
-        rootView.findViewById(R.id.nudgeBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mSwipeView.doSwipe(true);
-            }
-        });
+//        rootView.findViewById(R.id.rejectBtn).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mSwipeView.doSwipe(false);
+//            }
+//        });
+//
+//        rootView.findViewById(R.id.nudgeBtn).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mSwipeView.doSwipe(true);
+//            }
+//        });
+
 
         return rootView;
     }
+
+
 
 }
