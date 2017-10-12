@@ -53,7 +53,6 @@ public class FriendsFragment extends Fragment {
             mSwipeView.addView(new FriendsCard(mContext, profile, mSwipeView));
         }
 
-
 //        rootView.findViewById(R.id.rejectBtn).setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {

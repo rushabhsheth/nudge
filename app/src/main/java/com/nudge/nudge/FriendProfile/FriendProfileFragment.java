@@ -2,13 +2,17 @@ package com.nudge.nudge.FriendProfile;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
+import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.nudge.nudge.R;
 import com.nudge.nudge.ContactsData.ContactsClass;
@@ -29,6 +33,9 @@ public class FriendProfileFragment extends Fragment {
     private ContactsClass mFriendData;
     private FriendProfileAdapter mFriendProfileAdapter;
 
+    LinearLayout sliderDotsPanel;
+    private int dotsCount;
+    private ImageView[] dots;
 
     public FriendProfileFragment(){
         //Empty Constructor
@@ -58,8 +65,56 @@ public class FriendProfileFragment extends Fragment {
         mFriendProfileAdapter = new FriendProfileAdapter(getContext(),mFriendData);
         mRecyclerView.setAdapter(mFriendProfileAdapter);
 
-        SnapHelper snapHelper = new LinearSnapHelper();
+        SnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(mRecyclerView);
+
+        View actionButtons = rootView.findViewById(R.id.fragment_actionbuttons);
+        actionButtons.bringToFront();
+
+        sliderDotsPanel = (LinearLayout) rootView.findViewById(R.id.slider_dots);
+        dotsCount = mFriendData.getProfileImageList().size();
+        dots = new ImageView[dotsCount];
+
+        for (int i =0; i<dotsCount; i++){
+
+            dots[i] = new ImageView(getContext());
+            dots[i].setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.nonactive_dot));
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            params.setMargins(10,0,10,0);
+
+            sliderDotsPanel.addView(dots[i],params);
+        }
+
+        dots[0].setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.active_dot));
+
+        //Recyclerview listener to scroll dots
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    //mScrolling = false;
+                }
+
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+
+                    for (int i =0; i<dotsCount; i++){
+
+                        dots[i].setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.nonactive_dot));
+
+                    }
+
+                    int position = mLayoutManager.findFirstVisibleItemPosition();
+                    dots[position].setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.active_dot));
+
+                }
+            }
+
+        });
 
         return rootView;
     }
