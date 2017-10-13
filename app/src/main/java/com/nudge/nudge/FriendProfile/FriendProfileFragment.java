@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,9 @@ import com.nudge.nudge.R;
 import com.nudge.nudge.ContactsData.ContactsClass;
 import com.nudge.nudge.StarContacts.StarContactsRead;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Created by rushabh on 06/10/17.
@@ -71,6 +74,27 @@ public class FriendProfileFragment extends Fragment {
         View actionButtons = rootView.findViewById(R.id.fragment_actionbuttons);
         actionButtons.bringToFront();
 
+        addDots(rootView);
+        addDotsScrollListener();
+
+        return rootView;
+    }
+
+    private void getFriend(){
+        mFriendData = new ContactsClass();
+
+        for(int i=1;i<=5;i++){
+            int id = getResources().getIdentifier("pic"+String.valueOf(i), "drawable", getContext().getPackageName());
+            String path = "android.resource://" + getContext().getPackageName() + "/" + String.valueOf(id);
+//          Log.d(TAG,path);
+            mFriendData.getProfileImageList().add(path);
+
+        }
+
+    }
+
+    private void addDots(View rootView){
+        //Add slider dots to the bottom
         sliderDotsPanel = (LinearLayout) rootView.findViewById(R.id.slider_dots);
         dotsCount = mFriendData.getProfileImageList().size();
         dots = new ImageView[dotsCount];
@@ -89,6 +113,10 @@ public class FriendProfileFragment extends Fragment {
 
         dots[0].setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.active_dot));
 
+    }
+
+
+    private void addDotsScrollListener(){
         //Recyclerview listener to scroll dots
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
@@ -115,20 +143,6 @@ public class FriendProfileFragment extends Fragment {
             }
 
         });
-
-        return rootView;
-    }
-
-    private void getFriend(){
-        mFriendData = new ContactsClass();
-
-
-        for(int i=1;i<=5;i++){
-            int id = getResources().getIdentifier("pic"+String.valueOf(i), "drawable", getContext().getPackageName());
-            String path = "android.resource://" + getContext().getPackageName() + "/" + id;
-            mFriendData.getProfileImageList().add(path);
-        }
-
 
     }
 

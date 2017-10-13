@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,8 @@ import com.nudge.nudge.R;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.microedition.khronos.opengles.GL;
 
 /**
  * Created by rushabh on 06/10/17.
@@ -69,13 +72,15 @@ public class FriendProfileAdapter extends RecyclerView.Adapter<FriendProfileAdap
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        //Log.d(TAG, "Element " + position + " set.");
+
+//        Log.d(TAG, "Element " + position + " set.");
         final ViewHolder finalHolder = viewHolder;
-        Context context = finalHolder.itemView.getContext();
+        Context context = viewHolder.itemView.getContext();
         Resources res = finalHolder.itemView.getContext().getResources();
 
 
         String userProfileImage = mFriendImageList.get(position);
+        //Log.d(TAG,String.valueOf(position)+" " + userProfileImage);
         if(userProfileImage!=null){
             Uri uri = Uri.parse(userProfileImage);
             Glide.with(context)
@@ -89,6 +94,16 @@ public class FriendProfileAdapter extends RecyclerView.Adapter<FriendProfileAdap
     @Override
     public int getItemCount() {
         return mFriendImageList.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
     public void addImage(String imageUri, int index) {

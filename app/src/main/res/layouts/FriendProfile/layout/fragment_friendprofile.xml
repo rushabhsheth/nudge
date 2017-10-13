@@ -49,9 +49,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingBottom="30dp"
+            android:paddingBottom="20dp"
             app:layout_anchorGravity="bottom"
-            android:gravity="center_horizontal"></LinearLayout>
+            android:gravity="center_horizontal|top"></LinearLayout>
         
         <ImageButton
             android:id="@+id/actionbutton_star"
