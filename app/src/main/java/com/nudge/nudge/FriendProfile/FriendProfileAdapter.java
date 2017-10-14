@@ -79,6 +79,8 @@ public class FriendProfileAdapter extends RecyclerView.Adapter<FriendProfileAdap
         Resources res = finalHolder.itemView.getContext().getResources();
 
 
+        Glide.with(context).clear(finalHolder.getFriendprofile_ImageView());
+
         String userProfileImage = mFriendImageList.get(position);
         //Log.d(TAG,String.valueOf(position)+" " + userProfileImage);
         if(userProfileImage!=null){

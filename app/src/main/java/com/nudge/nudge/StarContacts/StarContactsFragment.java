@@ -22,13 +22,13 @@ public class StarContactsFragment extends Fragment {
 
     private static final String TAG = "StarContacts";
 
-    private RecyclerView mRecyclerView;
+    private RecyclerView mRVstarcontacts;
     private android.support.v7.widget.LinearLayoutManager mLayoutManager;
-    private List<ContactsClass> mStarContactsData;
+    private List<ContactsClass> mStarContactsData_allcontacts;
+    private List<ContactsClass> mStarContactsData_favourites;
     private StarContactsAdapter mStarContactsAdapter;
 
     private StarContactsRead mStarContactsRead;
-
 
 
     public StarContactsFragment(){
@@ -38,7 +38,8 @@ public class StarContactsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mStarContactsData = new ArrayList<>();
+        mStarContactsData_allcontacts = new ArrayList<>();
+        mStarContactsData_favourites = new ArrayList<>();
         getContacts();
     }
 
@@ -49,30 +50,25 @@ public class StarContactsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_starcontacts, container, false);
         rootView.setTag(TAG);
 
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_starcontacts);
+        //Initiatlize recycler view for all contacts
+
+        mRVstarcontacts = (RecyclerView) rootView.findViewById(R.id.recyclerview_starcontacts);
 
         int scrollPosition = 0;
         mLayoutManager = new LinearLayoutManager(getActivity()); //Layout is reversed
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.scrollToPosition(scrollPosition);
+        mRVstarcontacts.setLayoutManager(mLayoutManager);
+        mRVstarcontacts.scrollToPosition(scrollPosition);
 
-        mStarContactsAdapter = new StarContactsAdapter(getContext(),mStarContactsData);
-        mRecyclerView.setAdapter(mStarContactsAdapter);
-
-//        SnapHelper snapHelper = new LinearSnapHelper();
-//        snapHelper.attachToRecyclerView(mRecyclerView);
+        mStarContactsAdapter = new StarContactsAdapter(getContext(),mStarContactsData_allcontacts,mStarContactsData_favourites);
+        mRVstarcontacts.setAdapter(mStarContactsAdapter);
 
         return rootView;
     }
 
     private void getContacts(){
         mStarContactsRead = new StarContactsRead(getContext(),getLoaderManager());
-        mStarContactsData = mStarContactsRead.loadContacts();
+        mStarContactsData_allcontacts = mStarContactsRead.loadContacts();
 
-//        int id = getResources().getIdentifier("rushabh_sheth", "drawable", getContext().getPackageName());
-//        String path = "android.resource://" + getContext().getPackageName() + "/" + id;
-//        mStarContactsData.add(0, new ContactsClass(path, "Archana Das"));
-//        mStarContactsData.add(1, new ContactsClass(path, "Mahek Shah"));
-//        mStarContactsData.add(2, new ContactsClass(path, "Daniel Topolanek"));
+
     }
 }
