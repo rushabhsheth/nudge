@@ -15,6 +15,7 @@ import com.nudge.nudge.ContactsData.ContactsClass;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by rushabh on 07/10/17.
@@ -95,6 +96,10 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
         ContactsClass mContactsClass =  new ContactsClass();
         mContactsClass.setContact_name(c.getString(c.getColumnIndexOrThrow(DISPLAY_NAME)));
         mContactsClass.setProfile_image_uri(c.getString(c.getColumnIndexOrThrow(PHOTO_URI)));
+
+        Random r = new Random();
+        int id = r.nextInt(1000000);
+        mContactsClass.setId(id);
 
         return mContactsClass;
     }

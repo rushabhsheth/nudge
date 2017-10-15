@@ -4,12 +4,16 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.SearchView;
 
+
+import com.nudge.nudge.ContactsData.ContactsClass;
 import com.nudge.nudge.R;
+
+import java.util.List;
 
 /**
  * Created by rushabh on 05/10/17.
@@ -34,8 +38,19 @@ public class StarActivity extends AppCompatActivity{
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_star, menu);
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_starcontacts, menu);
+//
+//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+//        searchMenuItem = menu.findItem(R.id.action_search);
+//        searchView = (SearchView) searchMenuItem.getActionView();
+//
+//        searchView.setSearchableInfo(searchManager.
+//                getSearchableInfo(getComponentName()));
+//        searchView.setSubmitButtonEnabled(false);
+//        searchView.setOnQueryTextListener(this);
+//
+//        return true;
 
         return true;
     }
@@ -48,10 +63,13 @@ public class StarActivity extends AppCompatActivity{
         int id = item.getItemId();
 
         switch (id) {
-            case (R.id.action_search):
-                return true;
+//            case (R.id.action_search):
+//                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
+
 }

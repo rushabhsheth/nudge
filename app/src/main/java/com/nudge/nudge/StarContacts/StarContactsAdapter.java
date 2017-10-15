@@ -3,6 +3,7 @@ package com.nudge.nudge.StarContacts;
 import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.nudge.nudge.ContactsData.ContactsClass;
 import com.nudge.nudge.R;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -31,12 +33,14 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private List<ContactsClass> mDataSet_allcontacts;
     private List<ContactsClass> mDataSet_favourites;
     int totalItems;
+    private final Comparator<ContactsClass> mComparator;
 
     //Constructor
-    public StarContactsAdapter(Context context,List<ContactsClass> dataSet_allcontacts,List<ContactsClass> dataSet_favourites) {
+    public StarContactsAdapter(Context context,List<ContactsClass> dataSet_allcontacts,List<ContactsClass> dataSet_favourites, Comparator<ContactsClass> comparator) {
         this.mDataSet_allcontacts = dataSet_allcontacts;
         this.mDataSet_favourites = dataSet_favourites;
         this.mContext = context;
+        this.mComparator = comparator;
     }
 
 
@@ -78,7 +82,8 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        totalItems = mDataSet_allcontacts.size() + mDataSet_favourites.size() + 2; //2 headers - favourites & all contacts
+//        totalItems = mDataSet_allcontacts.size() + mDataSet_favourites.size() + 2; //2 headers - favourites & all contacts
+        totalItems = mSortedList.size() + mDataSet_favourites.size() + 2; //2 headers - favourites & all contacts
         return totalItems;
     }
 
@@ -102,7 +107,8 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             return mDataSet_favourites.get(position-1);
         }
         else {
-            return mDataSet_allcontacts.get(position - mDataSet_favourites.size()-2); //-2 is for headers
+//            return mDataSet_allcontacts.get(position - mDataSet_favourites.size()-2); //-2 is for headers
+              return mSortedList.get(position - mDataSet_favourites.size()-2); //-2 is for
         }
     }
 
@@ -227,5 +233,75 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     }
 
+
+
+    private final SortedList<ContactsClass> mSortedList = new SortedList<>(ContactsClass.class, new SortedList.Callback<ContactsClass>() {
+        @Override
+        public int compare(ContactsClass a, ContactsClass b) {
+            return mComparator.compare(a, b);
+        }
+
+        @Override
+        public void onInserted(int position, int count) {
+            notifyItemRangeInserted(position, count);
+        }
+
+        @Override
+        public void onRemoved(int position, int count) {
+            notifyItemRangeRemoved(position, count);
+        }
+
+        @Override
+        public void onMoved(int fromPosition, int toPosition) {
+            notifyItemMoved(fromPosition, toPosition);
+        }
+
+        @Override
+        public void onChanged(int position, int count) {
+            notifyItemRangeChanged(position, count);
+        }
+
+        @Override
+        public boolean areContentsTheSame(ContactsClass oldItem, ContactsClass newItem) {
+            return oldItem.equals(newItem);
+        }
+
+        @Override
+        public boolean areItemsTheSame(ContactsClass item1, ContactsClass item2) {
+            return item1.getId() == item2.getId();
+        }
+    });
+
+    public void add(ContactsClass model) {
+        mSortedList.add(model);
+    }
+
+    public void remove(ContactsClass model) {
+        mSortedList.remove(model);
+    }
+
+    public void add(List<ContactsClass> models) {
+        mSortedList.addAll(models);
+    }
+
+    public void remove(List<ContactsClass> models) {
+        mSortedList.beginBatchedUpdates();
+        for (ContactsClass model : models) {
+            mSortedList.remove(model);
+        }
+        mSortedList.endBatchedUpdates();
+    }
+
+    public void replaceAll(List<ContactsClass> models) {
+        mSortedList.beginBatchedUpdates();
+        for (int i = mSortedList.size() - 1; i >= 0; i--) {
+            final ContactsClass model = mSortedList.get(i);
+            if (!models.contains(model)) {
+                mSortedList.remove(model);
+            }
+        }
+        mSortedList.addAll(models);
+        mSortedList.endBatchedUpdates();
+    }
 
 }

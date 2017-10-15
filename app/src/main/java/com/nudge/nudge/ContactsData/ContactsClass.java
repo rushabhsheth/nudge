@@ -11,6 +11,7 @@ public class ContactsClass {
 
     private static final String TAG = "ContactsClass";
 
+    private int mId;
     private List<String> profileImageList;
     private String profile_image_uri;
     private String contact_name;
@@ -20,10 +21,11 @@ public class ContactsClass {
 
     public ContactsClass(){
 
+        this.mId = 0;
         this.profile_image_uri = null;
         this.contact_name = null;
         this.profileImageList = new ArrayList<>();
-        mStarPressed = false;
+        this.mStarPressed = false;
 
     }
 
@@ -41,6 +43,10 @@ public class ContactsClass {
 
     public String getContact_name(){
         return contact_name;
+    }
+
+    public int getId(){
+        return mId;
     }
 
     public boolean getStarPressed(){
@@ -66,6 +72,26 @@ public class ContactsClass {
 
     public void setProfileImageList (List<String> profileImageList) {
         this.profileImageList = profileImageList;
+    }
+
+    public void setId (int id){
+        this.mId = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ContactsClass that = (ContactsClass) o;
+
+        return contact_name.equals(that.contact_name);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return contact_name.hashCode();
     }
 
 }

@@ -53,28 +53,28 @@ public class FriendsCard {
 
     @SwipeOut
     private void onSwipedOut(){
-        Log.d("EVENT", "onSwipedOut");
+        //Log.d("EVENT", "onSwipedOut");
         mSwipeView.addView(this);
     }
 
     @SwipeCancelState
     private void onSwipeCancelState(){
-        Log.d("EVENT", "onSwipeCancelState");
+//        Log.d("EVENT", "onSwipeCancelState");
     }
 
     @SwipeIn
     private void onSwipeIn(){
-        Log.d("EVENT", "onSwipedIn");
+//        Log.d("EVENT", "onSwipedIn");
     }
 
     @SwipeInState
     private void onSwipeInState(){
-        Log.d("EVENT", "onSwipeInState");
+//        Log.d("EVENT", "onSwipeInState");
     }
 
     @SwipeOutState
     private void onSwipeOutState(){
-        Log.d("EVENT", "onSwipeOutState");
+//        Log.d("EVENT", "onSwipeOutState");
     }
 
 }

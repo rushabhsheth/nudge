@@ -3,17 +3,27 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_friendstab"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.nudge.nudge.FriendsTab.FriendsFragment"
     tools:showIn="@layout/activity_main">
 
-    <include layout="@layout/content_actionbuttons" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:id="@+id/fragment_friendstab_actionbuttons"
+        android:layout_gravity="bottom"></FrameLayout>
 
     <com.mindorks.placeholderview.SwipePlaceHolderView
         android:id="@+id/swipeView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:paddingTop="10dp"/>
+
+    <!--<include layout="@layout/content_actionbuttons" />-->
+
 
 </FrameLayout>

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_actionbuttons"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:tag="@string/fragment_actionbuttons"
     tools:layout="@layout/fragment_actionbuttons"
     android:name="com.nudge.nudge.ActionFragments.ActionButtonsFragment"
     android:layout_width="match_parent"
