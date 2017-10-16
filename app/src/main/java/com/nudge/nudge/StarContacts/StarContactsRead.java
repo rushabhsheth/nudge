@@ -71,7 +71,7 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
                 PROJECTION_COLUMNS,                   //Projection
                 null,                   //Selection
                 null,                   //Selection Arguments
-                null);                  //Sort Order
+                DISPLAY_NAME+" ASC");                  //Sort Order
     }
 
     @Override

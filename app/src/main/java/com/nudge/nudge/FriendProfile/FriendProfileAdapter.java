@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.nudge.nudge.ContactsData.ContactsClass;
 import com.nudge.nudge.NudgesTab.NudgeClass;
 import com.nudge.nudge.R;
@@ -79,6 +81,7 @@ public class FriendProfileAdapter extends RecyclerView.Adapter<FriendProfileAdap
         Resources res = finalHolder.itemView.getContext().getResources();
 
 
+        finalHolder.getFriendprofile_ImageView().setImageDrawable(null);
         Glide.with(context).clear(finalHolder.getFriendprofile_ImageView());
 
         String userProfileImage = mFriendImageList.get(position);

@@ -2,6 +2,7 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/friend_card_view"
     android:layout_width="340dp"
     android:layout_height="425dp"
     android:layout_marginBottom="0dp"

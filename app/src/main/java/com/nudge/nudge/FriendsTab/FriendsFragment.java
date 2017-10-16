@@ -1,6 +1,7 @@
 package com.nudge.nudge.FriendsTab;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -17,12 +18,16 @@ import com.mindorks.placeholderview.SwipeDecor;
 import com.mindorks.placeholderview.SwipePlaceHolderView;
 import com.mindorks.placeholderview.SwipeViewBinder;
 import com.nudge.nudge.ActionFragments.ActionButtonsFragment;
+import com.nudge.nudge.FriendProfile.FriendActivity;
 import com.nudge.nudge.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class FriendsFragment extends Fragment {
+public class FriendsFragment extends Fragment{
 
     private static final String TAG = "FriendsFragment";
 
@@ -80,12 +85,27 @@ public class FriendsFragment extends Fragment {
             mActionButtons.setSwipePlaceHolderView(mSwipeView);
         }
 
+        List<Object> resolverList = new ArrayList<>();
+        resolverList = mSwipeView.getAllResolvers();
+        for(int i = 0; i < 1;i++) {
+            FriendsCard friend = (FriendsCard) resolverList.get(i);
+            friend.view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startFriendProfileActivity();
+                }
+            });
+        }
+
 
         return rootView;
     }
 
 
-
+    private void startFriendProfileActivity(){
+        Intent intent = new Intent(getContext(), FriendActivity.class);
+        startActivity(intent);
+    }
 
 
 }

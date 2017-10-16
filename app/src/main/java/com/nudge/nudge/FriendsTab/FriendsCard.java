@@ -1,6 +1,7 @@
 package com.nudge.nudge.FriendsTab;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,6 +34,9 @@ public class FriendsCard {
 
     @View(R.id.locationNameTxt)
     private TextView locationNameTxt;
+
+    @View(R.id.friend_card_view)
+    public android.view.View view;
 
     private FriendsProfileClass mProfile;
     private Context mContext;
@@ -76,5 +80,6 @@ public class FriendsCard {
     private void onSwipeOutState(){
 //        Log.d("EVENT", "onSwipeOutState");
     }
+
 
 }

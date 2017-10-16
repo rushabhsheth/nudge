@@ -14,6 +14,7 @@
 
     <color name="colorMaterialGrey">#9e9e9e</color>
     <color name="colorMaterialGreyTransparent">#809e9e9e</color>
+    <color name="colorMaterialGrey500Transparent">#c99e9e9e</color>
     <color name="colorMaterialGreen600">#43a047</color>
     <color name="colorTickBlue">#2196F3</color>
 

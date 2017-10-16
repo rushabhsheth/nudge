@@ -3,11 +3,12 @@
     <string name="activity_userprofile">Profile</string>
     <string name="activity_calendar">Calendar</string>
     <string name="action_settings">Settings</string>
-    <string name="activity_starcontacts">Star Contacts</string>
+    <string name="activity_starcontacts">Favourites</string>
     <string name="activity_friendprofile">Archana\'s Profile</string>
     <string name="fragment_actionbuttons">fragment_actionbuttons</string>
 
-    <string name="action_star">Star Contacts</string>
+    <string name="action_star">Favourites</string>
+    <string name="action_addfavourite">Add to favourites</string>
     <string name="action_userprofile">My Profile</string>
     <string name="action_friendprofile">Friend Profile</string>
 

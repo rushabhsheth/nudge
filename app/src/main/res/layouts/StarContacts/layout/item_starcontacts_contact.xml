@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:layout_marginBottom="5dp"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
+    android:layout_marginTop="5dp"
+    android:weightSum="100">
+
+    <!--View for holding Profile Image-->
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:background="@color/colorBackground"
+        android:paddingBottom="0dp"
+        android:paddingTop="0dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/contactImageView"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            app:civ_border_color="@color/colorText"
+            app:civ_border_width="0dp" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/contactTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_weight="100"
+        android:background="@color/colorBackground"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:textColor="@color/colorText"
+        android:textSize="16sp" />
+
+
+    <ImageButton
+        android:id="@+id/StarContactButton"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_gravity="right|center_vertical"
+        android:padding="0dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_star_hollow"
+        android:background="@color/colorBackground"/>
+
+</LinearLayout>

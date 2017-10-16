@@ -2,17 +2,24 @@ package com.nudge.nudge.StarContacts;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SearchView;
+
+
 
 import com.nudge.nudge.ContactsData.ContactsClass;
 import com.nudge.nudge.R;
@@ -25,7 +32,7 @@ import java.util.List;
  * Created by rushabh on 06/10/17.
  */
 
-public class StarContactsFragment extends Fragment  implements SearchView.OnQueryTextListener{
+public class StarContactsFragment extends Fragment {
 
     private static final String TAG = "StarContacts";
 
@@ -37,8 +44,8 @@ public class StarContactsFragment extends Fragment  implements SearchView.OnQuer
 
     private StarContactsRead mStarContactsRead;
 
-    private SearchView searchView;
-    private MenuItem searchMenuItem;
+    private Toolbar searchtoolbar;
+    private SearchActionClass mSearchAction;
 
     public StarContactsFragment(){
         //Empty Constructor
@@ -50,7 +57,9 @@ public class StarContactsFragment extends Fragment  implements SearchView.OnQuer
         setHasOptionsMenu(true);
         mStarContactsData_allcontacts = new ArrayList<>();
         mStarContactsData_favourites = new ArrayList<>();
+
         getContacts();
+
     }
 
     @Override
@@ -77,17 +86,50 @@ public class StarContactsFragment extends Fragment  implements SearchView.OnQuer
         return rootView;
     }
 
+
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        searchtoolbar = (Toolbar) getActivity().findViewById(R.id.searchtoolbar);
+
+        mSearchAction = new SearchActionClass(getContext(),searchtoolbar);
+        mSearchAction.setSearchToolbar();
+
+    }
+
+
     private void getContacts(){
         mStarContactsRead = new StarContactsRead(getContext(),getLoaderManager());
         mStarContactsData_allcontacts = mStarContactsRead.loadContacts();
 
-        ContactsClass c = new ContactsClass();
-        c.setContact_name("Archana");
-        c.setId(123332);
-        mStarContactsData_favourites.add(c);
-
-
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.menu_starcontacts, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        switch (id) {
+            case (R.id.action_addfavourites):
+                return true;
+            case (R.id.action_search):
+                mSearchAction.actionSearch();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
 
     private static final Comparator<ContactsClass> ALPHABETICAL_COMPARATOR = new Comparator<ContactsClass>() {
         @Override
@@ -109,34 +151,11 @@ public class StarContactsFragment extends Fragment  implements SearchView.OnQuer
         return filteredModelList;
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.menu_starcontacts, menu);
-
-        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        searchMenuItem = menu.findItem(R.id.action_search);
-        searchView = (SearchView) searchMenuItem.getActionView();
-
-        searchView.setSearchableInfo(searchManager.
-                getSearchableInfo(getActivity().getComponentName()));
-        searchView.setSubmitButtonEnabled(false);
-        searchView.setOnQueryTextListener(this);
-
+    public SearchActionClass getSearchActionClass (){
+        return mSearchAction;
     }
 
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        return false;
-    }
 
-    @Override
-    public boolean onQueryTextChange(String query) {
-        final List<ContactsClass> filteredModelList = filter(mStarContactsData_allcontacts, query);
-        mStarContactsAdapter.replaceAll(filteredModelList);
-        mRVstarcontacts.scrollToPosition(0);
-        return true;
-    }
 
 
 }
