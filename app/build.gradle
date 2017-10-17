@@ -61,6 +61,10 @@ dependencies {
     //Java to JSON
     compile 'com.google.code.gson:gson:2.8.2'
 
+    compile 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
+
 }
 
 configurations.all {

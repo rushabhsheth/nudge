@@ -40,18 +40,15 @@ public class SearchActionClass{
 
     private SearchView searchView;
 
-    SearchActionClass(Context context, Toolbar toolbar){
+    private SearchQueryListener mCallback;
+    private StarContactsFragment mFragment;
+
+    SearchActionClass(StarContactsFragment fragment, Context context, Toolbar toolbar){
 
         this.mContext = context;
         this.mToolbar = toolbar;
-//        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-//        searchMenuItem = menu.findItem(R.id.action_search);
-//
-//        searchView = (SearchView) searchMenuItem.getActionView();
-//        searchView.setSearchableInfo(searchManager.
-//                getSearchableInfo(getActivity().getComponentName()));
-//        searchView.setSubmitButtonEnabled(false);
-//        searchView.setOnQueryTextListener(this);
+        this.mFragment = fragment;
+        mCallback = (SearchQueryListener) mFragment;
     }
 
     public void initSearchView()
@@ -88,14 +85,16 @@ public class SearchActionClass{
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                callSearch(query);
+//                callSearch(query);
+                mCallback.onSearchQuery(query);
                 searchView.clearFocus();
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                callSearch(newText);
+//                callSearch(newText);
+                mCallback.onSearchQuery(newText);
                 return true;
             }
 
@@ -110,18 +109,7 @@ public class SearchActionClass{
 
     }
 
-//    @Override
-//    public boolean onQueryTextSubmit(String query) {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean onQueryTextChange(String query) {
-////        final List<ContactsClass> filteredModelList = filter(mStarContactsData_allcontacts, query);
-////        mStarContactsAdapter.replaceAll(filteredModelList);
-////        mRVstarcontacts.scrollToPosition(0);
-//        return true;
-//    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void circleReveal(Toolbar toolbar, int posFromRight, boolean containsOverflow, final boolean isShow)
@@ -241,4 +229,7 @@ public class SearchActionClass{
         return searchView;
     }
 
+    public interface SearchQueryListener{
+        void onSearchQuery(String query);
+    }
 }

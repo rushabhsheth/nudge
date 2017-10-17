@@ -82,8 +82,8 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        totalItems = mDataSet_allcontacts.size() + mDataSet_favourites.size() + 2; //2 headers - favourites & all contacts
-//        totalItems = mSortedList.size() + mDataSet_favourites.size() + 2; //2 headers - favourites & all contacts
+//        totalItems = mDataSet_allcontacts.size() + mDataSet_favourites.size() + 2; //2 headers - favourites & all contacts
+        totalItems = mSortedList.size() + mDataSet_favourites.size() + 2; //2 headers - favourites & all contacts
 //        totalItems = mDataSet_favourites.size();
         return totalItems;
     }
@@ -108,8 +108,8 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             return mDataSet_favourites.get(position);
         }
         else {
-            return mDataSet_allcontacts.get(position - mDataSet_favourites.size()-2); //-2 is for headers
-//              return mSortedList.get(position - mDataSet_favourites.size()-2); //-2 is for
+//            return mDataSet_allcontacts.get(position - mDataSet_favourites.size()-2); //-2 is for headers
+              return mSortedList.get(position - mDataSet_favourites.size()-2); //-2 is for
         }
     }
 
@@ -283,7 +283,7 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public void add(List<ContactsClass> models) {
         mSortedList.addAll(models);
-    }
+     }
 
     public void remove(List<ContactsClass> models) {
         mSortedList.beginBatchedUpdates();

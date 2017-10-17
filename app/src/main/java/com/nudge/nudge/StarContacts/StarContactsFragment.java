@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-
 import com.nudge.nudge.ContactsData.ContactsClass;
 import com.nudge.nudge.R;
 
@@ -32,7 +31,9 @@ import java.util.List;
  * Created by rushabh on 06/10/17.
  */
 
-public class StarContactsFragment extends Fragment {
+public class StarContactsFragment extends Fragment implements
+        StarContactsRead.ReturnLoadedDataListener,
+        SearchActionClass.SearchQueryListener {
 
     private static final String TAG = "StarContacts";
 
@@ -47,7 +48,7 @@ public class StarContactsFragment extends Fragment {
     private Toolbar searchtoolbar;
     private SearchActionClass mSearchAction;
 
-    public StarContactsFragment(){
+    public StarContactsFragment() {
         //Empty Constructor
     }
 
@@ -57,8 +58,6 @@ public class StarContactsFragment extends Fragment {
         setHasOptionsMenu(true);
         mStarContactsData_allcontacts = new ArrayList<>();
         mStarContactsData_favourites = new ArrayList<>();
-
-        getContacts();
 
     }
 
@@ -78,14 +77,11 @@ public class StarContactsFragment extends Fragment {
         mRVstarcontacts.setLayoutManager(mLayoutManager);
         mRVstarcontacts.scrollToPosition(scrollPosition);
 
-        mStarContactsAdapter = new StarContactsAdapter(getContext(),mStarContactsData_allcontacts,mStarContactsData_favourites,ALPHABETICAL_COMPARATOR);
+        mStarContactsAdapter = new StarContactsAdapter(getContext(), mStarContactsData_allcontacts, mStarContactsData_favourites, ALPHABETICAL_COMPARATOR);
         mRVstarcontacts.setAdapter(mStarContactsAdapter);
-
-        mStarContactsAdapter.add(mStarContactsData_allcontacts);
 
         return rootView;
     }
-
 
 
     @Override
@@ -93,15 +89,20 @@ public class StarContactsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         searchtoolbar = (Toolbar) getActivity().findViewById(R.id.searchtoolbar);
 
-        mSearchAction = new SearchActionClass(getContext(),searchtoolbar);
+        mSearchAction = new SearchActionClass(this, getContext(), searchtoolbar);
         mSearchAction.setSearchToolbar();
+
+        mStarContactsRead = new StarContactsRead(this, getContext(), getLoaderManager());
+        mStarContactsRead.loadContacts();
+
+//        Log.d(TAG, String.valueOf(mStarContactsData_allcontacts.size()));
 
     }
 
-
-    private void getContacts(){
-        mStarContactsRead = new StarContactsRead(getContext(),getLoaderManager());
-        mStarContactsData_allcontacts = mStarContactsRead.loadContacts();
+    public void returnLoadedData(List<ContactsClass> contactList) {
+        mStarContactsData_allcontacts = contactList;
+        mStarContactsAdapter.replaceAll(contactList);
+        mRVstarcontacts.scrollToPosition(0);
 
     }
 
@@ -130,6 +131,14 @@ public class StarContactsFragment extends Fragment {
     }
 
 
+    public void onSearchQuery(String query) {
+
+        final List<ContactsClass> filteredModelList = filter(mStarContactsData_allcontacts, query);
+        mStarContactsAdapter.replaceAll(filteredModelList);
+        mRVstarcontacts.scrollToPosition(0);
+    }
+
+
 
     private static final Comparator<ContactsClass> ALPHABETICAL_COMPARATOR = new Comparator<ContactsClass>() {
         @Override
@@ -151,11 +160,9 @@ public class StarContactsFragment extends Fragment {
         return filteredModelList;
     }
 
-    public SearchActionClass getSearchActionClass (){
+    public SearchActionClass getSearchActionClass() {
         return mSearchAction;
     }
-
-
 
 
 }

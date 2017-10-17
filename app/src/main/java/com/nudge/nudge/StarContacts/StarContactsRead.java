@@ -29,6 +29,8 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
 
     List<ContactsClass> contactList;
     LoaderManager mLoaderManager;
+    ReturnLoadedDataListener mCallback;
+    StarContactsFragment mFragement;
 
     private static final Uri CONTENT_URI = ContactsContract.Contacts.CONTENT_URI;
 
@@ -50,15 +52,24 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
 
 
 
-    StarContactsRead(Context context, LoaderManager loaderManager){
+    StarContactsRead(StarContactsFragment fragment, Context context, LoaderManager loaderManager){
         this.mContext = context;
         this.mLoaderManager = loaderManager;
+        this.mFragement = fragment;
+
+        try {
+            mCallback = (ReturnLoadedDataListener) fragment;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(mContext.toString()
+                    + " must implement OnHeadlineSelectedListener");
+        }
+
+
     }
 
-    public List<ContactsClass> loadContacts(){
+    public void loadContacts(){
         contactList = new ArrayList<>();
         mLoaderManager.initLoader(0, null, this);
-        return contactList;
     }
 
 
@@ -84,6 +95,7 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
                 cursor.moveToNext();
             }
             cursor.close();
+            mCallback.returnLoadedData(contactList);
         }
     }
 
@@ -102,6 +114,10 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
         mContactsClass.setId(id);
 
         return mContactsClass;
+    }
+
+    public interface ReturnLoadedDataListener{
+        void returnLoadedData(List<ContactsClass> contactList);
     }
 
 }
