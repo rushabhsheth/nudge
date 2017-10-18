@@ -33,7 +33,8 @@ import java.util.List;
 
 public class StarContactsFragment extends Fragment implements
         StarContactsRead.ReturnLoadedDataListener,
-        SearchActionClass.SearchQueryListener {
+        SearchActionClass.SearchQueryListener,
+        StarContactsAdapter.onItemClickListener {
 
     private static final String TAG = "StarContacts";
 
@@ -77,7 +78,7 @@ public class StarContactsFragment extends Fragment implements
         mRVstarcontacts.setLayoutManager(mLayoutManager);
         mRVstarcontacts.scrollToPosition(scrollPosition);
 
-        mStarContactsAdapter = new StarContactsAdapter(getContext(), mStarContactsData_allcontacts, mStarContactsData_favourites, ALPHABETICAL_COMPARATOR);
+        mStarContactsAdapter = new StarContactsAdapter(this, getContext(), mStarContactsData_favourites, ALPHABETICAL_COMPARATOR);
         mRVstarcontacts.setAdapter(mStarContactsAdapter);
 
         return rootView;
@@ -99,11 +100,11 @@ public class StarContactsFragment extends Fragment implements
 
     }
 
+    //Interface implementation of method in @StarContactsRead
     public void returnLoadedData(List<ContactsClass> contactList) {
         mStarContactsData_allcontacts = contactList;
-        mStarContactsAdapter.replaceAll(contactList);
-        mRVstarcontacts.scrollToPosition(0);
-
+//        mStarContactsAdapter.replaceAll(contactList);
+//        mRVstarcontacts.scrollToPosition(0);
     }
 
     @Override
@@ -120,10 +121,9 @@ public class StarContactsFragment extends Fragment implements
         int id = item.getItemId();
 
         switch (id) {
-            case (R.id.action_addfavourites):
-                return true;
             case (R.id.action_search):
                 mSearchAction.actionSearch();
+                mStarContactsAdapter.setIsSearch(true);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -131,13 +131,39 @@ public class StarContactsFragment extends Fragment implements
     }
 
 
-    public void onSearchQuery(String query) {
+    //Interface method of StarContactsAdapter
+    public void onItemClicked(StarContactsAdapter.VHItem item, ContactsClass starContact, int position) {
+        boolean starPressed = starContact.getStarPressed();
+        if (!starPressed) {
+            item.getStarButton().setImageResource(R.drawable.ic_star_blue);
+            starContact.setStarPressed(true);
 
+            mStarContactsAdapter.addFavouriteItem(starContact);
+
+        } else {
+            item.getStarButton().setImageResource(R.drawable.ic_star_hollow);
+            starContact.setStarPressed(false);
+
+            //This is for database operations
+            mStarContactsAdapter.removeFavouriteItem(starContact, position);
+
+        }
+
+    }
+
+
+    //Interface method of SearchActionClass
+    public void onSearchQuery(String query) {
+//        Log.d(TAG, " Query: "+ query);
         final List<ContactsClass> filteredModelList = filter(mStarContactsData_allcontacts, query);
         mStarContactsAdapter.replaceAll(filteredModelList);
         mRVstarcontacts.scrollToPosition(0);
     }
 
+    public void onSearchClose(){
+//        Log.d(TAG, "onSearchClose: true");
+        mStarContactsAdapter.setIsSearch(false);
+    }
 
 
     private static final Comparator<ContactsClass> ALPHABETICAL_COMPARATOR = new Comparator<ContactsClass>() {

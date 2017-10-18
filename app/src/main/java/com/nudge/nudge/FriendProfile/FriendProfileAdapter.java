@@ -82,15 +82,17 @@ public class FriendProfileAdapter extends RecyclerView.Adapter<FriendProfileAdap
 
 
         finalHolder.getFriendprofile_ImageView().setImageDrawable(null);
-        Glide.with(context).clear(finalHolder.getFriendprofile_ImageView());
 
         String userProfileImage = mFriendImageList.get(position);
-        //Log.d(TAG,String.valueOf(position)+" " + userProfileImage);
+        Log.d(TAG,String.valueOf(position)+" " + userProfileImage);
         if(userProfileImage!=null){
             Uri uri = Uri.parse(userProfileImage);
             Glide.with(context)
                     .load(uri)
                     .into(finalHolder.getFriendprofile_ImageView());
+        }
+        else {
+            Glide.with(context).clear(finalHolder.getFriendprofile_ImageView());
         }
 
     }

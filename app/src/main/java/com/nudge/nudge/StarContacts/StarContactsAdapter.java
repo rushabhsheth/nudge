@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -17,6 +18,8 @@ import com.nudge.nudge.R;
 
 import java.util.Comparator;
 import java.util.List;
+
+import butterknife.OnClick;
 
 /**
  * Created by rushabh on 06/10/17.
@@ -34,13 +37,21 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private List<ContactsClass> mDataSet_favourites;
     int totalItems;
     private final Comparator<ContactsClass> mComparator;
+    private StarContactsFragment mFragment;
+
+    private boolean isSearch;
+
+    private onItemClickListener onClickListener;
 
     //Constructor
-    public StarContactsAdapter(Context context,List<ContactsClass> dataSet_allcontacts,List<ContactsClass> dataSet_favourites, Comparator<ContactsClass> comparator) {
-        this.mDataSet_allcontacts = dataSet_allcontacts;
+    public StarContactsAdapter(StarContactsFragment fragment, Context context,List<ContactsClass> dataSet_favourites, Comparator<ContactsClass> comparator) {
+//        this.mDataSet_allcontacts = dataSet_allcontacts;
         this.mDataSet_favourites = dataSet_favourites;
         this.mContext = context;
         this.mComparator = comparator;
+        this.mFragment = fragment;
+        onClickListener = (onItemClickListener) mFragment;
+        isSearch = false;
     }
 
 
@@ -83,9 +94,19 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public int getItemCount() {
 //        totalItems = mDataSet_allcontacts.size() + mDataSet_favourites.size() + 2; //2 headers - favourites & all contacts
-        totalItems = mSortedList.size() + mDataSet_favourites.size() + 2; //2 headers - favourites & all contacts
-//        totalItems = mDataSet_favourites.size();
+//        totalItems = mSortedList.size() + mDataSet_favourites.size() + 2; //2 headers - favourites & all contacts
+        if (isSearch){
+            totalItems = mSortedList.size();
+        }
+        else {
+            totalItems = mDataSet_favourites.size();
+        }
         return totalItems;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     @Override
@@ -97,20 +118,24 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     private boolean isPositionHeader(int position) {
-        if (position==0 || position == (mDataSet_favourites.size()+1)){
-            return true;
-        }
-        else return false;
+//        if (position==0 || position == (mDataSet_favourites.size()+1)){
+//            return true;
+//        }
+//        else return false;
+        return false;
     }
 
-    private ContactsClass getItem(int position){
-        if (position< mDataSet_favourites.size()+1){
-            return mDataSet_favourites.get(position);
+    private ContactsClass getItem(int position, boolean isSearch){
+//        if (position<= mDataSet_favourites.size()){
+//            return mDataSet_favourites.get(position-1); // -1 is for header
+//        }
+//        else {
+//              return mSortedList.get(position - mDataSet_favourites.size()-2); //-2 is for
+//        }
+        if(isSearch){
+            return mSortedList.get(position);
         }
-        else {
-//            return mDataSet_allcontacts.get(position - mDataSet_favourites.size()-2); //-2 is for headers
-              return mSortedList.get(position - mDataSet_favourites.size()-2); //-2 is for
-        }
+        else return mDataSet_favourites.get(position);
     }
 
     private String getHeader(int position, Resources res){
@@ -123,24 +148,31 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
 
-    public void addItem(ContactsClass dataObj, int index) {
+    public void addFavouriteItem(ContactsClass dataObj) {
         mDataSet_favourites.add(dataObj);
-        notifyItemInserted(index);
     }
 
-    public void deleteItem(int index) {
-        mDataSet_favourites.remove(index);
-        notifyItemRemoved(index);
+    public void removeFavouriteItem(ContactsClass dataObj, int position) {
+        mDataSet_favourites.remove(dataObj);
+        if(isSearch){
+
+        } else {
+            notifyItemRemoved(position); //Plus 1 is for the header
+        }
     }
 
-    private void loadVHItem(RecyclerView.ViewHolder viewHolder, int position){
+    public int getFavoriteItemCount(){
+        return mDataSet_favourites.size();
+    }
+
+    private void loadVHItem(final RecyclerView.ViewHolder viewHolder, final int position){
 
         final VHItem finalholder = (VHItem) viewHolder;
         //Log.d(TAG, "Element " + position + " set.");
         Context context = finalholder.itemView.getContext();
         Resources res = finalholder.itemView.getContext().getResources();
 
-        final ContactsClass starContact = getItem(position);
+        final ContactsClass starContact = getItem(position,isSearch);
 
         String userName = starContact.getContact_name();
         if(userName != null){
@@ -156,24 +188,27 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     .into(finalholder.getContactImageView());
         }
 
+        boolean starPressed = starContact.getStarPressed();
+        if (starPressed) {
+            finalholder.getStarButton().setImageResource(R.drawable.ic_star_blue);
+        }
+        else {
+            finalholder.getStarButton().setImageResource(R.drawable.ic_star_hollow);
+        }
 
+        finalholder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickListener.onItemClicked(finalholder, starContact, position);
+            }
+        });
 
-        finalholder.getStarButton().setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        boolean starPressed = starContact.getStarPressed();
-                        if (!starPressed) {
-                            finalholder.getStarButton().setImageResource(R.drawable.ic_star_blue);
-                            starContact.setStarPressed(true);
-                        }
-                        else {
-                            finalholder.getStarButton().setImageResource(R.drawable.ic_star_hollow);
-                            starContact.setStarPressed(false);
-                        }
-                    }
-                }
-        );
+        finalholder.getStarButton().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClickListener.onItemClicked(finalholder, starContact, position);
+            }
+        });
 
     }
 
@@ -303,6 +338,16 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
         mSortedList.addAll(models);
         mSortedList.endBatchedUpdates();
+        isSearch = true;
+    }
+
+    public void setIsSearch(boolean bool){
+        this.isSearch = bool;
+        notifyDataSetChanged();
+    }
+
+    public interface onItemClickListener{
+        void onItemClicked(VHItem item, ContactsClass starContact, int position);
     }
 
 }

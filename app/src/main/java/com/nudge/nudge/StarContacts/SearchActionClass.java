@@ -2,6 +2,7 @@ package com.nudge.nudge.StarContacts;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.graphics.Color;
@@ -62,7 +63,6 @@ public class SearchActionClass{
         // Change search close button image
         ImageView closeButton = (ImageView) searchView.findViewById(R.id.search_close_btn);
         closeButton.setImageResource(R.drawable.ic_close_grey);
-
 
         // set hint and the text colors
 
@@ -165,10 +165,16 @@ public class SearchActionClass{
             mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                        circleReveal(mToolbar,1,true,false);
-                    else
-                        mToolbar.setVisibility(View.GONE);
+                    actionClose();
+//                    mCallback.onSearchClose();
+//                    Log.d(TAG, " Called from setNavigationOnClickListener");
+//
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                        circleReveal(mToolbar, 1, true, false);
+//                    }
+//                    else {
+//                        mToolbar.setVisibility(View.GONE);
+//                    }
                 }
             });
 
@@ -182,8 +188,11 @@ public class SearchActionClass{
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         circleReveal(mToolbar,1,true,false);
                     }
-                    else
+                    else {
                         mToolbar.setVisibility(View.GONE);
+                    }
+                    mCallback.onSearchClose();
+//                    Log.d(TAG, "Called from onMenuItemActionCollape");
                     return true;
                 }
 
@@ -223,6 +232,8 @@ public class SearchActionClass{
 
         item_search.collapseActionView();
         searchView.setIconified(true);
+        mCallback.onSearchClose();
+//        Log.d(TAG, "Called from actionCLose");
     }
 
     public SearchView getSearchView(){
@@ -231,5 +242,6 @@ public class SearchActionClass{
 
     public interface SearchQueryListener{
         void onSearchQuery(String query);
+        void onSearchClose();
     }
 }

@@ -10,10 +10,10 @@
         android:title="@string/action_star"
         app:showAsAction="always" />
 
-    <item
-        android:id="@+id/action_addfavourites"
-        android:icon="@drawable/ic_addfavourites_plain"
-        android:title="@string/action_star"
-        app:showAsAction="always" />
+    <!--<item-->
+        <!--android:id="@+id/action_addfavourites"-->
+        <!--android:icon="@drawable/ic_addfavourites_plain"-->
+        <!--android:title="@string/action_star"-->
+        <!--app:showAsAction="always" />-->
 
 </menu>

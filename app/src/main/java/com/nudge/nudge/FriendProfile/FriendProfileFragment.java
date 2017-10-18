@@ -80,6 +80,7 @@ public class FriendProfileFragment extends Fragment {
         return rootView;
     }
 
+    //Add sample profile images to friends profile
     private void getFriend(){
         mFriendData = new ContactsClass();
 
