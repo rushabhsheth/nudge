@@ -165,7 +165,7 @@ public class SearchActionClass{
             mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    actionClose();
+//                    actionClose();
 //                    mCallback.onSearchClose();
 //                    Log.d(TAG, " Called from setNavigationOnClickListener");
 //
@@ -185,12 +185,14 @@ public class SearchActionClass{
                 @Override
                 public boolean onMenuItemActionCollapse(MenuItem item) {
                     // Do something when collapsed
+                    searchView.setQuery("",true);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         circleReveal(mToolbar,1,true,false);
                     }
                     else {
                         mToolbar.setVisibility(View.GONE);
                     }
+
                     mCallback.onSearchClose();
 //                    Log.d(TAG, "Called from onMenuItemActionCollape");
                     return true;

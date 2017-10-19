@@ -94,7 +94,7 @@ public class StarContactsFragment extends Fragment implements
         mSearchAction.setSearchToolbar();
 
         mStarContactsRead = new StarContactsRead(this, getContext(), getLoaderManager());
-        mStarContactsRead.loadContacts();
+        mStarContactsRead.loadContacts(0);
 
 //        Log.d(TAG, String.valueOf(mStarContactsData_allcontacts.size()));
 
@@ -103,6 +103,7 @@ public class StarContactsFragment extends Fragment implements
     //Interface implementation of method in @StarContactsRead
     public void returnLoadedData(List<ContactsClass> contactList) {
         mStarContactsData_allcontacts = contactList;
+        Log.d(TAG, "Size of contacts is "+mStarContactsData_allcontacts.size());
 //        mStarContactsAdapter.replaceAll(contactList);
 //        mRVstarcontacts.scrollToPosition(0);
     }

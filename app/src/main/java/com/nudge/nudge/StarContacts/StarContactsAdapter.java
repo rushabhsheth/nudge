@@ -1,10 +1,12 @@
 package com.nudge.nudge.StarContacts;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +15,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.GlideException;
 import com.nudge.nudge.ContactsData.ContactsClass;
 import com.nudge.nudge.R;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Comparator;
 import java.util.List;
 
@@ -181,11 +187,12 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         Glide.with(context).clear(finalholder.getContactImageView());
         String userProfileImage = starContact.getProfile_image_uri();
-        if(userProfileImage!=null){
+        if (userProfileImage != null) {
             Uri uri = Uri.parse(userProfileImage);
             Glide.with(context)
                     .load(uri)
                     .into(finalholder.getContactImageView());
+
         }
 
         boolean starPressed = starContact.getStarPressed();
@@ -349,5 +356,28 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public interface onItemClickListener{
         void onItemClicked(VHItem item, ContactsClass starContact, int position);
     }
+
+//    public InputStream getBitmapFromUri(Uri photo_uri) throws FileNotFoundException {
+//         InputStream inputStream = new InputStream() {
+//            @Override
+//            public int read() throws IOException {
+//                return 0;
+//            }
+//        };
+//
+//        try {
+//            AssetFileDescriptor fd =
+//                    mContext.getContentResolver().openAssetFileDescriptor(photo_uri, "r");
+//
+//            inputStream = fd.createInputStream();
+//
+//            inputStream.close();
+//            fd.close();
+//            return inputStream;
+//        } catch (IOException e) {
+//            // Handle error cases.
+//        }
+//        return inputStream;
+//    }
 
 }
