@@ -19,7 +19,6 @@ import com.nudge.nudge.Calendar.CalendarActivity;
 import com.nudge.nudge.FreeTab.FreeFragment;
 import com.nudge.nudge.FriendProfile.FriendActivity;
 import com.nudge.nudge.FriendsTab.FriendsFragment;
-import com.nudge.nudge.FriendsTab.FriendsUtils;
 import com.nudge.nudge.NudgesTab.NudgesFragment;
 import com.nudge.nudge.StarContacts.StarActivity;
 import com.nudge.nudge.UserProfile.ProfileActivity;
@@ -27,11 +26,11 @@ import com.nudge.nudge.UserProfile.ProfileActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-import MainActivityUtils.NudgeNonSwipableViewPager;
+import com.nudge.nudge.MainActivityUtils.NudgeNonSwipableViewPager;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivityUtils";
+    private static final String TAG = "Main Activity";
 
     private TabLayout tabLayout;
     private NudgeNonSwipableViewPager mNudgeViewPager;
