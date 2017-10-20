@@ -18,4 +18,10 @@
 
     <string name="string_favourites">Favourites</string>
     <string name="string_allcontacts">All Contacts</string>
+
+    <string name="facebook_application_id" translatable="false">468047940261404</string>
+    <string name="fb_login_protocol_scheme">fb468047940261404</string>
+
+    <string name="sign_out">Sign Out</string>
+
 </resources>

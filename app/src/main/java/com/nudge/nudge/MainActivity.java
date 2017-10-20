@@ -1,39 +1,67 @@
 package com.nudge.nudge;
 
 import android.Manifest;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.firebase.ui.auth.*;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.nudge.nudge.Calendar.CalendarActivity;
 import com.nudge.nudge.FreeTab.FreeFragment;
 import com.nudge.nudge.FriendProfile.FriendActivity;
 import com.nudge.nudge.FriendsTab.FriendsFragment;
+import com.nudge.nudge.MainActivityUtils.MainActivityViewModel;
 import com.nudge.nudge.NudgesTab.NudgesFragment;
 import com.nudge.nudge.StarContacts.StarActivity;
 import com.nudge.nudge.UserProfile.ProfileActivity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.nudge.nudge.MainActivityUtils.NudgeNonSwipableViewPager;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Main Activity";
 
-    private TabLayout tabLayout;
-    private NudgeNonSwipableViewPager mNudgeViewPager;
+    private static final int RC_SIGN_IN = 9001;
+    private static final int RC_PROFILE = 123;
+
+    //Firebase instance variables
+    private FirebaseAuth mFirebaseAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseUser mUser;
+
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+
+    @BindView(R.id.tabs)
+    TabLayout tabLayout;
+
+    @BindView(R.id.nudge_viewpager)
+    NudgeNonSwipableViewPager mNudgeViewPager;
+
+    private MainActivityViewModel mViewModel;
 
     // Request code for READ_CONTACTS. It can be any number > 0.
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
@@ -43,18 +71,60 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        ButterKnife.bind(this);
+        setSupportActionBar(mToolbar);
 
-        mNudgeViewPager = (NudgeNonSwipableViewPager) findViewById(R.id.nudge_viewpager);
         setupViewPager(mNudgeViewPager);
 
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mNudgeViewPager);
 
-        readContactsPersmission();
+        // View model
+        mViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
+
+        // Initialize Firebase components
+        mUser = null;
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        initAuthListener();
+
+
 
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        mUser = mFirebaseAuth.getCurrentUser();
+        // Start sign in if necessary
+        if (shouldStartSignIn()) {
+            startSignIn();
+        } else {
+            //TODO uncomment this before reading phone contacts
+            readContactsPersmission();
+        }
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mAuthStateListener != null) {
+            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
+        }
+    }
+
 
     private void setupViewPager(NudgeNonSwipableViewPager nudgeNonSwipableViewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -65,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         nudgeNonSwipableViewPager.setCurrentItem(1);
     }
 
-   private class ViewPagerAdapter extends FragmentPagerAdapter {
+    private class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 
@@ -126,23 +196,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void startStarActivity(){
+    private void startStarActivity() {
         Intent intent = new Intent(this, StarActivity.class);
         startActivity(intent);
     }
 
-    private void startProfileActivity(){
+    private void startProfileActivity() {
         Intent intent = new Intent(this, ProfileActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, RC_PROFILE);
     }
 
-    private void startCalendarActivity(){
+    private void startCalendarActivity() {
         Intent intent = new Intent(this, CalendarActivity.class);
         startActivity(intent);
     }
 
 
-    private void startFriendProfileActivity(){
+    private void startFriendProfileActivity() {
         Intent intent = new Intent(this, FriendActivity.class);
         startActivity(intent);
     }
@@ -174,5 +244,86 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+
+    private boolean shouldStartSignIn() {
+        if(mUser!=null){
+            return false;
+        } else return true;
+    }
+
+    private void startSignIn() {
+
+        AuthUI.IdpConfig facebookIdp = new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER)
+                .setPermissions(Arrays.asList("public_profile", "user_friends", "email"))
+                .build();
+
+        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                facebookIdp,
+                new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()
+        );
+
+        // Sign in with FirebaseUI
+        Intent intent = AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setIsSmartLockEnabled(!BuildConfig.DEBUG)
+                .setProviders(providers)
+                .build();
+
+        startActivityForResult(intent, RC_SIGN_IN);
+        mViewModel.setIsSigningIn(true);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            IdpResponse response = IdpResponse.fromResultIntent(data);
+
+            if (resultCode == RESULT_OK) {
+                // Sign-in succeeded, set up the UI
+                Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show();
+                mUser = mFirebaseAuth.getCurrentUser();
+                mViewModel.setIsSigningIn(false);
+                mViewModel.setUser(mUser);
+
+            } else {
+                if (resultCode == RESULT_CANCELED) {
+                    // Sign in was canceled by the user, finish the activity
+                    Toast.makeText(this, "Sign in canceled", Toast.LENGTH_SHORT).show();
+                    mViewModel.setIsSigningIn(false);
+                }
+            }
+        }
+
+        else if (requestCode == RC_PROFILE ) {
+            if (resultCode == RESULT_OK) {
+                if (data.hasExtra("SignOut")) {
+                    String mSignOut = data.getExtras().getString("SignOut");
+//                    Log.d(TAG, "Intent with RC_Profile. Sign Out? " + mSignOut);
+                    if (mUser != null) {
+                        mFirebaseAuth.signOut();
+                        Toast.makeText(this, "Signed out", Toast.LENGTH_LONG).show();
+                        mViewModel.setUser(null);
+                    }
+                }
+            }
+        }
+
+    }
+
+    private void initAuthListener() {
+        //Firebase Auth State Listener
+
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                mUser = firebaseAuth.getCurrentUser();
+                mViewModel.setUser(mUser);
+            }
+        };
+    }
+
 
 }
