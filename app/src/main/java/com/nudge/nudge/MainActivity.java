@@ -99,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
         if (shouldStartSignIn()) {
             startSignIn();
         } else {
-            //TODO uncomment this before reading phone contacts
             readContactsPersmission();
         }
 
@@ -306,6 +305,7 @@ public class MainActivity extends AppCompatActivity {
                         mFirebaseAuth.signOut();
                         Toast.makeText(this, "Signed out", Toast.LENGTH_LONG).show();
                         mViewModel.setUser(null);
+                        startSignIn();
                     }
                 }
             }

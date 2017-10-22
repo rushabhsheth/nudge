@@ -18,6 +18,9 @@ import com.nudge.nudge.R;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by rushabh on 05/10/17.
  */
@@ -25,6 +28,10 @@ import java.util.List;
 public class StarActivity extends AppCompatActivity{
 
     private static final String TAG = "StarActivity";
+
+    @BindView(R.id.toolbar_staractivity)
+    Toolbar toolbar;
+
 
     private android.support.v7.widget.SearchView mSearchView;
     private SearchActionClass mSearchAction;
@@ -35,7 +42,8 @@ public class StarActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_star);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_staractivity);
+        ButterKnife.bind(this);
+
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setTitle(R.string.activity_starcontacts);

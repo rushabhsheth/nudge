@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/friend_card_view"
     android:layout_width="340dp"
@@ -9,40 +8,84 @@
     android:orientation="vertical">
 
     <android.support.v7.widget.CardView
-        android:orientation="vertical"
-        android:background="@color/colorWhite"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="5dp"
+        android:background="@color/colorWhite"
+        android:orientation="vertical"
         app:cardCornerRadius="7dp"
         app:cardElevation="2dp">
+
         <ImageView
             android:id="@+id/profileImageView"
-            android:scaleType="centerCrop"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="75dp"/>
+            android:layout_marginBottom="80dp"
+            android:scaleType="centerCrop" />
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="75dp"
-            android:orientation="vertical"
-            android:layout_gravity="bottom"
-            android:gravity="center|left"
-            android:paddingLeft="20dp">
-            <TextView
-                android:id="@+id/nameAgeTxt"
-                android:layout_width="wrap_content"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="18dp"
-                android:textStyle="bold"
-                android:layout_height="wrap_content"/>
-            <TextView
-                android:id="@+id/locationNameTxt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="14dp"
-                android:textStyle="normal"/>
+            android:layout_height="80dp"
+            android:orientation="horizontal"
+            android:weightSum="100"
+            android:layout_gravity= "bottom"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="75dp"
+                android:layout_gravity="top"
+                android:layout_weight="100"
+                android:gravity="center|left"
+                android:orientation="vertical"
+                android:paddingLeft="20dp">
+
+                <TextView
+                    android:id="@+id/name_friend"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:ellipsize="end"
+                    android:maxLines="1"/>
+
+                <TextView
+                    android:id="@+id/friendcard_last_time_contacted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="14dp"
+                    android:textStyle="normal" />
+
+                <TextView
+                    android:id="@+id/friendcard_times_contacted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="14dp"
+                    android:textStyle="normal" />
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/frame_friendtab_starcontact"
+                android:layout_width="75dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="right">
+
+                <ImageButton
+                    android:id="@+id/StarContactButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:padding="0dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_star_hollow"
+                    android:background="@color/colorWhite"/>
+
+            </FrameLayout>
+
         </LinearLayout>
     </android.support.v7.widget.CardView>
 </FrameLayout>

@@ -1,8 +1,7 @@
 package com.nudge.nudge.FriendsTab;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.util.Log;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,8 +15,11 @@ import com.mindorks.placeholderview.annotations.swipe.SwipeIn;
 import com.mindorks.placeholderview.annotations.swipe.SwipeInState;
 import com.mindorks.placeholderview.annotations.swipe.SwipeOut;
 import com.mindorks.placeholderview.annotations.swipe.SwipeOutState;
-import com.mindorks.placeholderview.annotations.swipe.SwipeTouch;
+import com.nudge.nudge.ContactsData.ContactsClass;
 import com.nudge.nudge.R;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by rushabh on 07/10/17.
@@ -29,20 +31,27 @@ public class FriendsCard {
     @View(R.id.profileImageView)
     private ImageView profileImageView;
 
-    @View(R.id.nameAgeTxt)
+    @View(R.id.name_friend)
     private TextView nameAgeTxt;
 
-    @View(R.id.locationNameTxt)
-    private TextView locationNameTxt;
+    @View(R.id.friendcard_last_time_contacted)
+    private TextView lastTimeContacted;
+
+    @View(R.id.friendcard_times_contacted)
+    private TextView timesContacted;
 
     @View(R.id.friend_card_view)
     public android.view.View view;
 
-    private FriendsProfileClass mProfile;
+    @View(R.id.frame_friendtab_starcontact )
+    private ViewGroup starViewGroup;
+
+
+    private ContactsClass mProfile;
     private Context mContext;
     private SwipePlaceHolderView mSwipeView;
 
-    public FriendsCard(Context context, FriendsProfileClass profile, SwipePlaceHolderView swipeView) {
+    public FriendsCard(Context context, ContactsClass profile, SwipePlaceHolderView swipeView) {
         mContext = context;
         mProfile = profile;
         mSwipeView = swipeView;
@@ -50,9 +59,20 @@ public class FriendsCard {
 
     @Resolve
     private void onResolved(){
-        Glide.with(mContext).load(mProfile.getImageUrl()).into(profileImageView);
-        nameAgeTxt.setText(mProfile.getName() + ", " + mProfile.getAge());
-        locationNameTxt.setText(mProfile.getLocation());
+        Glide.with(mContext).load(mProfile.getProfileImageUri()).into(profileImageView);
+        nameAgeTxt.setText(mProfile.getContactName());
+        lastTimeContacted.setText("Last time contacted: " + getNormalizedDate(mProfile.getLastTimeContacted()) + " days ago");
+        timesContacted.setText("Times contacted: " + mProfile.getTimesContacted());
+    }
+
+    public String getNormalizedDate(long timeContacted){
+        String normalizedTime = "";
+        long timeNow = System.currentTimeMillis();
+        long timeDiff = timeNow - timeContacted;
+        int days =  (int) (timeDiff/(1000 * 60 * 60 *24));
+
+        normalizedTime = String.valueOf(days);
+        return normalizedTime;
     }
 
     @SwipeOut

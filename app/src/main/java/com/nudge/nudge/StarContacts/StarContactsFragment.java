@@ -1,15 +1,11 @@
 package com.nudge.nudge.StarContacts;
 
-import android.app.SearchManager;
-import android.content.Context;
-import android.os.Build;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,14 +14,27 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 
+import com.firebase.ui.auth.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 import com.nudge.nudge.ContactsData.ContactsClass;
+import com.nudge.nudge.ContactsData.UserClass;
 import com.nudge.nudge.R;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by rushabh on 06/10/17.
@@ -38,7 +47,9 @@ public class StarContactsFragment extends Fragment implements
 
     private static final String TAG = "StarContacts";
 
-    private RecyclerView mRVstarcontacts;
+    @BindView(R.id.recyclerview_starcontacts)
+    RecyclerView mRVstarcontacts;
+
     private android.support.v7.widget.LinearLayoutManager mLayoutManager;
     private List<ContactsClass> mStarContactsData_allcontacts;
     private List<ContactsClass> mStarContactsData_favourites;
@@ -48,6 +59,10 @@ public class StarContactsFragment extends Fragment implements
 
     private Toolbar searchtoolbar;
     private SearchActionClass mSearchAction;
+
+    private FirebaseFirestore mFirestore;
+    private FirebaseUser mUser;
+    private StarActivityViewModel mViewModel;
 
     public StarContactsFragment() {
         //Empty Constructor
@@ -60,6 +75,16 @@ public class StarContactsFragment extends Fragment implements
         mStarContactsData_allcontacts = new ArrayList<>();
         mStarContactsData_favourites = new ArrayList<>();
 
+        // View model
+        mViewModel = ViewModelProviders.of(this).get(StarActivityViewModel.class);
+
+        // Enable Firestore logging
+        FirebaseFirestore.setLoggingEnabled(true);
+
+        // Firestore
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
+        mFirestore = FirebaseFirestore.getInstance();
+
     }
 
     @Override
@@ -69,10 +94,27 @@ public class StarContactsFragment extends Fragment implements
         View rootView = inflater.inflate(R.layout.fragment_starcontacts, container, false);
         rootView.setTag(TAG);
 
+        ButterKnife.bind(this, rootView);
+
+        initRecyclerView();
+
+        return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+
+    }
+
+    private void initRecyclerView(){
         //Initiatlize recycler view for all contacts
-
-        mRVstarcontacts = (RecyclerView) rootView.findViewById(R.id.recyclerview_starcontacts);
-
         int scrollPosition = 0;
         mLayoutManager = new LinearLayoutManager(getActivity()); //Layout is reversed
         mRVstarcontacts.setLayoutManager(mLayoutManager);
@@ -81,9 +123,7 @@ public class StarContactsFragment extends Fragment implements
         mStarContactsAdapter = new StarContactsAdapter(this, getContext(), mStarContactsData_favourites, ALPHABETICAL_COMPARATOR);
         mRVstarcontacts.setAdapter(mStarContactsAdapter);
 
-        return rootView;
     }
-
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -98,14 +138,6 @@ public class StarContactsFragment extends Fragment implements
 
 //        Log.d(TAG, String.valueOf(mStarContactsData_allcontacts.size()));
 
-    }
-
-    //Interface implementation of method in @StarContactsRead
-    public void returnLoadedData(List<ContactsClass> contactList) {
-        mStarContactsData_allcontacts = contactList;
-        Log.d(TAG, "Size of contacts is "+mStarContactsData_allcontacts.size());
-//        mStarContactsAdapter.replaceAll(contactList);
-//        mRVstarcontacts.scrollToPosition(0);
     }
 
     @Override
@@ -126,6 +158,9 @@ public class StarContactsFragment extends Fragment implements
                 mSearchAction.actionSearch();
                 mStarContactsAdapter.setIsSearch(true);
                 return true;
+            case (R.id.action_addfavourites):
+                onAddItemsClicked();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -134,16 +169,16 @@ public class StarContactsFragment extends Fragment implements
 
     //Interface method of StarContactsAdapter
     public void onItemClicked(StarContactsAdapter.VHItem item, ContactsClass starContact, int position) {
-        boolean starPressed = starContact.getStarPressed();
-        if (!starPressed) {
+        int starPressed = starContact.getStarred();
+        if (starPressed==0) {
             item.getStarButton().setImageResource(R.drawable.ic_star_blue);
-            starContact.setStarPressed(true);
+            starContact.setStarred(1);
 
             mStarContactsAdapter.addFavouriteItem(starContact);
 
         } else {
             item.getStarButton().setImageResource(R.drawable.ic_star_hollow);
-            starContact.setStarPressed(false);
+            starContact.setStarred(0);
 
             //This is for database operations
             mStarContactsAdapter.removeFavouriteItem(starContact, position);
@@ -170,7 +205,7 @@ public class StarContactsFragment extends Fragment implements
     private static final Comparator<ContactsClass> ALPHABETICAL_COMPARATOR = new Comparator<ContactsClass>() {
         @Override
         public int compare(ContactsClass a, ContactsClass b) {
-            return a.getContact_name().compareTo(b.getContact_name());
+            return a.getContactName().compareTo(b.getContactName());
         }
     };
 
@@ -179,7 +214,7 @@ public class StarContactsFragment extends Fragment implements
 
         final List<ContactsClass> filteredModelList = new ArrayList<>();
         for (ContactsClass model : models) {
-            final String text = model.getContact_name().toLowerCase();
+            final String text = model.getContactName().toLowerCase();
             if (text.contains(lowerCaseQuery)) {
                 filteredModelList.add(model);
             }
@@ -191,5 +226,52 @@ public class StarContactsFragment extends Fragment implements
         return mSearchAction;
     }
 
+    private void showTodoToast() {
+        Toast.makeText(getContext(), "TODO: Implement", Toast.LENGTH_SHORT).show();
+    }
+
+
+    //Interface implementation of method in @StarContactsRead
+    public void returnLoadedData(List<ContactsClass> contactList) {
+        mStarContactsData_allcontacts = contactList;
+        Log.d(TAG, "Size of contacts is "+mStarContactsData_allcontacts.size());
+//        mStarContactsAdapter.replaceAll(contactList);
+//        mRVstarcontacts.scrollToPosition(0);
+    }
+
+    private void onAddItemsClicked() {
+
+        WriteBatch batch = mFirestore.batch();
+        UserClass user = getUser(mUser);
+        DocumentReference userRef = mFirestore.collection("users").document(user.getUserId());
+
+        //Add user
+        batch.set(userRef, user);
+
+        for (ContactsClass contact : mStarContactsData_allcontacts)
+        {
+            batch.set(userRef.collection("whatsapp_friends").document(),contact);
+        }
+
+        batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "Write batch succeeded.");
+                } else {
+                    Log.w(TAG, "write batch failed.", task.getException());
+                }
+            }
+        });
+
+    }
+
+    private UserClass getUser(FirebaseUser user){
+        UserClass mUser = new UserClass();
+        mUser.setUserId(user.getUid());
+        mUser.setUserIdentifier(user.getEmail());
+        mUser.setUserName(user.getDisplayName());
+        return mUser;
+    }
 
 }

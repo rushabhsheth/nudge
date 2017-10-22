@@ -84,13 +84,14 @@ public class FriendProfileFragment extends Fragment {
     private void getFriend(){
         mFriendData = new ContactsClass();
 
+        List<String> paths = new ArrayList<>();
         for(int i=1;i<=5;i++){
             int id = getResources().getIdentifier("pic"+String.valueOf(i), "drawable", getContext().getPackageName());
             String path = "android.resource://" + getContext().getPackageName() + "/" + String.valueOf(id);
 //          Log.d(TAG,path);
-            mFriendData.getProfileImageList().add(path);
-
+            paths.add(path);
         }
+        mFriendData.setProfileImageList(paths);
 
     }
 

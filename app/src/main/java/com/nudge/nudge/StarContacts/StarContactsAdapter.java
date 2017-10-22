@@ -1,31 +1,22 @@
 package com.nudge.nudge.StarContacts;
 
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.GlideException;
 import com.nudge.nudge.ContactsData.ContactsClass;
 import com.nudge.nudge.R;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Comparator;
 import java.util.List;
-
-import butterknife.OnClick;
 
 /**
  * Created by rushabh on 06/10/17.
@@ -180,13 +171,13 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         final ContactsClass starContact = getItem(position,isSearch);
 
-        String userName = starContact.getContact_name();
+        String userName = starContact.getContactName();
         if(userName != null){
             finalholder.getContactNameTextView().setText(userName);
         }
 
         Glide.with(context).clear(finalholder.getContactImageView());
-        String userProfileImage = starContact.getProfile_image_uri();
+        String userProfileImage = starContact.getProfileImageUri();
         if (userProfileImage != null) {
             Uri uri = Uri.parse(userProfileImage);
             Glide.with(context)
@@ -195,8 +186,8 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
 
-        boolean starPressed = starContact.getStarPressed();
-        if (starPressed) {
+        int starPressed = starContact.getStarred();
+        if (starPressed==1) {
             finalholder.getStarButton().setImageResource(R.drawable.ic_star_blue);
         }
         else {
@@ -311,7 +302,7 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         @Override
         public boolean areItemsTheSame(ContactsClass item1, ContactsClass item2) {
-            return item1.getId() == item2.getId();
+            return item1.getContactId() == item2.getContactId();
         }
     });
 

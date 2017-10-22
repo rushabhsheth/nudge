@@ -1,10 +1,7 @@
 package com.nudge.nudge.StarContacts;
 
 
-import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,11 +14,8 @@ import android.util.Log;
 
 import com.nudge.nudge.ContactsData.ContactsClass;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by rushabh on 07/10/17.
@@ -47,6 +41,7 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
     String PHOTO_URI = ContactsContract.Contacts.PHOTO_URI;
     String LAST_TIME_CONTACTED = ContactsContract.Contacts.LAST_TIME_CONTACTED;
     String TIMES_CONTACTED = ContactsContract.Contacts.TIMES_CONTACTED;
+    String STARRED = ContactsContract.Contacts.STARRED;
 
     private final String[] PROJECTION_COLUMNS = {
             _ID,
@@ -54,7 +49,8 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
             HAS_PHONE_NUMBER,
             PHOTO_URI,
             LAST_TIME_CONTACTED,
-            TIMES_CONTACTED
+            TIMES_CONTACTED,
+            STARRED
     };
 
 
@@ -81,29 +77,33 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
     }
 
 
+
+    //Read whatsapp contacts
+    Uri RAW_CONTENT_URI = ContactsContract.RawContacts.CONTENT_URI;
+
+    String RAW_SELECTION_COLUMNS =
+            ContactsContract.RawContacts.ACCOUNT_TYPE + "= ?";
+
+    String[] RAW_SELECTION_ARGS = {
+            "com.whatsapp"
+    };
+
+    String[] RAW_PROJECTION_COLUMNS = {
+            ContactsContract.RawContacts._ID,
+            ContactsContract.RawContacts.CONTACT_ID,
+            ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY,
+            ContactsContract.RawContacts.TIMES_CONTACTED,
+            ContactsContract.RawContacts.LAST_TIME_CONTACTED,
+            ContactsContract.RawContacts.STARRED,
+            ContactsContract.RawContacts.ACCOUNT_NAME,
+            ContactsContract.RawContacts.ACCOUNT_TYPE,
+    };
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         CursorLoader loader;
         /*Id =0 is for loading whatsapp contact ids*/
         if (id ==0){
-
-            Uri RAW_CONTENT_URI = ContactsContract.RawContacts.CONTENT_URI;
-
-            String[] RAW_PROJECTION_COLUMNS = {
-                    ContactsContract.RawContacts._ID,
-                    ContactsContract.RawContacts.CONTACT_ID,
-                    ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY,
-                    ContactsContract.RawContacts.ACCOUNT_NAME,
-                    ContactsContract.RawContacts.TIMES_CONTACTED,
-                    ContactsContract.RawContacts.LAST_TIME_CONTACTED
-            };
-
-            String RAW_SELECTION_COLUMNS =
-                    ContactsContract.RawContacts.ACCOUNT_TYPE + "= ?";
-
-            String[] RAW_SELECTION_ARGS = {
-                    "com.whatsapp"
-            };
 
             //Whatsapp contacts
             loader = new CursorLoader(
@@ -138,7 +138,7 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
                 if (cursor != null && cursor.moveToFirst()) {
                     while (!cursor.isAfterLast()) {
 
-                        ContactsClass singleWhatsappContact = getWhatsappId(cursor);
+                        ContactsClass singleWhatsappContact = getWhatsappContact(cursor);
                         mWhatsappContacts.add(singleWhatsappContact);
                         cursor.moveToNext();
                     }
@@ -160,7 +160,6 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
                 }
                 break;
 
-
         }
     }
 
@@ -169,17 +168,15 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
 
     }
 
-    private ContactsClass getWhatsappId(Cursor c){
+    private ContactsClass getWhatsappContact(Cursor c){
         ContactsClass whatsapp_contact = new ContactsClass();
         try {
-            whatsapp_contact.setContact_name(c.getString(c.getColumnIndexOrThrow(ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY)));
-            whatsapp_contact.setId(c.getInt(c.getColumnIndexOrThrow(ContactsContract.RawContacts.CONTACT_ID)));
-
-            long rawContactId = c.getLong(c.getColumnIndexOrThrow(ContactsContract.RawContacts._ID));
-            Uri photoId = ContentUris.withAppendedId(ContactsContract.RawContacts.CONTENT_URI, rawContactId);
-            Uri photoUri = Uri.withAppendedPath(photoId, ContactsContract.RawContacts.DisplayPhoto.CONTENT_DIRECTORY);
-
-            whatsapp_contact.setProfile_image_uri(photoUri.toString());
+            whatsapp_contact.setContactName(c.getString(c.getColumnIndexOrThrow(ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY)));
+            whatsapp_contact.setContactId(c.getLong(c.getColumnIndexOrThrow(ContactsContract.RawContacts.CONTACT_ID)));
+            whatsapp_contact.setTimesContacted(c.getInt(c.getColumnIndexOrThrow(ContactsContract.RawContacts.TIMES_CONTACTED)));
+            whatsapp_contact.setLastTimeContacted(c.getLong(c.getColumnIndexOrThrow(ContactsContract.RawContacts.LAST_TIME_CONTACTED)));
+            whatsapp_contact.setStarred(c.getInt(c.getColumnIndexOrThrow(ContactsContract.RawContacts.STARRED)));
+            whatsapp_contact.setAccountType(c.getString(c.getColumnIndexOrThrow(ContactsContract.RawContacts.ACCOUNT_TYPE)));
 
         } catch (IllegalArgumentException e){
             Log.d(TAG, " No whatsapp id found from raw contacts");
@@ -190,12 +187,12 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private ContactsClass getSingleContact (Cursor c){
         ContactsClass mContactsClass =  new ContactsClass();
-        mContactsClass.setContact_name(c.getString(c.getColumnIndexOrThrow(DISPLAY_NAME)));
-        mContactsClass.setProfile_image_uri(c.getString(c.getColumnIndexOrThrow(PHOTO_URI)));
-
-        Random r = new Random();
-        int id = r.nextInt(1000000);
-        mContactsClass.setId(id);
+        mContactsClass.setContactName(c.getString(c.getColumnIndexOrThrow(DISPLAY_NAME)));
+        mContactsClass.setContactId(c.getLong(c.getColumnIndexOrThrow(_ID)));
+        mContactsClass.setTimesContacted(c.getInt(c.getColumnIndexOrThrow(TIMES_CONTACTED)));
+        mContactsClass.setLastTimeContacted(c.getLong(c.getColumnIndexOrThrow(LAST_TIME_CONTACTED)));
+        mContactsClass.setStarred(c.getInt(c.getColumnIndexOrThrow(STARRED)));
+        mContactsClass.setProfileImageUri(c.getString(c.getColumnIndexOrThrow(PHOTO_URI)));
 
         return mContactsClass;
     }
