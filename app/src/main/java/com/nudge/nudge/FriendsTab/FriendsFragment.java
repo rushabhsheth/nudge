@@ -79,24 +79,6 @@ public class FriendsFragment
         mFirestore = FirebaseFirestore.getInstance();
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();
-        if(mUser==null){
-            //TODO startSignIn
-            Log.w(TAG, "User is null, start sign in process");
-        }
-        else {
-            // Get reference to the user
-            Log.d(TAG, "FirebaseAuth user id: " + String.valueOf(mUser.getUid()));
-            mUserRef = mFirestore.collection("users").document(mUser.getUid());
-
-            // Get whatsapp friends
-            mQuery = mUserRef
-                    .collection("whatsapp_friends")
-                    .orderBy("timesContacted", Query.Direction.DESCENDING)
-                    .limit(100);
-
-            mFirestoreAdapter = new FirestoreAdapter(mQuery, this);
-        }
-
     }
 
     @Override
@@ -119,37 +101,30 @@ public class FriendsFragment
                         .setSwipeInMsgLayoutId(R.layout.nudge_swipe_in_msg_view)
                         .setSwipeOutMsgLayoutId(R.layout.nudge_swipe_out_msg_view));
 
-
-
-//        for(FriendsProfileClass profile : FriendsUtils.loadProfiles(this.getContext())){
-//            mSwipeView.addView(new FriendsCard(mContext, profile, mSwipeView));
-//        }
-
-
-//        List<Object> resolverList = new ArrayList<>();
-//        resolverList = mSwipeView.getAllResolvers();
-//        for(int i = 0; i < 1;i++) {
-//            FriendsCard friend = (FriendsCard) resolverList.get(i);
-//            friend.view.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    startFriendProfileActivity();
-//                }
-//            });
-//        }
-
         return rootView;
     }
 
     @Override
     public void onStart() {
         super.onStart();
+
+        if (mUser != null) {
+            mUserRef = mFirestore.collection("users").document(mUser.getUid());
+
+            // Get whatsapp friends
+            mQuery = mUserRef
+                    .collection("whatsapp_friends")
+                    .orderBy("timesContacted", Query.Direction.DESCENDING)
+                    .limit(40);
+
+            mFirestoreAdapter = new FirestoreAdapter(mQuery, this);
+        }
+
         if (mUserRef != null) {
             mUserRegistration = mUserRef.addSnapshotListener(this);
-
         }
-        if(mFirestoreAdapter!=null){
-         mFirestoreAdapter.startListening();
+        if (mFirestoreAdapter != null) {
+            mFirestoreAdapter.startListening();
         }
     }
 

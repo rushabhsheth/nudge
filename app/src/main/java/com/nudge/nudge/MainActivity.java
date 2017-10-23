@@ -74,33 +74,17 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
 
-        setupViewPager(mNudgeViewPager);
-
-        tabLayout.setupWithViewPager(mNudgeViewPager);
-
         // View model
         mViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
 
-        // Initialize Firebase components
-        mUser = null;
         mFirebaseAuth = FirebaseAuth.getInstance();
         initAuthListener();
-
-
 
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
-        mUser = mFirebaseAuth.getCurrentUser();
-        // Start sign in if necessary
-        if (shouldStartSignIn()) {
-            startSignIn();
-        } else {
-            readContactsPersmission();
-        }
 
     }
 
@@ -245,12 +229,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private boolean shouldStartSignIn() {
-        if(mUser!=null){
-            return false;
-        } else return true;
-    }
-
     private void startSignIn() {
 
         AuthUI.IdpConfig facebookIdp = new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER)
@@ -292,6 +270,7 @@ public class MainActivity extends AppCompatActivity {
                     // Sign in was canceled by the user, finish the activity
                     Toast.makeText(this, "Sign in canceled", Toast.LENGTH_SHORT).show();
                     mViewModel.setIsSigningIn(false);
+                    finish();
                 }
             }
         }
@@ -321,6 +300,17 @@ public class MainActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 mUser = firebaseAuth.getCurrentUser();
                 mViewModel.setUser(mUser);
+
+                if (mUser != null) {
+                    // User is signed in
+                    Log.d(TAG, "Sign in successful, setting up view pager ");
+                    setupViewPager(mNudgeViewPager);
+                    tabLayout.setupWithViewPager(mNudgeViewPager);
+                    readContactsPersmission();
+                } else {
+                    startSignIn();
+                }
+
             }
         };
     }

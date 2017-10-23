@@ -23,7 +23,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.WriteBatch;
 import com.nudge.nudge.ContactsData.ContactsClass;
 import com.nudge.nudge.ContactsData.UserClass;
@@ -43,9 +46,9 @@ import butterknife.ButterKnife;
 public class StarContactsFragment extends Fragment implements
         StarContactsRead.ReturnLoadedDataListener,
         SearchActionClass.SearchQueryListener,
-        StarContactsAdapter.onItemClickListener {
+        StarContactsAdapter.onItemClickListener{
 
-    private static final String TAG = "StarContacts";
+    private static final String TAG = "StarContacts Fragment";
 
     @BindView(R.id.recyclerview_starcontacts)
     RecyclerView mRVstarcontacts;
@@ -63,6 +66,8 @@ public class StarContactsFragment extends Fragment implements
     private FirebaseFirestore mFirestore;
     private FirebaseUser mUser;
     private StarActivityViewModel mViewModel;
+
+    DocumentReference mUserRef;
 
     public StarContactsFragment() {
         //Empty Constructor
@@ -241,28 +246,40 @@ public class StarContactsFragment extends Fragment implements
 
     private void onAddItemsClicked() {
 
-        WriteBatch batch = mFirestore.batch();
-        UserClass user = getUser(mUser);
-        DocumentReference userRef = mFirestore.collection("users").document(user.getUserId());
+        int batch_size = 25;
+        int total_items = mStarContactsData_allcontacts.size();
+        int batches = (int) Math.ceil((double) mStarContactsData_allcontacts.size() / batch_size);
 
-        //Add user
-        batch.set(userRef, user);
+        for (int i = 0; i < batches; i++) {
 
-        for (ContactsClass contact : mStarContactsData_allcontacts)
-        {
-            batch.set(userRef.collection("whatsapp_friends").document(),contact);
-        }
+            WriteBatch batch = mFirestore.batch();
+            Log.d(TAG, " beginning batch write for contacts");
+            UserClass user = getUser(mUser);
+            Log.d(TAG, "FirebaseAuth user id: " + mUser.getEmail() + " , " + String.valueOf(mUser.getUid()));
+            mUserRef = mFirestore.collection("users").document(user.getUserId());
 
-        batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    Log.d(TAG, "Write batch succeeded.");
-                } else {
-                    Log.w(TAG, "write batch failed.", task.getException());
+            //Add user
+            batch.set(mUserRef, user);
+
+            for (int j = 0; j < batch_size; j++) {
+                int counter = i * batch_size + j;
+
+                if (counter < total_items) {
+                    ContactsClass contact = mStarContactsData_allcontacts.get(i * batch_size + j);
+                    batch.set(mUserRef.collection("whatsapp_friends").document(), contact);
                 }
             }
-        });
+            batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "Write batch succeeded.");
+                    } else {
+                        Log.w(TAG, "write batch failed.", task.getException());
+                    }
+                }
+            });
+        }
 
     }
 
@@ -273,5 +290,23 @@ public class StarContactsFragment extends Fragment implements
         mUser.setUserName(user.getDisplayName());
         return mUser;
     }
+
+//    /**
+//     * Listener for the Restaurant document ({@link #mUserRef}).
+//     */
+//    @Override
+//    public void onEvent(DocumentReference reference, FirebaseFirestoreException e) {
+//        if(reference.getId()!= null){
+//            Log.d(TAG, "User Reference: " + reference.getId());
+//        } else {
+//            Log.d(TAG, " User reference is null");
+//        }
+//
+//
+//        if (e != null) {
+//            Log.w(TAG, "user:onEvent", e);
+//            return;
+//        }
+//    }
 
 }
