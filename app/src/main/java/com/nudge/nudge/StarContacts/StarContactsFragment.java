@@ -164,7 +164,7 @@ public class StarContactsFragment extends Fragment implements
                 mStarContactsAdapter.setIsSearch(true);
                 return true;
             case (R.id.action_addfavourites):
-                onAddItemsClicked();
+                onUploadFriendsClicked();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -244,7 +244,7 @@ public class StarContactsFragment extends Fragment implements
 //        mRVstarcontacts.scrollToPosition(0);
     }
 
-    private void onAddItemsClicked() {
+    private void onUploadFriendsClicked() {
 
         int batch_size = 25;
         int total_items = mStarContactsData_allcontacts.size();
@@ -291,22 +291,5 @@ public class StarContactsFragment extends Fragment implements
         return mUser;
     }
 
-//    /**
-//     * Listener for the Restaurant document ({@link #mUserRef}).
-//     */
-//    @Override
-//    public void onEvent(DocumentReference reference, FirebaseFirestoreException e) {
-//        if(reference.getId()!= null){
-//            Log.d(TAG, "User Reference: " + reference.getId());
-//        } else {
-//            Log.d(TAG, " User reference is null");
-//        }
-//
-//
-//        if (e != null) {
-//            Log.w(TAG, "user:onEvent", e);
-//            return;
-//        }
-//    }
 
 }

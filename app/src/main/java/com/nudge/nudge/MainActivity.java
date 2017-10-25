@@ -76,6 +76,8 @@ public class MainActivity extends AppCompatActivity {
 
         // View model
         mViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
+        setupViewPager(mNudgeViewPager);
+        tabLayout.setupWithViewPager(mNudgeViewPager);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         initAuthListener();
@@ -98,6 +100,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+        readContactsPersmission();
+
     }
 
     @Override
@@ -261,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 // Sign-in succeeded, set up the UI
                 Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show();
-                mUser = mFirebaseAuth.getCurrentUser();
+//                mUser = mFirebaseAuth.getCurrentUser();
                 mViewModel.setIsSigningIn(false);
                 mViewModel.setUser(mUser);
 
@@ -304,10 +308,7 @@ public class MainActivity extends AppCompatActivity {
                 if (mUser != null) {
                     // User is signed in
                     Log.d(TAG, "Sign in successful, setting up view pager ");
-                    setupViewPager(mNudgeViewPager);
-                    tabLayout.setupWithViewPager(mNudgeViewPager);
-                    readContactsPersmission();
-                } else {
+                   } else {
                     startSignIn();
                 }
 

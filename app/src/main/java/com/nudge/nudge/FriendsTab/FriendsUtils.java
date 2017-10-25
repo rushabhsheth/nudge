@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.nudge.nudge.ContactsData.ContactsClass;
 
 import org.json.JSONArray;
 
@@ -22,14 +23,14 @@ public class FriendsUtils {
 
     private static final String TAG = "FriendsUtils";
 
-    public static List<FriendsProfileClass> loadProfiles(Context context){
+    public static List<ContactsClass> loadProfiles(Context context){
         try{
             GsonBuilder builder = new GsonBuilder();
             Gson gson = builder.create();
             JSONArray array = new JSONArray(loadJSONFromAsset(context, "profiles.json"));
-            List<FriendsProfileClass> profileList = new ArrayList<>();
+            List<ContactsClass> profileList = new ArrayList<>();
             for(int i=0;i<array.length();i++){
-                FriendsProfileClass profile = gson.fromJson(array.getString(i), FriendsProfileClass.class);
+                ContactsClass profile = gson.fromJson(array.getString(i), ContactsClass.class);
                 profileList.add(profile);
             }
             return profileList;

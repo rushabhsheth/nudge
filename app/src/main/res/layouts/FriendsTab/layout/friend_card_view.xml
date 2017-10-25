@@ -75,11 +75,11 @@
                 android:layout_gravity="right">
 
                 <ImageButton
-                    android:id="@+id/StarContactButton"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:id="@+id/friendcard_starbutton"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_gravity="center_horizontal|center_vertical"
-                    android:padding="0dp"
+                    android:padding="5dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_star_hollow"
                     android:background="@color/colorWhite"/>

@@ -2,11 +2,14 @@ package com.nudge.nudge.FriendsTab;
 
 import android.content.Context;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.mindorks.placeholderview.SwipePlaceHolderView;
+import com.mindorks.placeholderview.annotations.Click;
 import com.mindorks.placeholderview.annotations.Layout;
 import com.mindorks.placeholderview.annotations.Resolve;
 import com.mindorks.placeholderview.annotations.View;
@@ -17,9 +20,13 @@ import com.mindorks.placeholderview.annotations.swipe.SwipeOut;
 import com.mindorks.placeholderview.annotations.swipe.SwipeOutState;
 import com.nudge.nudge.ContactsData.ContactsClass;
 import com.nudge.nudge.R;
+import com.nudge.nudge.StarContacts.StarContactsAdapter;
 
 import java.util.Calendar;
 import java.util.Date;
+
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by rushabh on 07/10/17.
@@ -43,18 +50,26 @@ public class FriendsCard {
     @View(R.id.friend_card_view)
     public android.view.View view;
 
-    @View(R.id.frame_friendtab_starcontact )
-    private ViewGroup starViewGroup;
+    @View(R.id.friendcard_starbutton )
+    private ImageButton starViewButton;
 
 
     private ContactsClass mProfile;
     private Context mContext;
     private SwipePlaceHolderView mSwipeView;
+    private DocumentSnapshot documentSnapshot;
 
-    public FriendsCard(Context context, ContactsClass profile, SwipePlaceHolderView swipeView) {
+
+    private onStarClickListener mStarClickListener;
+
+
+    public FriendsCard(onStarClickListener listner, Context context, DocumentSnapshot snapshot, SwipePlaceHolderView swipeView) {
         mContext = context;
-        mProfile = profile;
+        mProfile = snapshot.toObject(ContactsClass.class);
         mSwipeView = swipeView;
+        mStarClickListener = listner;
+        documentSnapshot = snapshot;
+
     }
 
     @Resolve
@@ -63,6 +78,19 @@ public class FriendsCard {
         nameAgeTxt.setText(mProfile.getContactName());
         lastTimeContacted.setText("Last time contacted: " + getNormalizedDate(mProfile.getLastTimeContacted()) + " days ago");
         timesContacted.setText("Times contacted: " + mProfile.getTimesContacted());
+
+        if(mProfile.getStarred()==1) {
+            starViewButton.setImageResource(R.drawable.ic_star_blue);
+        }
+        else {
+            starViewButton.setImageResource(R.drawable.ic_star_hollow);
+        }
+        starViewButton.setOnClickListener(new android.view.View.OnClickListener() {
+            @Override
+            public void onClick(android.view.View v) {
+                mStarClickListener.onStarClicked(starViewButton, documentSnapshot, mProfile);
+            }
+        });
     }
 
     public String getNormalizedDate(long timeContacted){
@@ -78,7 +106,7 @@ public class FriendsCard {
     @SwipeOut
     private void onSwipedOut(){
         //Log.d("EVENT", "onSwipedOut");
-        mSwipeView.addView(this);
+//        mSwipeView.addView(this);
     }
 
     @SwipeCancelState
@@ -99,6 +127,11 @@ public class FriendsCard {
     @SwipeOutState
     private void onSwipeOutState(){
 //        Log.d("EVENT", "onSwipeOutState");
+    }
+
+
+    public interface onStarClickListener{
+        void onStarClicked(ImageButton button, DocumentSnapshot snapshot, ContactsClass contact);
     }
 
 
