@@ -80,9 +80,7 @@ public class FriendsFragment
 
     private FirestoreAdapter mFirestoreAdapter;
 
-    private List<ContactsClass> mContactList;
-
-    private int fetchLimit = 400;
+    private int fetchLimit = 20;
 
     public FriendsFragment() {
     }
@@ -99,7 +97,6 @@ public class FriendsFragment
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        mContactList = new ArrayList<>();
     }
 
     @Override
@@ -292,19 +289,22 @@ public class FriendsFragment
     @Override
     public void onItemRemoved(int count){
 //        Log.d(TAG, " Number of items in swipeview" + String.valueOf(count));
-        if(count<2) {
+        if(count==2) {
             loadNextDataFromFirestore(count);
         }
     }
 
     private void loadNextDataFromFirestore(int count) {
-            mQuery = mUserRef
-                    .collection("whatsapp_friends")
-                    .orderBy("timesContacted", Query.Direction.DESCENDING)
-                    .limit(fetchLimit)
-                    .startAfter(mFirestoreAdapter.getSnapshot(mFirestoreAdapter.getItemCount()-1));
+        Log.d(TAG, "Number of snapshots in adapter: " + String.valueOf(mFirestoreAdapter.getItemCount()));
+        DocumentSnapshot snapshot = mFirestoreAdapter.getSnapshot(mFirestoreAdapter.getItemCount() - 1);
 
-            mFirestoreAdapter.setQuery(mQuery);
+        mQuery = mUserRef
+                .collection("whatsapp_friends")
+                .orderBy("timesContacted", Query.Direction.DESCENDING)
+                .limit(fetchLimit)
+                .startAfter(snapshot);
+
+        mFirestoreAdapter.setQuery(mQuery);
     }
 
 

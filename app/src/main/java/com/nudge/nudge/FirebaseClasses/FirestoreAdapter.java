@@ -36,9 +36,9 @@ public class FirestoreAdapter
 
     private ArrayList<DocumentSnapshot> mSnapshots = new ArrayList<>();
 
-    public FirestoreAdapter(Query query, FriendsFragment fragment) {
+    public FirestoreAdapter(Query query, DataReceivedListener listener) {
         mQuery = query;
-        mCallback = (DataReceivedListener) fragment;
+        mCallback = listener;
     }
 
     @Override
@@ -89,12 +89,13 @@ public class FirestoreAdapter
         stopListening();
 
         // Clear existing data
-        mSnapshots.clear();
+//        mSnapshots.clear();
 //        notifyDataSetChanged();
 
         // Listen to new query
         mQuery = query;
         startListening();
+
     }
 
 //    @Override
