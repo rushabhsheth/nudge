@@ -61,10 +61,12 @@ public class FriendsFragment
         implements
         EventListener<DocumentSnapshot>,
         FirestoreAdapter.DataReceivedListener,
-        FriendsCard.onStarClickListener,
+        FriendsCard.onClickListener,
         ItemRemovedListener{
 
     private static final String TAG = "FriendsFragment";
+    private static final int RC_SEND_WHATSAPP = 5123;
+
 
     @BindView(R.id.swipeView)
     SwipePlaceHolderView mSwipeView;
@@ -229,7 +231,7 @@ public class FriendsFragment
 
         for(int i = 0; i< mFirestoreAdapter.getItemCount(); i++){
 //            ContactsClass contact  = mFirestoreAdapter.getSnapshot(i).toObject(ContactsClass.class);
-            mSwipeView.addView(new FriendsCard(this, mContext, mFirestoreAdapter.getSnapshot(i), mSwipeView));
+            mSwipeView.addView(new FriendsCard(this, mContext, mFirestoreAdapter.getSnapshot(i)));
         }
         Log.d(TAG, "Number of items fetched: " + String.valueOf(mFirestoreAdapter.getItemCount()));
     }
@@ -254,6 +256,16 @@ public class FriendsFragment
             changeStar(friendRef,contact);
         }
 
+    }
+
+    public void onSendClicked(){
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SENDTO);
+        sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Hi!");
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "Sent via Nudge!");
+        sendIntent.setType("text/plain");
+        sendIntent.setPackage("com.whatsapp");
+        startActivityForResult(sendIntent,RC_SEND_WHATSAPP);
     }
 
 
@@ -306,6 +318,7 @@ public class FriendsFragment
 
         mFirestoreAdapter.setQuery(mQuery);
     }
+
 
 
 

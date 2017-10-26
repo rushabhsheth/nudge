@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.nudge.nudge.ContactsData.ContactsClass;
 import com.nudge.nudge.R;
 
@@ -147,14 +148,24 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public void addFavouriteItem(ContactsClass dataObj) {
         mDataSet_favourites.add(dataObj);
+        notifyItemInserted(mDataSet_favourites.size()-1);
     }
 
     public void removeFavouriteItem(ContactsClass dataObj, int position) {
-        mDataSet_favourites.remove(dataObj);
+        int i=0;
+        for(i = 0;i<mDataSet_favourites.size();i++){
+            ContactsClass contact = mDataSet_favourites.get(i);
+            if(dataObj.getContactId()==contact.getContactId())
+            {
+                mDataSet_favourites.remove(i);
+                break;
+            }
+        }
+
         if(isSearch){
 
         } else {
-            notifyItemRemoved(position); //Plus 1 is for the header
+            notifyItemRemoved(i); //Plus 1 is for the header
         }
     }
 
@@ -347,28 +358,5 @@ public class StarContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public interface onItemClickListener{
         void onItemClicked(VHItem item, ContactsClass starContact, int position);
     }
-
-//    public InputStream getBitmapFromUri(Uri photo_uri) throws FileNotFoundException {
-//         InputStream inputStream = new InputStream() {
-//            @Override
-//            public int read() throws IOException {
-//                return 0;
-//            }
-//        };
-//
-//        try {
-//            AssetFileDescriptor fd =
-//                    mContext.getContentResolver().openAssetFileDescriptor(photo_uri, "r");
-//
-//            inputStream = fd.createInputStream();
-//
-//            inputStream.close();
-//            fd.close();
-//            return inputStream;
-//        } catch (IOException e) {
-//            // Handle error cases.
-//        }
-//        return inputStream;
-//    }
 
 }

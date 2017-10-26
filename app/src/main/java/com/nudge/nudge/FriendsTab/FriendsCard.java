@@ -48,7 +48,7 @@ public class FriendsCard {
     private TextView timesContacted;
 
     @View(R.id.friend_card_view)
-    public android.view.View view;
+    public android.view.View cardView;
 
     @View(R.id.friendcard_starbutton )
     private ImageButton starViewButton;
@@ -60,14 +60,13 @@ public class FriendsCard {
     private DocumentSnapshot documentSnapshot;
 
 
-    private onStarClickListener mStarClickListener;
+    private onClickListener mClickListener;
 
 
-    public FriendsCard(onStarClickListener listner, Context context, DocumentSnapshot snapshot, SwipePlaceHolderView swipeView) {
+    public FriendsCard(onClickListener listner, Context context, DocumentSnapshot snapshot) {
         mContext = context;
         mProfile = snapshot.toObject(ContactsClass.class);
-        mSwipeView = swipeView;
-        mStarClickListener = listner;
+        mClickListener = listner;
         documentSnapshot = snapshot;
 
     }
@@ -88,9 +87,17 @@ public class FriendsCard {
         starViewButton.setOnClickListener(new android.view.View.OnClickListener() {
             @Override
             public void onClick(android.view.View v) {
-                mStarClickListener.onStarClicked(starViewButton, documentSnapshot, mProfile);
+                mClickListener.onStarClicked(starViewButton, documentSnapshot, mProfile);
             }
         });
+
+        cardView.setOnClickListener(new android.view.View.OnClickListener() {
+            @Override
+            public void onClick(android.view.View v) {
+                mClickListener.onSendClicked();
+            }
+        });
+
     }
 
     public String getNormalizedDate(long timeContacted){
@@ -130,8 +137,9 @@ public class FriendsCard {
     }
 
 
-    public interface onStarClickListener{
+    public interface onClickListener{
         void onStarClicked(ImageButton button, DocumentSnapshot snapshot, ContactsClass contact);
+        void onSendClicked();
     }
 
 

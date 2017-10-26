@@ -1,6 +1,7 @@
 package com.nudge.nudge.StarContacts;
 
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -177,6 +178,39 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
             whatsapp_contact.setLastTimeContacted(c.getLong(c.getColumnIndexOrThrow(ContactsContract.RawContacts.LAST_TIME_CONTACTED)));
             whatsapp_contact.setStarred(c.getInt(c.getColumnIndexOrThrow(ContactsContract.RawContacts.STARRED)));
             whatsapp_contact.setAccountType(c.getString(c.getColumnIndexOrThrow(ContactsContract.RawContacts.ACCOUNT_TYPE)));
+
+            final String[] PROJECTION = {
+                    ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER,
+                    ContactsContract.CommonDataKinds.Phone.NUMBER
+            };
+
+            final String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ? ";
+
+            String whatsappContactId = c.getString(c.getColumnIndex(ContactsContract.RawContacts.CONTACT_ID));
+            final String[] selectionArgs = {
+                   whatsappContactId
+            };
+
+            ContentResolver cr = mContext.getContentResolver();
+            Cursor cursor = cr.query(
+                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    PROJECTION,
+                    selection,
+                    selectionArgs,
+                    null);
+
+            String normalized_number = null;
+            String number = null;
+            while (cursor.moveToNext()) {
+//                normalized_number = cursor.getString(cursor.getColumnIndexOrThrow((ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER)));
+                number = cursor.getString(cursor.getColumnIndexOrThrow((ContactsContract.CommonDataKinds.Phone.NUMBER)));
+                whatsapp_contact.setConactNumber(number);
+
+            }
+//            String name = c.getString(c.getColumnIndexOrThrow(ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY));
+//            Log.d(TAG, " Whatsapp name: "+ name + " , Whatsapp Number: " + number + " , Normalized number: " + normalized_number);
+            cursor.close();
+
 
         } catch (IllegalArgumentException e){
             Log.d(TAG, " No whatsapp id found from raw contacts");

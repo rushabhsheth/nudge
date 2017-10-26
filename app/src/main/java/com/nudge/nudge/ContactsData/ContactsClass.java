@@ -5,6 +5,7 @@ import com.google.firebase.firestore.ServerTimestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.PriorityQueue;
 
 /**
  * Created by rushabh on 06/10/17.
@@ -17,6 +18,7 @@ public class ContactsClass {
     public static final String ACCOUNT_TYPE = "accountType";
     public static final String CONTACT_ID = "contactId";
     public static final String CONTACT_NAME = "contactName";
+    public static final String CONTACT_NUMBER = "contactNumber";
     public static final String LAST_TIME_CONTACTED = "lastTimeContacted";
     public static final String PROFILE_IMAGE_LIST = "profileImageList";
     public static final String PROFILE_IMAGE_URI = "profileImageUri";
@@ -27,6 +29,7 @@ public class ContactsClass {
 
     private String contact_name;
     private long contact_id;
+    private String contact_number;
     private int times_contacted;
     private long last_time_contacted;
     private int starred;
@@ -34,7 +37,6 @@ public class ContactsClass {
     private List<String> profile_image_list;
     private String account_type;
     private @ServerTimestamp Date timestamp;
-
 
     public ContactsClass(){
 
@@ -47,6 +49,7 @@ public class ContactsClass {
         this.profile_image_list = new ArrayList<>();
         this.contact_name = null;
         this.account_type = null;
+        this.contact_number = null;
     }
 
     public ContactsClass(String profile_image_uri, String contact_name){
@@ -68,6 +71,14 @@ public class ContactsClass {
 
     public void setContactId(long contact_id){
         this.contact_id = contact_id;
+    }
+
+    public String getContactNumber(){
+        return contact_number;
+    }
+
+    public void setConactNumber(String contact_number){
+        this.contact_number = contact_number;
     }
 
     public int getTimesContacted(){
