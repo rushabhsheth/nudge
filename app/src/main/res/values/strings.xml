@@ -24,4 +24,10 @@
 
     <string name="sign_out">Sign Out</string>
 
+    <string name="filter_send_message">Message</string>
+    <string name="hint_send_message">Hi! How are you doing?</string>
+    <string name="nudge_dynamic_link">\n\nSent via Nudge!</string>
+    <string name="cancel">CANCEL</string>
+    <string name="send">SEND</string>
+
 </resources>

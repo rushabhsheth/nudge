@@ -204,7 +204,7 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
             while (cursor.moveToNext()) {
 //                normalized_number = cursor.getString(cursor.getColumnIndexOrThrow((ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER)));
                 number = cursor.getString(cursor.getColumnIndexOrThrow((ContactsContract.CommonDataKinds.Phone.NUMBER)));
-                whatsapp_contact.setConactNumber(number);
+                whatsapp_contact.setContactNumber(number);
 
             }
 //            String name = c.getString(c.getColumnIndexOrThrow(ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY));

@@ -2,10 +2,8 @@ package com.nudge.nudge.FriendsTab;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.Rating;
-import android.os.CountDownTimer;
+import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -13,14 +11,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.firebase.ui.auth.User;
-import com.google.android.gms.common.api.BooleanResult;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -36,22 +31,17 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.Transaction;
 import com.mindorks.placeholderview.SwipeDecor;
 import com.mindorks.placeholderview.SwipePlaceHolderView;
-import com.mindorks.placeholderview.SwipeViewBinder;
 import com.mindorks.placeholderview.listeners.ItemRemovedListener;
 import com.nudge.nudge.ActionFragments.ActionButtonsFragment;
+import com.nudge.nudge.ActionFragments.MessageDialogFragment;
 import com.nudge.nudge.ContactsData.ContactsClass;
 import com.nudge.nudge.ContactsData.UserClass;
 import com.nudge.nudge.FirebaseClasses.FirestoreAdapter;
 import com.nudge.nudge.FriendProfile.FriendActivity;
 import com.nudge.nudge.R;
-import com.nudge.nudge.StarContacts.StarContactsAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -62,7 +52,9 @@ public class FriendsFragment
         EventListener<DocumentSnapshot>,
         FirestoreAdapter.DataReceivedListener,
         FriendsCard.onClickListener,
-        ItemRemovedListener{
+        ItemRemovedListener,
+        ActionButtonsFragment.onClickListener,
+        MessageDialogFragment.SendListener{
 
     private static final String TAG = "FriendsFragment";
     private static final int RC_SEND_WHATSAPP = 5123;
@@ -84,6 +76,9 @@ public class FriendsFragment
 
     private int fetchLimit = 20;
 
+    private MessageDialogFragment mMessageDialog;
+
+
     public FriendsFragment() {
     }
 
@@ -99,6 +94,8 @@ public class FriendsFragment
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();
 
+        mMessageDialog = new MessageDialogFragment();
+        mMessageDialog.setSendListener(this);
     }
 
     @Override
@@ -222,6 +219,7 @@ public class FriendsFragment
 
         if (mActionButtons != null) {
             mActionButtons.setSwipePlaceHolderView(mSwipeView);
+            mActionButtons.setButtonClickListener(this);
         }
 
     }
@@ -257,17 +255,6 @@ public class FriendsFragment
         }
 
     }
-
-    public void onSendClicked(){
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SENDTO);
-        sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Hi!");
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "Sent via Nudge!");
-        sendIntent.setType("text/plain");
-        sendIntent.setPackage("com.whatsapp");
-        startActivityForResult(sendIntent,RC_SEND_WHATSAPP);
-    }
-
 
     private Task<Void> changeStar(final DocumentReference friendRef, final ContactsClass contact) {
         // Create reference for new rating, for use inside the transaction
@@ -320,7 +307,35 @@ public class FriendsFragment
     }
 
 
+    //Action fragment click
+    public void onMessageBtnClick(){
+        FriendsCard card = (FriendsCard) mSwipeView.getAllResolvers().get(0);
+        String name = card.getProfile().getContactName();
+        Log.d(TAG, "Contact name " + name);
+//        mMessageDialog.setMessageDialogText("Hi " + name.split(" ")[0] + "! How are you doing?");
+        mMessageDialog.show(getActivity().getSupportFragmentManager(), MessageDialogFragment.TAG);
+    }
 
+    //Send message clicked in Message Dialog Fragment
+    public void onSendClickedMessageDialog(String message){
+
+        FriendsCard card = (FriendsCard) mSwipeView.getAllResolvers().get(0);
+        String number = card.getProfile().getContactNumber();
+        //  Log.d(TAG, "Contact name: " + card.getProfile().getContactName() + " , Contact number: " + number);
+
+        String toNumber = number.replace("+", "").replace(" ", "");
+        String finalMessage = message + getString(R.string.nudge_dynamic_link);
+
+        Intent sendIntent = new Intent("android.intent.action.MAIN");
+        sendIntent.putExtra("jid", toNumber + "@s.whatsapp.net");
+        sendIntent.putExtra(Intent.EXTRA_TEXT, finalMessage);
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.setPackage("com.whatsapp");
+        sendIntent.setType("text/plain");
+        startActivity(sendIntent);
+
+
+    }
 
 
 }

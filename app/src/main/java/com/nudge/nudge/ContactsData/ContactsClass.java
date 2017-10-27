@@ -77,7 +77,7 @@ public class ContactsClass {
         return contact_number;
     }
 
-    public void setConactNumber(String contact_number){
+    public void setContactNumber(String contact_number){
         this.contact_number = contact_number;
     }
 
