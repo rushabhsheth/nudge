@@ -22,6 +22,7 @@ import com.firebase.ui.auth.*;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.nudge.nudge.Calendar.CalendarActivity;
+import com.nudge.nudge.CameraFragment.CameraFragment;
 import com.nudge.nudge.FreeTab.FreeFragment;
 import com.nudge.nudge.FriendProfile.FriendActivity;
 import com.nudge.nudge.FriendsTab.FriendsFragment;
@@ -36,6 +37,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.nudge.nudge.MainActivityUtils.NudgeNonSwipableViewPager;
+import com.nudge.nudge.UserProfile.UserProfileFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,11 +54,20 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private FirebaseUser mUser;
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
+//    @BindView(R.id.toolbar)
+//    Toolbar mToolbar;
+
 
     @BindView(R.id.tabs)
     TabLayout tabLayout;
+
+    private int[] tabIcons = {
+            R.drawable.ic_home,
+            R.drawable.ic_nudge_plain_white,
+            R.drawable.ic_camera,
+            R.drawable.ic_free,
+            R.drawable.ic_profile
+    };
 
     @BindView(R.id.nudge_viewpager)
     NudgeNonSwipableViewPager mNudgeViewPager;
@@ -72,12 +83,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
-        setSupportActionBar(mToolbar);
+//        setSupportActionBar(mToolbar);
 
         // View model
         mViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
         setupViewPager(mNudgeViewPager);
         tabLayout.setupWithViewPager(mNudgeViewPager);
+        setupTabIcons();
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         initAuthListener();
@@ -112,14 +124,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void setupTabIcons() {
+        tabLayout.getTabAt(0).setIcon(tabIcons[0]);
+        tabLayout.getTabAt(1).setIcon(tabIcons[1]);
+        tabLayout.getTabAt(2).setIcon(tabIcons[2]);
+        tabLayout.getTabAt(3).setIcon(tabIcons[3]);
+        tabLayout.getTabAt(4).setIcon(tabIcons[4]);
+
+    }
 
     private void setupViewPager(NudgeNonSwipableViewPager nudgeNonSwipableViewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new NudgesFragment(), "NUDGES");
         adapter.addFragment(new FriendsFragment(), "FRIENDS");
+        adapter.addFragment(new NudgesFragment(), "NUDGES");
+        adapter.addFragment(new CameraFragment(), "CAMERA");
         adapter.addFragment(new FreeFragment(), "FREE");
+        adapter.addFragment(new UserProfileFragment(), "PROFILE");
         nudgeNonSwipableViewPager.setAdapter(adapter);
-        nudgeNonSwipableViewPager.setCurrentItem(1);
+        nudgeNonSwipableViewPager.setCurrentItem(0);
     }
 
     private class ViewPagerAdapter extends FragmentPagerAdapter {
@@ -145,16 +167,16 @@ public class MainActivity extends AppCompatActivity {
             mFragmentTitleList.add(title);
         }
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
-        }
+//        @Override
+//        public CharSequence getPageTitle(int position) {
+//            return mFragmentTitleList.get(position);
+//        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+//        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -166,18 +188,18 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         switch (id) {
-            case (R.id.action_userprofile):
-                startProfileActivity();
-                return true;
-            case (R.id.action_star):
-                startStarActivity();
-                return true;
-            case (R.id.action_calendar):
-                startCalendarActivity();
-                return true;
-            case (R.id.action_friendprofile):
-                startFriendProfileActivity();
-                return true;
+//            case (R.id.action_userprofile):
+//                startProfileActivity();
+//                return true;
+//            case (R.id.action_star):
+//                startStarActivity();
+//                return true;
+//            case (R.id.action_calendar):
+//                startCalendarActivity();
+//                return true;
+//            case (R.id.action_friendprofile):
+//                startFriendProfileActivity();
+//                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -199,10 +221,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void startFriendProfileActivity() {
-        Intent intent = new Intent(this, FriendActivity.class);
-        startActivity(intent);
-    }
+//    private void startFriendProfileActivity() {
+//        Intent intent = new Intent(this, FriendActivity.class);
+//        startActivity(intent);
+//    }
 
     /**
      * Show the contacts in the ListView.

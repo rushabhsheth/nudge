@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.nudge.nudge.MainActivity.MainActivity">
 
-    <item
-        android:id="@+id/action_friendprofile"
-        android:icon="@drawable/ic_profile"
-        android:title="@string/action_friendprofile"
-        app:showAsAction="always"/>
+    <!--<item-->
+        <!--android:id="@+id/action_friendprofile"-->
+        <!--android:icon="@drawable/ic_profile"-->
+        <!--android:title="@string/action_friendprofile"-->
+        <!--app:showAsAction="always"/>-->
 
     <item
         android:id="@+id/action_star"
@@ -16,12 +16,12 @@
         app:showAsAction="always"
     />
 
-    <item
-        android:id="@+id/action_calendar"
-        android:icon="@drawable/ic_schedule_white"
-        android:title="@string/action_star"
-        app:showAsAction="always"
-        />
+    <!--<item-->
+        <!--android:id="@+id/action_calendar"-->
+        <!--android:icon="@drawable/ic_schedule_white"-->
+        <!--android:title="@string/action_star"-->
+        <!--app:showAsAction="always"-->
+        <!--/>-->
 
     <item
         android:id="@+id/action_userprofile"

@@ -21,7 +21,7 @@
         android:id="@+id/swipeView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="10dp"/>
+        android:paddingTop="0dp"/>
 
     <!--<include layout="@layout/content_actionbuttons" />-->
 

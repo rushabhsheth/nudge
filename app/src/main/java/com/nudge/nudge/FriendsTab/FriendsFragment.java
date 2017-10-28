@@ -13,7 +13,9 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -63,6 +65,10 @@ public class FriendsFragment
     @BindView(R.id.swipeView)
     SwipePlaceHolderView mSwipeView;
 
+
+    @BindView(R.id.fragment_friendstab_actionbuttons)
+    FrameLayout mActionButtonFrame;
+
     private Context mContext;
     private ActionButtonsFragment mActionButtons;
 
@@ -101,25 +107,33 @@ public class FriendsFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_friends, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_friends, container, false);
 
         ButterKnife.bind(this, rootView);
 
         mContext = rootView.getContext();
         initActionButtons();
 
-        mSwipeView.getBuilder()
-                .setDisplayViewCount(2)
-                .setIsUndoEnabled(false)
-                .setSwipeDecor(new SwipeDecor()
-                        .setPaddingTop(20)
-                        .setViewGravity(Gravity.TOP)
-                        .setViewGravity(Gravity.CENTER_HORIZONTAL)
-                        .setRelativeScale(0.01f)
-                        .setSwipeInMsgLayoutId(R.layout.nudge_swipe_in_msg_view)
-                        .setSwipeOutMsgLayoutId(R.layout.nudge_swipe_out_msg_view));
 
         mSwipeView.addItemRemoveListener(this);
+
+        rootView.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeView.getBuilder()
+                        .setDisplayViewCount(2)
+                        .setIsUndoEnabled(false)
+                        .setSwipeDecor(new SwipeDecor()
+                                .setPaddingTop(20)
+                                .setViewGravity(Gravity.TOP)
+                                .setViewGravity(Gravity.CENTER_HORIZONTAL)
+                                .setRelativeScale(0.01f)
+                                .setViewHeight(rootView.getHeight()-mActionButtonFrame.getHeight())
+                                .setViewWidth(rootView.getWidth())//height is ready
+                                .setSwipeInMsgLayoutId(R.layout.nudge_swipe_in_msg_view)
+                                .setSwipeOutMsgLayoutId(R.layout.nudge_swipe_out_msg_view));
+            }
+        });
 
         return rootView;
     }
@@ -284,6 +298,11 @@ public class FriendsFragment
 
     }
 
+
+    public void onFriendProfileClicked(ContactsClass contact){
+        startFriendProfileActivity();
+    }
+
     //Swipe view recycler
     @Override
     public void onItemRemoved(int count){
@@ -312,7 +331,7 @@ public class FriendsFragment
         FriendsCard card = (FriendsCard) mSwipeView.getAllResolvers().get(0);
         String name = card.getProfile().getContactName();
         Log.d(TAG, "Contact name " + name);
-//        mMessageDialog.setMessageDialogText("Hi " + name.split(" ")[0] + "! How are you doing?");
+        mMessageDialog.setMessageDialogText("Hi " + name.split(" ")[0] + "! How are you doing?");
         mMessageDialog.show(getActivity().getSupportFragmentManager(), MessageDialogFragment.TAG);
     }
 

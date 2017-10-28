@@ -94,7 +94,7 @@ public class FriendsCard {
         cardView.setOnClickListener(new android.view.View.OnClickListener() {
             @Override
             public void onClick(android.view.View v) {
-//                mClickListener.onSendClicked();
+                mClickListener.onFriendProfileClicked(mProfile);
             }
         });
 
@@ -139,7 +139,7 @@ public class FriendsCard {
 
     public interface onClickListener{
         void onStarClicked(ImageButton button, DocumentSnapshot snapshot, ContactsClass contact);
-//        void onSendClicked();
+        void onFriendProfileClicked(ContactsClass contact);
     }
 
     public ContactsClass getProfile(){

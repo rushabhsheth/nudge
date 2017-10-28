@@ -23,6 +23,7 @@ android {
             assets.srcDirs = ['src/main/assets', 'src/main/assets/']
             res.srcDirs =
                     [
+                            'src/main/res/layouts/CameraTab',
                             'src/main/res/layouts/ActionFragments',
                             'src/main/res/layouts/FriendProfile',
                             'src/main/res/layouts/Calendar',
