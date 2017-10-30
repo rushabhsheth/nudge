@@ -42,6 +42,8 @@ import com.nudge.nudge.FirebaseClasses.FirestoreAdapter;
 import com.nudge.nudge.FriendProfile.FriendActivity;
 import com.nudge.nudge.R;
 
+import java.io.Serializable;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -56,10 +58,10 @@ public class FriendsFragment
         FriendsCard.onClickListener,
         ItemRemovedListener,
         ActionButtonsFragment.onClickListener,
-        MessageDialogFragment.SendListener{
+        MessageDialogFragment.SendListener {
 
     private static final String TAG = "FriendsFragment";
-    private static final int RC_SEND_WHATSAPP = 5123;
+    private static final String KEY_ADAPTER_STATE = "com.nudge.nudge.FriendsTab.KEY_ADAPTER_STATE";
 
 
     @BindView(R.id.swipeView)
@@ -102,6 +104,7 @@ public class FriendsFragment
 
         mMessageDialog = new MessageDialogFragment();
         mMessageDialog.setSendListener(this);
+
     }
 
     @Override
@@ -113,7 +116,6 @@ public class FriendsFragment
 
         mContext = rootView.getContext();
         initActionButtons();
-
 
         mSwipeView.addItemRemoveListener(this);
 
@@ -128,7 +130,7 @@ public class FriendsFragment
                                 .setViewGravity(Gravity.TOP)
                                 .setViewGravity(Gravity.CENTER_HORIZONTAL)
                                 .setRelativeScale(0.01f)
-                                .setViewHeight(rootView.getHeight()-mActionButtonFrame.getHeight())
+                                .setViewHeight(rootView.getHeight() - mActionButtonFrame.getHeight())
                                 .setViewWidth(rootView.getWidth())//height is ready
                                 .setSwipeInMsgLayoutId(R.layout.nudge_swipe_in_msg_view)
                                 .setSwipeOutMsgLayoutId(R.layout.nudge_swipe_out_msg_view));
@@ -151,7 +153,7 @@ public class FriendsFragment
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
 
         if (mUser != null) {
@@ -163,7 +165,7 @@ public class FriendsFragment
                     .orderBy("timesContacted", Query.Direction.DESCENDING)
                     .limit(fetchLimit);
 
-            mFirestoreAdapter = new FirestoreAdapter(mQuery, this){
+            mFirestoreAdapter = new FirestoreAdapter(mQuery, this) {
 
                 @Override
                 protected void onError(FirebaseFirestoreException e) {
@@ -185,9 +187,9 @@ public class FriendsFragment
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
-        if(mFirestoreAdapter!=null){
+        if (mFirestoreAdapter != null) {
             mFirestoreAdapter.stopListening();
         }
         if (mUserRegistration != null) {
@@ -196,12 +198,38 @@ public class FriendsFragment
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+//        TODO: Saved instance works for now from MainActivity > ViewPagerAdapter
+//        if (savedInstanceState != null) {
+//
+//            myData = (List<String>) savedInstanceState.getSerializable("list");
+//
+//        } else {
+//            if (myData != null) {
+//                //returning from backstack, data is fine, do nothing
+//            } else {
+//                //newly created, compute data
+//                myData = computeData();
+//            }
+//        }
+
+    }
+
+
     /**
      * Listener for the Restaurant document ({@link #mUserRef}).
      */
     @Override
     public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
-        if(snapshot.exists()){
+        if (snapshot.exists()) {
             UserClass user = snapshot.toObject(UserClass.class);
             Log.d(TAG, "Fetching data for: " + user.getUserName() + ", id: " + user.getUserIdentifier());
         } else {
@@ -216,18 +244,17 @@ public class FriendsFragment
     }
 
 
-
-    private void startFriendProfileActivity(){
+    private void startFriendProfileActivity() {
         Intent intent = new Intent(getContext(), FriendActivity.class);
         startActivity(intent);
     }
 
-    private void initActionButtons(){
+    private void initActionButtons() {
         String tag_actionbuttons_friendtab = "tag_actionbuttons_friendtab";
         FragmentManager childFragMan = getChildFragmentManager();
         FragmentTransaction childFragTrans = childFragMan.beginTransaction();
         mActionButtons = new ActionButtonsFragment();
-        childFragTrans.add(R.id.fragment_friendstab_actionbuttons, mActionButtons,tag_actionbuttons_friendtab);
+        childFragTrans.add(R.id.fragment_friendstab_actionbuttons, mActionButtons, tag_actionbuttons_friendtab);
         childFragTrans.addToBackStack(null);
         childFragTrans.commit();
 
@@ -241,7 +268,7 @@ public class FriendsFragment
     @Override
     public void onDataChanged() {
 
-        for(int i = 0; i< mFirestoreAdapter.getItemCount(); i++){
+        for (int i = 0; i < mFirestoreAdapter.getItemCount(); i++) {
 //            ContactsClass contact  = mFirestoreAdapter.getSnapshot(i).toObject(ContactsClass.class);
             mSwipeView.addView(new FriendsCard(this, mContext, mFirestoreAdapter.getSnapshot(i)));
         }
@@ -253,19 +280,18 @@ public class FriendsFragment
         int starPressed = contact.getStarred();
         DocumentReference friendRef = mUserRef.collection(contact.WHATSAPP_FRIENDS).document(snapshot.getId());
 
-        if (starPressed==0) {
+        if (starPressed == 0) {
             button.setImageResource(R.drawable.ic_star_blue);
             contact.setStarred(1);
 
-            changeStar(friendRef,contact);
-
+            changeStar(friendRef, contact);
 
 
         } else {
             button.setImageResource(R.drawable.ic_star_hollow);
             contact.setStarred(0);
 
-            changeStar(friendRef,contact);
+            changeStar(friendRef, contact);
         }
 
     }
@@ -283,12 +309,12 @@ public class FriendsFragment
 
                 return null;
             }
-        }) .addOnSuccessListener(getActivity(), new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Contact starred / unstarred");
-                    }
-                })
+        }).addOnSuccessListener(getActivity(), new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "Contact starred / unstarred");
+            }
+        })
                 .addOnFailureListener(getActivity(), new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
@@ -299,15 +325,15 @@ public class FriendsFragment
     }
 
 
-    public void onFriendProfileClicked(ContactsClass contact){
+    public void onFriendProfileClicked(ContactsClass contact) {
         startFriendProfileActivity();
     }
 
     //Swipe view recycler
     @Override
-    public void onItemRemoved(int count){
+    public void onItemRemoved(int count) {
 //        Log.d(TAG, " Number of items in swipeview" + String.valueOf(count));
-        if(count==2) {
+        if (count == 3) {
             loadNextDataFromFirestore(count);
         }
     }
@@ -327,7 +353,7 @@ public class FriendsFragment
 
 
     //Action fragment click
-    public void onMessageBtnClick(){
+    public void onMessageBtnClick() {
         FriendsCard card = (FriendsCard) mSwipeView.getAllResolvers().get(0);
         String name = card.getProfile().getContactName();
         Log.d(TAG, "Contact name " + name);
@@ -336,7 +362,7 @@ public class FriendsFragment
     }
 
     //Send message clicked in Message Dialog Fragment
-    public void onSendClickedMessageDialog(String message){
+    public void onSendClickedMessageDialog(String message) {
 
         FriendsCard card = (FriendsCard) mSwipeView.getAllResolvers().get(0);
         String number = card.getProfile().getContactNumber();

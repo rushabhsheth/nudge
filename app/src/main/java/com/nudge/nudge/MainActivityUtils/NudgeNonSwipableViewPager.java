@@ -22,7 +22,7 @@ public class NudgeNonSwipableViewPager extends ViewPager {
 
     public NudgeNonSwipableViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
-        //setMyScroller();
+//        setMyScroller();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class NudgeNonSwipableViewPager extends ViewPager {
 
         @Override
         public void startScroll(int startX, int startY, int dx, int dy, int duration) {
-            super.startScroll(startX, startY, dx, dy, 350 /*1 secs*/);
+            super.startScroll(startX, startY, dx, dy, 1000 /*1 secs*/);
         }
     }
 

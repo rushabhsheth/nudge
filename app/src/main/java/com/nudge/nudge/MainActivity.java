@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.*;
@@ -31,6 +32,7 @@ import com.nudge.nudge.NudgesTab.NudgesFragment;
 import com.nudge.nudge.StarContacts.StarActivity;
 import com.nudge.nudge.UserProfile.ProfileActivity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,6 +47,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Main Activity";
+    private static final String KEY_ADAPTER_STATE = "com.nudge.nudge.KEY_ADAPTER_STATE";
 
     private static final int RC_SIGN_IN = 9001;
     private static final int RC_PROFILE = 123;
@@ -74,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
 
     private MainActivityViewModel mViewModel;
 
+    private ViewPagerAdapter mAdapter;
+
     // Request code for READ_CONTACTS. It can be any number > 0.
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
 
@@ -87,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
 
         // View model
         mViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
+
+        mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         setupViewPager(mNudgeViewPager);
         tabLayout.setupWithViewPager(mNudgeViewPager);
         setupTabIcons();
@@ -134,13 +141,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupViewPager(NudgeNonSwipableViewPager nudgeNonSwipableViewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new FriendsFragment(), "FRIENDS");
-        adapter.addFragment(new NudgesFragment(), "NUDGES");
-        adapter.addFragment(new CameraFragment(), "CAMERA");
-        adapter.addFragment(new FreeFragment(), "FREE");
-        adapter.addFragment(new UserProfileFragment(), "PROFILE");
-        nudgeNonSwipableViewPager.setAdapter(adapter);
+        mAdapter.addFragment(new FriendsFragment(), "FRIENDS");
+        mAdapter.addFragment(new NudgesFragment(), "NUDGES");
+        mAdapter.addFragment(new CameraFragment(), "CAMERA");
+        mAdapter.addFragment(new FreeFragment(), "FREE");
+        mAdapter.addFragment(new UserProfileFragment(), "PROFILE");
+        nudgeNonSwipableViewPager.setAdapter(mAdapter);
         nudgeNonSwipableViewPager.setCurrentItem(0);
     }
 
@@ -167,6 +173,12 @@ public class MainActivity extends AppCompatActivity {
             mFragmentTitleList.add(title);
         }
 
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+
+        }
+
+//          Uncomment to show titles on tabs
 //        @Override
 //        public CharSequence getPageTitle(int position) {
 //            return mFragmentTitleList.get(position);
@@ -336,6 +348,11 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
 
