@@ -2,7 +2,6 @@ package com.nudge.nudge.FriendsTab;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -36,13 +34,11 @@ import com.mindorks.placeholderview.SwipePlaceHolderView;
 import com.mindorks.placeholderview.listeners.ItemRemovedListener;
 import com.nudge.nudge.ActionFragments.ActionButtonsFragment;
 import com.nudge.nudge.ActionFragments.MessageDialogFragment;
-import com.nudge.nudge.ContactsData.ContactsClass;
-import com.nudge.nudge.ContactsData.UserClass;
-import com.nudge.nudge.FirebaseClasses.FirestoreAdapter;
+import com.nudge.nudge.Data.Database.ContactsClass;
+import com.nudge.nudge.Data.Database.UserClass;
+import com.nudge.nudge.Data.Network.FirestoreAdapter;
 import com.nudge.nudge.FriendProfile.FriendActivity;
 import com.nudge.nudge.R;
-
-import java.io.Serializable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -269,7 +265,9 @@ public class FriendsFragment
     public void onDataChanged() {
 
         for (int i = 0; i < mFirestoreAdapter.getItemCount(); i++) {
-//            ContactsClass contact  = mFirestoreAdapter.getSnapshot(i).toObject(ContactsClass.class);
+
+            ContactsClass contact  = mFirestoreAdapter.getSnapshot(i).toObject(ContactsClass.class);
+            Log.d(TAG,contact.getContactName() + " " + String.valueOf(mFirestoreAdapter.getSnapshot(i).getId()));
             mSwipeView.addView(new FriendsCard(this, mContext, mFirestoreAdapter.getSnapshot(i)));
         }
         Log.d(TAG, "Number of items fetched: " + String.valueOf(mFirestoreAdapter.getItemCount()));
@@ -366,7 +364,7 @@ public class FriendsFragment
 
         FriendsCard card = (FriendsCard) mSwipeView.getAllResolvers().get(0);
         String number = card.getProfile().getContactNumber();
-        //  Log.d(TAG, "Contact name: " + card.getProfile().getContactName() + " , Contact number: " + number);
+        Log.d(TAG, "Contact name: " + card.getProfile().getContactName() + " , Contact number: " + number) ;
 
         String toNumber = number.replace("+", "").replace(" ", "");
         String finalMessage = message + getString(R.string.nudge_dynamic_link);

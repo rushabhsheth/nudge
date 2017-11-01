@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.nudge.nudge.MainActivityUtils.MainActivity;
 import com.nudge.nudge.R;
 
 import butterknife.BindView;
@@ -22,10 +23,12 @@ import static android.app.Activity.RESULT_OK;
 
 public class UserProfileFragment extends Fragment {
 
-    private static final String TAG = "UserProfielFragment";
+    private static final String TAG = UserProfileFragment.class.getSimpleName();
 
     @BindView(R.id.profile_signoutButton)
     Button mSignOutButton;
+
+    private onSignOutListener mSignOutListener;
 
     public UserProfileFragment(){
         //Empty Constructor
@@ -46,20 +49,21 @@ public class UserProfileFragment extends Fragment {
 
         ButterKnife.bind(this,rootView);
 
+        mSignOutListener = (onSignOutListener) (MainActivity)getActivity();
+
         mSignOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-//                Intent intent=new Intent();
-//                intent.putExtra("SignOut","Yes");
-//                getContext().setResult(RESULT_OK,intent);
-//                finish();
+                mSignOutListener.onSignOutClicked();
             }
         });
 
-
         return rootView;
+    }
 
+
+    public interface onSignOutListener{
+        void onSignOutClicked();
     }
 
 

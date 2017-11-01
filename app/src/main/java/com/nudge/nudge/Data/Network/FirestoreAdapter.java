@@ -1,10 +1,9 @@
-package com.nudge.nudge.FirebaseClasses;
+package com.nudge.nudge.Data.Network;
 
 /**
  * Created by rushabh on 22/10/17.
  */
 
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.google.firebase.firestore.DocumentChange;
@@ -14,7 +13,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.nudge.nudge.FriendsTab.FriendsFragment;
 
 import java.util.ArrayList;
 

@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.nudge.nudge.ContactsData.ContactsClass;
+import com.nudge.nudge.Data.Database.ContactsClass;
 
 import org.json.JSONArray;
 

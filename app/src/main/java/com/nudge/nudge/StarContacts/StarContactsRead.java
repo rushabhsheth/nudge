@@ -13,7 +13,7 @@ import android.support.v4.content.Loader;
 import android.util.Log;
 
 
-import com.nudge.nudge.ContactsData.ContactsClass;
+import com.nudge.nudge.Data.Database.ContactsClass;
 
 import java.util.ArrayList;
 import java.util.List;

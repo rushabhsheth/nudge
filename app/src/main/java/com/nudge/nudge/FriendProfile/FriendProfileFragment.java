@@ -4,11 +4,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +14,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.nudge.nudge.R;
-import com.nudge.nudge.ContactsData.ContactsClass;
-import com.nudge.nudge.StarContacts.StarContactsRead;
+import com.nudge.nudge.Data.Database.ContactsClass;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * Created by rushabh on 06/10/17.

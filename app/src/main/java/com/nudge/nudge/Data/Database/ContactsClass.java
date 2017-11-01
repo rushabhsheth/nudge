@@ -1,15 +1,15 @@
-package com.nudge.nudge.ContactsData;
+package com.nudge.nudge.Data.Database;
 
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.PriorityQueue;
 
 /**
  * Created by rushabh on 06/10/17.
  */
+
 
 public class ContactsClass {
 

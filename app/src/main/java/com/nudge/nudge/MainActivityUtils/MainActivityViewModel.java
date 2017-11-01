@@ -1,8 +1,11 @@
 package com.nudge.nudge.MainActivityUtils;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.nudge.nudge.Data.NudgeRepository;
 
 /**
  * Created by rushabh on 20/10/17.
@@ -10,12 +13,16 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivityViewModel extends ViewModel {
 
+    private final NudgeRepository mRepository;
     private boolean mIsSigningIn;
-    private FirebaseUser mUser;
 
-    public MainActivityViewModel() {
+    //Firebase instance variables
+    private LiveData<FirebaseUser> mFirebaseUser;
+
+    public MainActivityViewModel(NudgeRepository repository) {
+        this.mRepository = repository;
         mIsSigningIn = false;
-        mUser = null;
+        mFirebaseUser = mRepository.getFirebaseUser();
     }
 
     public boolean getIsSigningIn() {
@@ -26,12 +33,15 @@ public class MainActivityViewModel extends ViewModel {
         this.mIsSigningIn = mIsSigningIn;
     }
 
-    public FirebaseUser getUser(){
-        return mUser;
+    public LiveData<FirebaseUser> getFirebaseUser(){
+        return mFirebaseUser;
     }
 
-    public void setUser(FirebaseUser user){
-        this.mUser = user;
+    public void startSignOut(){
+        mRepository.startSignOut();
     }
 
+    public void setContactsPermissionGranted(boolean bool){
+        //TODO if true, start contacts sync with server
+    }
 }

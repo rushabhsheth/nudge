@@ -12,8 +12,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.nudge.nudge.ContactsData.ContactsClass;
+import com.nudge.nudge.Data.Database.ContactsClass;
 import com.nudge.nudge.R;
 
 import java.util.Comparator;

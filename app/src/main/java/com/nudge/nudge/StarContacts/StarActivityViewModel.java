@@ -2,8 +2,7 @@ package com.nudge.nudge.StarContacts;
 
 import android.arch.lifecycle.ViewModel;
 
-import com.google.firebase.auth.FirebaseUser;
-import com.nudge.nudge.ContactsData.ContactsClass;
+import com.nudge.nudge.Data.Database.ContactsClass;
 
 import java.util.ArrayList;
 import java.util.List;

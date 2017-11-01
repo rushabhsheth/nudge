@@ -3,7 +3,6 @@ package com.nudge.nudge.StarContacts;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,8 +17,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 
-import com.firebase.ui.auth.User;
-import com.google.android.gms.games.snapshot.Snapshot;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -35,10 +32,9 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
-import com.nudge.nudge.ContactsData.ContactsClass;
-import com.nudge.nudge.ContactsData.UserClass;
-import com.nudge.nudge.FirebaseClasses.FirestoreAdapter;
-import com.nudge.nudge.FriendsTab.FriendsCard;
+import com.nudge.nudge.Data.Database.ContactsClass;
+import com.nudge.nudge.Data.Database.UserClass;
+import com.nudge.nudge.Data.Network.FirestoreAdapter;
 import com.nudge.nudge.R;
 
 import java.util.ArrayList;

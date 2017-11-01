@@ -1,22 +1,15 @@
 package com.nudge.nudge.StarContacts;
 
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.SearchView;
 
 
-import com.nudge.nudge.ContactsData.ContactsClass;
 import com.nudge.nudge.R;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
