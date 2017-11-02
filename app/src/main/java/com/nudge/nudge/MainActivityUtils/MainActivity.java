@@ -183,6 +183,7 @@ public class MainActivity extends AppCompatActivity
             } else {
                 mViewModel.setContactsPermissionGranted(false);
                 Toast.makeText(this, "App cannot work until you grant permission", Toast.LENGTH_LONG).show();
+                readContactsPersmission();
             }
         }
     }

@@ -67,6 +67,11 @@
 
         </activity>
 
+        <!--This is required for immediate syncs -->
+        <service
+            android:name=".Data.Network.FirebaseSyncIntentService"
+            android:exported="false" />
+
     </application>
 
 </manifest>

@@ -2,9 +2,9 @@ package com.nudge.nudge.Utilities;
 
 import android.content.Context;
 
-import com.nudge.nudge.Data.Database.ContactDatabase;
 import com.nudge.nudge.Data.Network.FirebaseDataSource;
 import com.nudge.nudge.Data.NudgeRepository;
+import com.nudge.nudge.FriendsTab.FriendsFragmentViewModelFactory;
 import com.nudge.nudge.MainActivityUtils.MainViewModelFactory;
 
 /**
@@ -32,6 +32,11 @@ public class InjectorUtils {
     public static MainViewModelFactory provideMainActivityViewModelFactory(Context context) {
         NudgeRepository repository = provideRepository(context.getApplicationContext());
         return new MainViewModelFactory(repository);
+    }
+
+    public static FriendsFragmentViewModelFactory provideFriendsFragmentViewModelFactory(Context context) {
+        NudgeRepository repository = provideRepository(context.getApplicationContext());
+        return new FriendsFragmentViewModelFactory(repository);
     }
 
 }

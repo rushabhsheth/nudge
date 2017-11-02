@@ -6,8 +6,12 @@ import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.nudge.nudge.Data.Database.ContactsClass;
 import com.nudge.nudge.Data.Network.FirebaseDataSource;
 import com.nudge.nudge.Utilities.AppExecutors;
+
+import java.util.ArrayList;
 
 /**
  * Created by rushabh on 01/11/17.
@@ -54,6 +58,13 @@ public class NudgeRepository {
         // performed, we have nothing to do in this method.
         if (mInitialized) return;
         mInitialized = true;
+
+        mExecutors.diskIO().execute(() -> {
+
+//            Log.d(LOG_TAG, "starting initialize Data");
+            startFetchFriendsService();
+
+        });
     }
 
     public LiveData<FirebaseUser> getFirebaseUser(){
@@ -62,6 +73,27 @@ public class NudgeRepository {
 
     public void startSignOut(){
         mFirebaseDataSource.startSignOut();
+    }
+
+    public LiveData<ArrayList<DocumentSnapshot>> getFriendsViaQuery(){
+        initializeData();
+        return mFirebaseDataSource.getFriendsViaQuery();
+    }
+
+    /**
+     * Network related operation
+     */
+
+    private void startFetchFriendsService() {
+        mFirebaseDataSource.startFetchFriendsService();
+    }
+
+    public void requestMoreFriends(){
+        startFetchFriendsService();
+    }
+
+    public void changeStar(DocumentSnapshot snapshot, ContactsClass contact){
+        mFirebaseDataSource.changeStar(snapshot,contact);
     }
 
 }

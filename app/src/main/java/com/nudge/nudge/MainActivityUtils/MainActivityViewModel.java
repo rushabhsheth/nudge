@@ -1,7 +1,11 @@
 package com.nudge.nudge.MainActivityUtils;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.arch.lifecycle.ViewModel;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -44,4 +48,5 @@ public class MainActivityViewModel extends ViewModel {
     public void setContactsPermissionGranted(boolean bool){
         //TODO if true, start contacts sync with server
     }
+
 }

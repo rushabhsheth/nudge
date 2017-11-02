@@ -105,6 +105,10 @@ public class FirestoreAdapter
         return mSnapshots.get(index);
     }
 
+    public ArrayList<DocumentSnapshot> getAllSnapshots(){
+        return mSnapshots;
+    }
+
     protected void onDocumentAdded(DocumentChange change) {
         mSnapshots.add(change.getNewIndex(), change.getDocument());
 //        notifyItemInserted(change.getNewIndex());

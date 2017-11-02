@@ -62,4 +62,8 @@
         <item name="colorControlActivated">@color/colorPrimary</item>
     </style>
 
+    <style name="AppTheme.BlueAccent">
+        <item name="colorAccent">@color/colorPrimary</item> <!-- Whatever color you want-->
+    </style>
+
 </resources>

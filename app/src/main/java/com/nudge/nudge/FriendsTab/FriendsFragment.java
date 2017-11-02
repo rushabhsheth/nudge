@@ -1,5 +1,6 @@
 package com.nudge.nudge.FriendsTab;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -38,7 +40,13 @@ import com.nudge.nudge.Data.Database.ContactsClass;
 import com.nudge.nudge.Data.Database.UserClass;
 import com.nudge.nudge.Data.Network.FirestoreAdapter;
 import com.nudge.nudge.FriendProfile.FriendActivity;
+import com.nudge.nudge.MainActivityUtils.MainActivityViewModel;
+import com.nudge.nudge.MainActivityUtils.MainViewModelFactory;
 import com.nudge.nudge.R;
+import com.nudge.nudge.Utilities.InjectorUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,36 +57,26 @@ import butterknife.ButterKnife;
 public class FriendsFragment
         extends Fragment
         implements
-        EventListener<DocumentSnapshot>,
-        FirestoreAdapter.DataReceivedListener,
         FriendsCard.onClickListener,
         ItemRemovedListener,
         ActionButtonsFragment.onClickListener,
         MessageDialogFragment.SendListener {
 
-    private static final String TAG = "FriendsFragment";
-    private static final String KEY_ADAPTER_STATE = "com.nudge.nudge.FriendsTab.KEY_ADAPTER_STATE";
-
+    private static final String TAG = FriendsFragment.class.getSimpleName();
 
     @BindView(R.id.swipeView)
     SwipePlaceHolderView mSwipeView;
 
-
     @BindView(R.id.fragment_friendstab_actionbuttons)
     FrameLayout mActionButtonFrame;
 
+    @BindView(R.id.pb_loading_indicator)
+    ProgressBar mLoadingIndicator;
+
     private Context mContext;
+    private FriendsFragmentViewModel mViewModel;
+
     private ActionButtonsFragment mActionButtons;
-
-    private FirebaseFirestore mFirestore;
-    private FirebaseUser mUser;
-    private Query mQuery;
-    private DocumentReference mUserRef;
-    private ListenerRegistration mUserRegistration;
-
-    private FirestoreAdapter mFirestoreAdapter;
-
-    private int fetchLimit = 20;
 
     private MessageDialogFragment mMessageDialog;
 
@@ -90,16 +88,14 @@ public class FriendsFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Enable Firestore logging
-        FirebaseFirestore.setLoggingEnabled(true);
-
-        // Firestore
-        mFirestore = FirebaseFirestore.getInstance();
-
-        mUser = FirebaseAuth.getInstance().getCurrentUser();
-
         mMessageDialog = new MessageDialogFragment();
         mMessageDialog.setSendListener(this);
+
+        //ViewModel
+        mContext = this.getContext();
+        FriendsFragmentViewModelFactory factory = InjectorUtils.provideFriendsFragmentViewModelFactory(mContext);
+        mViewModel = ViewModelProviders.of(this, factory).get(FriendsFragmentViewModel.class);
+        getFriendsData();
 
     }
 
@@ -110,7 +106,6 @@ public class FriendsFragment
 
         ButterKnife.bind(this, rootView);
 
-        mContext = rootView.getContext();
         initActionButtons();
 
         mSwipeView.addItemRemoveListener(this);
@@ -133,7 +128,41 @@ public class FriendsFragment
             }
         });
 
+        showLoading();
         return rootView;
+    }
+
+    private void getFriendsData() {
+
+        mViewModel.getFriendsData().observe(this, listFriendsData -> {
+            for (int i = 0; i < listFriendsData.size(); i++) {
+                mSwipeView.addView(new FriendsCard(this, mContext, listFriendsData.get(i)));
+            }
+            if (listFriendsData != null && listFriendsData.size() != 0) showWeatherDataView();
+            else showLoading();
+        });
+    }
+
+    /**
+     * This method will make the View for the weather data visible and hide the error message and
+     * loading indicator.
+     */
+    private void showWeatherDataView() {
+        // First, hide the loading indicator
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+        // Finally, make sure the weather data is visible
+        mSwipeView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * This method will make the loading indicator visible and hide the weather View and error
+     * message.
+     */
+    private void showLoading() {
+        // Then, hide the weather data
+        mSwipeView.setVisibility(View.INVISIBLE);
+        // Finally, show the loading indicator
+        mLoadingIndicator.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -151,47 +180,18 @@ public class FriendsFragment
     @Override
     public void onResume() {
         super.onResume();
-
-        if (mUser != null) {
-            mUserRef = mFirestore.collection("users").document(mUser.getUid());
-
-            // Get whatsapp friends
-            mQuery = mUserRef
-                    .collection("whatsapp_friends")
-                    .orderBy("timesContacted", Query.Direction.DESCENDING)
-                    .limit(fetchLimit);
-
-            mFirestoreAdapter = new FirestoreAdapter(mQuery, this) {
-
-                @Override
-                protected void onError(FirebaseFirestoreException e) {
-                    // Show a snackbar on errors
-                    Toast.makeText(getContext(),
-                            "FriendsFragment FirebaseAdapter Error: check logs for info.", Toast.LENGTH_LONG).show();
-                }
-            };
-
-
-        }
-
-        if (mUserRef != null) {
-            mUserRegistration = mUserRef.addSnapshotListener(this);
-        }
-        if (mFirestoreAdapter != null) {
-            mFirestoreAdapter.startListening();
-        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mFirestoreAdapter != null) {
-            mFirestoreAdapter.stopListening();
-        }
-        if (mUserRegistration != null) {
-            mUserRegistration.remove();
-            mUserRegistration = null;
-        }
+//        if (mFirestoreAdapter != null) {
+//            mFirestoreAdapter.stopListening();
+//        }
+//        if (mUserRegistration != null) {
+//            mUserRegistration.remove();
+//            mUserRegistration = null;
+//        }
     }
 
     @Override
@@ -203,41 +203,9 @@ public class FriendsFragment
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-//        TODO: Saved instance works for now from MainActivity > ViewPagerAdapter
-//        if (savedInstanceState != null) {
-//
-//            myData = (List<String>) savedInstanceState.getSerializable("list");
-//
-//        } else {
-//            if (myData != null) {
-//                //returning from backstack, data is fine, do nothing
-//            } else {
-//                //newly created, compute data
-//                myData = computeData();
-//            }
-//        }
-
     }
 
 
-    /**
-     * Listener for the Restaurant document ({@link #mUserRef}).
-     */
-    @Override
-    public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
-        if (snapshot.exists()) {
-            UserClass user = snapshot.toObject(UserClass.class);
-            Log.d(TAG, "Fetching data for: " + user.getUserName() + ", id: " + user.getUserIdentifier());
-        } else {
-            Log.d(TAG, " User reference is null");
-        }
-
-
-        if (e != null) {
-            Log.w(TAG, "user:onEvent", e);
-            return;
-        }
-    }
 
 
     private void startFriendProfileActivity() {
@@ -261,67 +229,19 @@ public class FriendsFragment
 
     }
 
-    @Override
-    public void onDataChanged() {
-
-        for (int i = 0; i < mFirestoreAdapter.getItemCount(); i++) {
-
-            ContactsClass contact  = mFirestoreAdapter.getSnapshot(i).toObject(ContactsClass.class);
-            Log.d(TAG,contact.getContactName() + " " + String.valueOf(mFirestoreAdapter.getSnapshot(i).getId()));
-            mSwipeView.addView(new FriendsCard(this, mContext, mFirestoreAdapter.getSnapshot(i)));
-        }
-        Log.d(TAG, "Number of items fetched: " + String.valueOf(mFirestoreAdapter.getItemCount()));
-    }
-
     //Interface method of StarContactsAdapter
     public void onStarClicked(ImageButton button, DocumentSnapshot snapshot, ContactsClass contact) {
         int starPressed = contact.getStarred();
-        DocumentReference friendRef = mUserRef.collection(contact.WHATSAPP_FRIENDS).document(snapshot.getId());
-
         if (starPressed == 0) {
             button.setImageResource(R.drawable.ic_star_blue);
             contact.setStarred(1);
-
-            changeStar(friendRef, contact);
-
-
         } else {
             button.setImageResource(R.drawable.ic_star_hollow);
             contact.setStarred(0);
-
-            changeStar(friendRef, contact);
         }
+        mViewModel.changeStar(snapshot,contact);
 
     }
-
-    private Task<Void> changeStar(final DocumentReference friendRef, final ContactsClass contact) {
-        // Create reference for new rating, for use inside the transaction
-
-        // In a transaction, add the new rating and update the aggregate totals
-        return mFirestore.runTransaction(new Transaction.Function<Void>() {
-            @Override
-            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
-
-                // Commit to Firestore
-                transaction.update(friendRef, contact.STARRED, contact.getStarred());
-
-                return null;
-            }
-        }).addOnSuccessListener(getActivity(), new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "Contact starred / unstarred");
-            }
-        })
-                .addOnFailureListener(getActivity(), new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Contact star could not be updated", e);
-                    }
-                });
-
-    }
-
 
     public void onFriendProfileClicked(ContactsClass contact) {
         startFriendProfileActivity();
@@ -330,33 +250,26 @@ public class FriendsFragment
     //Swipe view recycler
     @Override
     public void onItemRemoved(int count) {
-//        Log.d(TAG, " Number of items in swipeview" + String.valueOf(count));
         if (count == 3) {
             loadNextDataFromFirestore(count);
         }
     }
 
     private void loadNextDataFromFirestore(int count) {
-        Log.d(TAG, "Number of snapshots in adapter: " + String.valueOf(mFirestoreAdapter.getItemCount()));
-        DocumentSnapshot snapshot = mFirestoreAdapter.getSnapshot(mFirestoreAdapter.getItemCount() - 1);
-
-        mQuery = mUserRef
-                .collection("whatsapp_friends")
-                .orderBy("timesContacted", Query.Direction.DESCENDING)
-                .limit(fetchLimit)
-                .startAfter(snapshot);
-
-        mFirestoreAdapter.setQuery(mQuery);
+        mViewModel.requestMoreFriends();
     }
 
 
     //Action fragment click
     public void onMessageBtnClick() {
-        FriendsCard card = (FriendsCard) mSwipeView.getAllResolvers().get(0);
-        String name = card.getProfile().getContactName();
-        Log.d(TAG, "Contact name " + name);
-        mMessageDialog.setMessageDialogText("Hi " + name.split(" ")[0] + "! How are you doing?");
-        mMessageDialog.show(getActivity().getSupportFragmentManager(), MessageDialogFragment.TAG);
+        List<Object> friendCards = mSwipeView.getAllResolvers();
+        if(friendCards.size()!=0) {
+            FriendsCard card = (FriendsCard) friendCards.get(0);
+            String name = card.getProfile().getContactName();
+            Log.d(TAG, "Contact name " + name);
+            mMessageDialog.setMessageDialogText("Hi " + name.split(" ")[0] + "! How are you doing?");
+            mMessageDialog.show(getActivity().getSupportFragmentManager(), MessageDialogFragment.TAG);
+        }
     }
 
     //Send message clicked in Message Dialog Fragment
@@ -376,7 +289,6 @@ public class FriendsFragment
         sendIntent.setPackage("com.whatsapp");
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
-
 
     }
 
