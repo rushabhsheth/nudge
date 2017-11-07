@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.nudge.nudge.Data.Database.NudgeClass;
 import com.nudge.nudge.R;
 
 import java.util.List;
@@ -104,17 +105,17 @@ public class NudgesAdapter extends RecyclerView.Adapter<NudgesAdapter.ViewHolder
 
         final NudgeClass nudgeClass = mDataSet.get(position);
 
-        String userName = nudgeClass.getReceiver_name();
+        String userName = nudgeClass.getReceiverName();
         if(userName != null){
             finalHolder.getNudges_nameView().setText(userName);
         }
 
-        String timestamp = nudgeClass.getTime();
+        String timestamp = nudgeClass.getTimestamp().toString();
         if(timestamp != null){
             finalHolder.getNudges_timeView().setText(timestamp);
         }
 
-        String userProfileImage = nudgeClass.getReceiver_imageUrl();
+        String userProfileImage = nudgeClass.getReceiverImageUrl();
         if(userProfileImage!=null){
             Uri uri = Uri.parse(userProfileImage);
             Glide.with(context)

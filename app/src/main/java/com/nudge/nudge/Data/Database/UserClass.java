@@ -13,6 +13,7 @@ public class UserClass {
     private String userName;
     private String userId;
     private String userIdentifier;
+    private String userFCMToken;
     private @ServerTimestamp Date timestamp;
 
     public UserClass() {
@@ -41,6 +42,14 @@ public class UserClass {
 
     public void setUserIdentifier(String userIdentifier) {
         this.userIdentifier = userIdentifier;
+    }
+
+    public String getUserFCMToken() {
+        return userFCMToken;
+    }
+
+    public void setUserFCMToken(String userFCMToken) {
+        this.userFCMToken = userFCMToken;
     }
 
     public Date getTimestamp() {

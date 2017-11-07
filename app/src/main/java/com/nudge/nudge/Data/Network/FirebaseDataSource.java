@@ -21,9 +21,11 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.Transaction;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.nudge.nudge.Data.Database.ContactsClass;
 import com.nudge.nudge.Data.Database.UserClass;
 import com.nudge.nudge.FriendsTab.FriendsCard;
+import com.nudge.nudge.R;
 import com.nudge.nudge.Utilities.AppExecutors;
 
 import java.util.ArrayList;
@@ -34,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class FirebaseDataSource
-        implements EventListener<DocumentSnapshot>,
+        implements
         FirestoreAdapter.DataReceivedListener{
 
     private static final String LOG_TAG = FirebaseDataSource.class.getSimpleName();
@@ -67,6 +69,8 @@ public class FirebaseDataSource
     private FirestoreAdapter mFirestoreAdapter;
 
     private final MutableLiveData<ArrayList<DocumentSnapshot>> mFriendsData;
+    private final MutableLiveData<ArrayList<DocumentSnapshot>> mNudgesData;
+
 
     private int fetchLimit = 20;
 
@@ -83,6 +87,7 @@ public class FirebaseDataSource
         // Firestore
         mFirestore = FirebaseFirestore.getInstance();
         mFriendsData = new MutableLiveData<>();
+        mNudgesData = new MutableLiveData<>();
         initFirebaseAdapter();
     }
 
@@ -110,7 +115,7 @@ public class FirebaseDataSource
                 mExecutors.networkIO().execute(() -> {
                     mFirebaseUser.postValue(firebaseAuth.getCurrentUser());
                     initUserReference(firebaseAuth.getCurrentUser());
-//                    startFetchFriendsService();
+                    startFetchFriendsService();
                 });
 
             }
@@ -122,7 +127,27 @@ public class FirebaseDataSource
         Log.d(LOG_TAG, "Initializing User Reference ");
         if (user != null) {
             mUserRef = mFirestore.collection("users").document(user.getUid());
-            mUserRegistration = mUserRef.addSnapshotListener(this);
+
+            mUserRegistration = mUserRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
+
+                    if (e != null) {
+                        Log.w(LOG_TAG, "user:onEvent", e);
+                        return;
+                    }
+
+                    if (snapshot.exists() && snapshot != null ) {
+                            UserClass user = snapshot.toObject(UserClass.class);
+                            Log.d(LOG_TAG, "Fetching data for: " + user.getUserName() + ", id: " + user.getUserIdentifier());
+                            checkFCMtoken(user);
+
+                        } else {
+                            Log.d(LOG_TAG, " User reference is null");
+                        }
+
+                    }
+                });
         }
     }
 
@@ -202,23 +227,6 @@ public class FirebaseDataSource
         });
     }
 
-    /**
-     * Listener for the Restaurant document ({@link #mUserRef}).
-     */
-    @Override
-    public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
-        if (snapshot.exists()) {
-            UserClass user = snapshot.toObject(UserClass.class);
-            Log.d(LOG_TAG, "Fetching data for: " + user.getUserName() + ", id: " + user.getUserIdentifier());
-        } else {
-            Log.d(LOG_TAG, " User reference is null");
-        }
-
-        if (e != null) {
-            Log.w(LOG_TAG, "user:onEvent", e);
-            return;
-        }
-    }
 
     @Override
     public void onDataChanged() {
@@ -262,6 +270,62 @@ public class FirebaseDataSource
         });
 
     }
+
+
+    /*Check if FCM token for user is set*/
+    public void checkFCMtoken(UserClass user){
+
+        String token_value = FirebaseInstanceId.getInstance().getToken();
+        String token_key = mContext.getResources().getString(R.string.firebase_cloud_messaging_token);
+
+        if(user.getUserFCMToken()==null || user.getUserFCMToken()!= token_value){
+            /* Update user FCM token */
+            sendRegistrationToServer(token_key,token_value);
+        }
+
+    }
+
+    public void sendRegistrationToServer(String token_key, String token_value){
+        if(mUserRef!=null) {
+            sendRegistrationTokenToServer(mUserRef,token_key, token_value);
+        }
+        else {
+            Log.d(LOG_TAG, "Could not set FCM token, user reference is null");
+        }
+    }
+
+    private Task<Void> sendRegistrationTokenToServer(DocumentReference reference, String token_key, String token_value){
+
+
+        // In a transaction, add the new rating and update the aggregate totals
+        return mFirestore.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+
+                // Commit to Firestore
+                transaction.update(reference,token_key , token_value);
+
+                return null;
+            }
+        }).addOnSuccessListener(mExecutors.networkIO(), new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(LOG_TAG, "FCM token updated");
+            }
+        }).addOnFailureListener(mExecutors.networkIO(), new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(LOG_TAG, "Failed to update FCM Token for user", e);
+            }
+        });
+
+    }
+
+    public LiveData<ArrayList<DocumentSnapshot>> getNudges(){
+        return mNudgesData;
+    }
+
+
 
 
 }

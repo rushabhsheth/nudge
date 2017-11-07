@@ -1,6 +1,8 @@
 package com.nudge.nudge.MainActivityUtils;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -75,8 +77,42 @@ public class MainActivity extends AppCompatActivity
         tabLayout.setupWithViewPager(mNudgeViewPager);
         setupTabIcons();
 
+        createNotificationChannel();
+        getNotificationClickIntent();
         checkSignIn();
 
+    }
+
+    private void createNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create channel to show notifications.
+            String channelId  = getString(R.string.default_notification_channel_id);
+            String channelName = getString(R.string.default_notification_channel_name);
+            NotificationManager notificationManager =
+                    getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(new NotificationChannel(channelId,
+                    channelName, NotificationManager.IMPORTANCE_DEFAULT));
+        }
+    }
+
+    private void getNotificationClickIntent(){
+
+        // If a notification message is tapped, any data accompanying the notification
+        // message is available in the intent extras. In this sample the launcher
+        // intent is fired when the notification is tapped, so any accompanying data would
+        // be handled here. If you want a different intent fired, set the click_action
+        // field of the notification message to the desired intent. The launcher intent
+        // is used when no click_action is specified.
+        //
+        // Handle possible data accompanying notification message.
+        // [START handle_data_extras]
+        if (getIntent().getExtras() != null) {
+            for (String key : getIntent().getExtras().keySet()) {
+                Object value = getIntent().getExtras().get(key);
+                Log.d(LOG_TAG, "Key: " + key + " Value: " + value);
+            }
+        }
+        // [END handle_data_extras]
     }
 
     private void checkSignIn(){
@@ -182,8 +218,8 @@ public class MainActivity extends AppCompatActivity
                 mViewModel.setContactsPermissionGranted(true);
             } else {
                 mViewModel.setContactsPermissionGranted(false);
-                Toast.makeText(this, "App cannot work until you grant permission", Toast.LENGTH_LONG).show();
                 readContactsPersmission();
+                Toast.makeText(this, "App cannot work until you grant permission", Toast.LENGTH_LONG).show();
             }
         }
     }

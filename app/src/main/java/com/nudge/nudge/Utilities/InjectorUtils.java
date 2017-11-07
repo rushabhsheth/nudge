@@ -6,6 +6,8 @@ import com.nudge.nudge.Data.Network.FirebaseDataSource;
 import com.nudge.nudge.Data.NudgeRepository;
 import com.nudge.nudge.FriendsTab.FriendsFragmentViewModelFactory;
 import com.nudge.nudge.MainActivityUtils.MainViewModelFactory;
+import com.nudge.nudge.NudgesTab.NudgesFragmentViewModel;
+import com.nudge.nudge.NudgesTab.NudgesFragmentViewModelFactory;
 
 /**
  * Created by rushabh on 01/11/17.
@@ -28,6 +30,10 @@ public class InjectorUtils {
         return FirebaseDataSource.getInstance(context.getApplicationContext(), executors);
     }
 
+    public static SharedPreferenceUtils provideSharedPreferences(Context context) {
+        return SharedPreferenceUtils.getInstance(context);
+    }
+
 
     public static MainViewModelFactory provideMainActivityViewModelFactory(Context context) {
         NudgeRepository repository = provideRepository(context.getApplicationContext());
@@ -38,5 +44,12 @@ public class InjectorUtils {
         NudgeRepository repository = provideRepository(context.getApplicationContext());
         return new FriendsFragmentViewModelFactory(repository);
     }
+
+
+    public static NudgesFragmentViewModelFactory provideNudgesFragmentViewModelFactory(Context context) {
+        NudgeRepository repository = provideRepository(context.getApplicationContext());
+        return new NudgesFragmentViewModelFactory(repository);
+    }
+
 
 }

@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.nudge.nudge.Data.Database.NudgeClass;
 
 import org.json.JSONArray;
 

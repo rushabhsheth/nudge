@@ -67,6 +67,8 @@ public class FriendsFragment
     @BindView(R.id.swipeView)
     SwipePlaceHolderView mSwipeView;
 
+    private SwipeDecor mSwipeDecor;
+
     @BindView(R.id.fragment_friendstab_actionbuttons)
     FrameLayout mActionButtonFrame;
 
@@ -109,27 +111,34 @@ public class FriendsFragment
         initActionButtons();
 
         mSwipeView.addItemRemoveListener(this);
+        setupSwipeView(rootView);
+
+        showLoading();
+        return rootView;
+    }
+
+    private void setupSwipeView(View rootView) {
 
         rootView.post(new Runnable() {
             @Override
             public void run() {
+                mSwipeDecor = new SwipeDecor()
+                        .setPaddingTop(20)
+                        .setViewGravity(Gravity.TOP)
+                        .setViewGravity(Gravity.CENTER_HORIZONTAL)
+                        .setRelativeScale(0.01f)
+                        .setSwipeInMsgLayoutId(R.layout.nudge_swipe_in_msg_view)
+                        .setSwipeOutMsgLayoutId(R.layout.nudge_swipe_out_msg_view)
+                        .setViewHeight(getView().getHeight() - mActionButtonFrame.getHeight())
+                        .setViewWidth(getView().getWidth());//height is ready
+
                 mSwipeView.getBuilder()
                         .setDisplayViewCount(2)
                         .setIsUndoEnabled(false)
-                        .setSwipeDecor(new SwipeDecor()
-                                .setPaddingTop(20)
-                                .setViewGravity(Gravity.TOP)
-                                .setViewGravity(Gravity.CENTER_HORIZONTAL)
-                                .setRelativeScale(0.01f)
-                                .setViewHeight(rootView.getHeight() - mActionButtonFrame.getHeight())
-                                .setViewWidth(rootView.getWidth())//height is ready
-                                .setSwipeInMsgLayoutId(R.layout.nudge_swipe_in_msg_view)
-                                .setSwipeOutMsgLayoutId(R.layout.nudge_swipe_out_msg_view));
+                        .setSwipeDecor(mSwipeDecor);
             }
         });
 
-        showLoading();
-        return rootView;
     }
 
     private void getFriendsData() {
@@ -138,7 +147,7 @@ public class FriendsFragment
             for (int i = 0; i < listFriendsData.size(); i++) {
                 mSwipeView.addView(new FriendsCard(this, mContext, listFriendsData.get(i)));
             }
-            if (listFriendsData != null && listFriendsData.size() != 0) showWeatherDataView();
+            if (listFriendsData != null && listFriendsData.size() != 0) showFriendsDataView();
             else showLoading();
         });
     }
@@ -147,7 +156,7 @@ public class FriendsFragment
      * This method will make the View for the weather data visible and hide the error message and
      * loading indicator.
      */
-    private void showWeatherDataView() {
+    private void showFriendsDataView() {
         // First, hide the loading indicator
         mLoadingIndicator.setVisibility(View.INVISIBLE);
         // Finally, make sure the weather data is visible
@@ -180,6 +189,7 @@ public class FriendsFragment
     @Override
     public void onResume() {
         super.onResume();
+
     }
 
     @Override

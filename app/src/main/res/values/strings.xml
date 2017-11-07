@@ -31,4 +31,9 @@
     <string name="cancel">CANCEL</string>
     <string name="send">SEND</string>
 
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="default_notification_channel_name" translatable="true">Nudge</string>
+
+    <!--Shared Preference-->
+    <string name="firebase_cloud_messaging_token">fcm_token</string>
 </resources>

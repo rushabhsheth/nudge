@@ -96,4 +96,8 @@ public class NudgeRepository {
         mFirebaseDataSource.changeStar(snapshot,contact);
     }
 
+    public LiveData<ArrayList<DocumentSnapshot>> getNudges(){
+        return mFirebaseDataSource.getNudges();
+    }
+
 }
