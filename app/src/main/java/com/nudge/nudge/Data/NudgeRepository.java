@@ -1,13 +1,11 @@
 package com.nudge.nudge.Data;
 
 import android.arch.lifecycle.LiveData;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.nudge.nudge.Data.Database.ContactsClass;
+import com.nudge.nudge.Data.Models.ContactsClass;
 import com.nudge.nudge.Data.Network.FirebaseDataSource;
 import com.nudge.nudge.Utilities.AppExecutors;
 
@@ -59,6 +57,10 @@ public class NudgeRepository {
         if (mInitialized) return;
         mInitialized = true;
 
+        // This method call triggers Sunshine to create its task to synchronize weather data
+        // periodically.
+        mFirebaseDataSource.scheduleRecurringContactsSync();
+
         mExecutors.diskIO().execute(() -> {
 
 //            Log.d(LOG_TAG, "starting initialize Data");
@@ -100,4 +102,7 @@ public class NudgeRepository {
         return mFirebaseDataSource.getNudges();
     }
 
+    public void syncPhoneContactsWithServer(){
+        mFirebaseDataSource.syncContacts();
+    }
 }

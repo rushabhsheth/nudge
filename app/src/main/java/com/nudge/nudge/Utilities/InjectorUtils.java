@@ -1,8 +1,11 @@
 package com.nudge.nudge.Utilities;
 
 import android.content.Context;
+import android.support.v4.app.LoaderManager;
 
+import com.nudge.nudge.Data.Database.ContactsReadPhone;
 import com.nudge.nudge.Data.Network.FirebaseDataSource;
+import com.nudge.nudge.Data.Network.FirestoreTasks;
 import com.nudge.nudge.Data.NudgeRepository;
 import com.nudge.nudge.FriendsTab.FriendsFragmentViewModelFactory;
 import com.nudge.nudge.MainActivityUtils.MainViewModelFactory;
@@ -17,8 +20,9 @@ public class InjectorUtils {
 
     public static NudgeRepository provideRepository(Context context) {
         AppExecutors executors = AppExecutors.getInstance();
+        FirestoreTasks tasks = FirestoreTasks.getInstance(context.getApplicationContext(),executors);
         FirebaseDataSource firebaseDataSource =
-                FirebaseDataSource.getInstance(context.getApplicationContext(), executors);
+                FirebaseDataSource.getInstance(context.getApplicationContext(), executors,tasks);
         return NudgeRepository.getInstance(firebaseDataSource, executors);
     }
 
@@ -27,7 +31,8 @@ public class InjectorUtils {
         // case the repository will not exist unless it is specifically created.
         provideRepository(context.getApplicationContext());
         AppExecutors executors = AppExecutors.getInstance();
-        return FirebaseDataSource.getInstance(context.getApplicationContext(), executors);
+        FirestoreTasks tasks = FirestoreTasks.getInstance(context.getApplicationContext(),executors);
+        return FirebaseDataSource.getInstance(context.getApplicationContext(), executors,tasks);
     }
 
     public static SharedPreferenceUtils provideSharedPreferences(Context context) {

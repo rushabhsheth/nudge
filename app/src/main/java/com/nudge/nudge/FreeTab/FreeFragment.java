@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.nudge.nudge.Data.Database.ContactsClass;
+import com.nudge.nudge.Data.Models.ContactsClass;
 import com.nudge.nudge.FriendsTab.FriendsUtils;
 import com.nudge.nudge.R;
 

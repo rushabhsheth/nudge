@@ -16,7 +16,7 @@ import com.mindorks.placeholderview.annotations.swipe.SwipeIn;
 import com.mindorks.placeholderview.annotations.swipe.SwipeInState;
 import com.mindorks.placeholderview.annotations.swipe.SwipeOut;
 import com.mindorks.placeholderview.annotations.swipe.SwipeOutState;
-import com.nudge.nudge.Data.Database.ContactsClass;
+import com.nudge.nudge.Data.Models.ContactsClass;
 import com.nudge.nudge.R;
 
 /**
@@ -103,7 +103,8 @@ public class FriendsCard {
 
     @SwipeOut
     private void onSwipedOut(){
-        //Log.d("EVENT", "onSwipedOut");
+//        Log.d("EVENT", "onSwipedOut");
+        mClickListener.onCardSwipedOut();
 //        mSwipeView.addView(this);
     }
 
@@ -115,6 +116,7 @@ public class FriendsCard {
     @SwipeIn
     private void onSwipeIn(){
 //        Log.d("EVENT", "onSwipedIn");
+        mClickListener.onCardSwipedIn();
     }
 
     @SwipeInState
@@ -131,6 +133,8 @@ public class FriendsCard {
     public interface onClickListener{
         void onStarClicked(ImageButton button, DocumentSnapshot snapshot, ContactsClass contact);
         void onFriendProfileClicked(ContactsClass contact);
+        void onCardSwipedIn();
+        void onCardSwipedOut();
     }
 
     public ContactsClass getProfile(){

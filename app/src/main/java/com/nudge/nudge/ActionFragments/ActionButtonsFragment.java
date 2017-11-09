@@ -70,19 +70,20 @@ public class ActionButtonsFragment extends Fragment{
         reject_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if(mSwipeView!=null) {
-                    mSwipeView.doSwipe(false);
-                }
+                mOnClickListener.onRejectBtnClick();
+//                if(mSwipeView!=null) {
+//                    mSwipeView.doSwipe(false);
+//                }
             }
         });
 
         nudge_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mSwipeView!=null) {
-                    mSwipeView.doSwipe(true);
-                }
+                mOnClickListener.onNudgeBtnClick();
+//                if(mSwipeView!=null) {
+//                    mSwipeView.doSwipe(true);
+//                }
             }
         });
 
@@ -120,12 +121,18 @@ public class ActionButtonsFragment extends Fragment{
         this.mOnClickListener = listener;
     }
 
-    public void setSwipePlaceHolderView(SwipePlaceHolderView swipePlaceHolderView){
-        this.mSwipeView = swipePlaceHolderView;
+//    public void setSwipePlaceHolderView(SwipePlaceHolderView swipePlaceHolderView){
+//        this.mSwipeView = swipePlaceHolderView;
+//    }
+
+    public void setNudgeBtnEnabled(boolean  enabled){
+        nudge_btn.setEnabled(enabled);
     }
 
     public interface onClickListener{
         void onMessageBtnClick();
+        void onNudgeBtnClick();
+        void onRejectBtnClick();
     }
 
 }

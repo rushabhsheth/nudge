@@ -20,5 +20,31 @@
         android:visibility="invisible"
         android:theme="@style/AppTheme.BlueAccent"/>
 
+    <!-- View for empty ratings -->
+    <LinearLayout
+        android:id="@+id/view_empty_nudges"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:src="@drawable/ic_monster"
+            android:layout_width="200dp"
+            android:layout_height="200dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            android:padding="20dp"
+            android:textAlignment="center"
+            android:lineSpacingMultiplier="1.2"
+            android:text="@string/message_no_nudges"
+            android:textColor="@color/colorText" />
+
+    </LinearLayout>
+
 
 </FrameLayout >

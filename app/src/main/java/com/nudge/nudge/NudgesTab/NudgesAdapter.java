@@ -11,7 +11,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.nudge.nudge.Data.Database.NudgeClass;
+import com.nudge.nudge.Data.Models.NudgeClass;
 import com.nudge.nudge.R;
 
 import java.util.List;
@@ -33,10 +33,6 @@ public class NudgesAdapter extends RecyclerView.Adapter<NudgesAdapter.ViewHolder
         private final TextView nudges_nameView;
         private final TextView nudges_timeView;
         private final ImageButton nudges_nudgeBtn;
-        private final ImageButton nudges_callBtn;
-        private final ImageButton nudges_rejectBtn;
-        private final ImageButton nudges_scheduleBtn;
-
 
         public ViewHolder(View v) {
             super(v);
@@ -45,9 +41,6 @@ public class NudgesAdapter extends RecyclerView.Adapter<NudgesAdapter.ViewHolder
             nudges_nameView = (TextView) v.findViewById(R.id.nudges_nameTextView);
             nudges_timeView = (TextView) v.findViewById(R.id.nudges_timeTextView);
             nudges_nudgeBtn = (ImageButton) v.findViewById(R.id.nudges_nudgeBtn);
-            nudges_callBtn = (ImageButton) v.findViewById(R.id.nudges_callBtn);
-            nudges_scheduleBtn = (ImageButton) v.findViewById(R.id.nudges_scheduleBtn);
-            nudges_rejectBtn = (ImageButton) v.findViewById(R.id.nudges_rejectBtn);
         }
 
         public de.hdodenhof.circleimageview.CircleImageView getNudges_contactImageView(){
@@ -67,15 +60,6 @@ public class NudgesAdapter extends RecyclerView.Adapter<NudgesAdapter.ViewHolder
 
         public ImageButton getNudges_nudgeBtn(){
             return nudges_nudgeBtn;
-        }
-        public ImageButton getNudges_callBtn(){
-            return nudges_callBtn;
-        }
-        public ImageButton getNudges_rejectBtn(){
-            return nudges_rejectBtn;
-        }
-        public ImageButton getNudges_scheduleBtn(){
-            return nudges_scheduleBtn;
         }
 
     }

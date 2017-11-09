@@ -6,13 +6,13 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.nudge.nudge.Data.Database.NudgeClass;
-import com.nudge.nudge.FriendsTab.FriendsCard;
+import com.nudge.nudge.Data.Models.NudgeClass;
 import com.nudge.nudge.R;
 import com.nudge.nudge.Utilities.InjectorUtils;
 
@@ -38,6 +38,8 @@ public class NudgesFragment extends Fragment {
     @BindView(R.id.pb_loading_indicator_nudges)
     ProgressBar mLoadingIndicator;
 
+    @BindView(R.id.view_empty_nudges)
+    ViewGroup mEmptyView;
 
     private android.support.v7.widget.LinearLayoutManager mLayoutManager;
     private List<NudgeClass> mNudgesData;
@@ -71,7 +73,8 @@ public class NudgesFragment extends Fragment {
         ButterKnife.bind(this, rootView);
 
         initRecyclerView();
-
+//        loadSampleData();
+        showEmpty();
         return rootView;
     }
 
@@ -89,12 +92,18 @@ public class NudgesFragment extends Fragment {
 
     }
 
-    private void getNudgesData() {
-
+    private void loadSampleData(){
         mNudgesData = NudgesUtils.loadNudges(this.getContext());
-        for(int i = 0; i<mNudgesData.size();i++){
-                mNudgesAdapter.addView(mNudgesData.get(i),i);
+        if(mNudgesData!=null) {
+            for (int i = 0; i < mNudgesData.size(); i++) {
+                mNudgesAdapter.addView(mNudgesData.get(i), i);
+            }
+        } else {
+            Log.d(TAG,"Nudges data is null");
         }
+    }
+
+    private void getNudgesData() {
 
         mViewModel.getNudgesData().observe(this, listNudgesData -> {
             for (int i = 0; i < listNudgesData.size(); i++) {
@@ -111,6 +120,7 @@ public class NudgesFragment extends Fragment {
      * loading indicator.
      */
     private void showNudgesDataView() {
+        mEmptyView.setVisibility(View.INVISIBLE);
         // First, hide the loading indicator
         mLoadingIndicator.setVisibility(View.INVISIBLE);
         // Finally, make sure the weather data is visible
@@ -122,10 +132,19 @@ public class NudgesFragment extends Fragment {
      * message.
      */
     private void showLoading() {
+        mEmptyView.setVisibility(View.INVISIBLE);
         // Then, hide the weather data
         mRecyclerView.setVisibility(View.INVISIBLE);
         // Finally, show the loading indicator
         mLoadingIndicator.setVisibility(View.VISIBLE);
+    }
+
+    private void showEmpty(){
+        mEmptyView.setVisibility(View.VISIBLE);
+        // Then, hide the weather data
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        // Finally, show the loading indicator
+        mLoadingIndicator.setVisibility(View.GONE);
     }
 
 

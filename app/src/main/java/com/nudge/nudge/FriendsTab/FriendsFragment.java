@@ -3,7 +3,6 @@ package com.nudge.nudge.FriendsTab;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -16,36 +15,18 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.Transaction;
 import com.mindorks.placeholderview.SwipeDecor;
 import com.mindorks.placeholderview.SwipePlaceHolderView;
 import com.mindorks.placeholderview.listeners.ItemRemovedListener;
 import com.nudge.nudge.ActionFragments.ActionButtonsFragment;
 import com.nudge.nudge.ActionFragments.MessageDialogFragment;
-import com.nudge.nudge.Data.Database.ContactsClass;
-import com.nudge.nudge.Data.Database.UserClass;
-import com.nudge.nudge.Data.Network.FirestoreAdapter;
+import com.nudge.nudge.Data.Models.ContactsClass;
 import com.nudge.nudge.FriendProfile.FriendActivity;
-import com.nudge.nudge.MainActivityUtils.MainActivityViewModel;
-import com.nudge.nudge.MainActivityUtils.MainViewModelFactory;
 import com.nudge.nudge.R;
 import com.nudge.nudge.Utilities.InjectorUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -147,6 +128,7 @@ public class FriendsFragment
             for (int i = 0; i < listFriendsData.size(); i++) {
                 mSwipeView.addView(new FriendsCard(this, mContext, listFriendsData.get(i)));
             }
+            setNudgeBtnEnabled();
             if (listFriendsData != null && listFriendsData.size() != 0) showFriendsDataView();
             else showLoading();
         });
@@ -195,13 +177,6 @@ public class FriendsFragment
     @Override
     public void onPause() {
         super.onPause();
-//        if (mFirestoreAdapter != null) {
-//            mFirestoreAdapter.stopListening();
-//        }
-//        if (mUserRegistration != null) {
-//            mUserRegistration.remove();
-//            mUserRegistration = null;
-//        }
     }
 
     @Override
@@ -233,7 +208,7 @@ public class FriendsFragment
         childFragTrans.commit();
 
         if (mActionButtons != null) {
-            mActionButtons.setSwipePlaceHolderView(mSwipeView);
+//            mActionButtons.setSwipePlaceHolderView(mSwipeView);
             mActionButtons.setButtonClickListener(this);
         }
 
@@ -260,6 +235,7 @@ public class FriendsFragment
     //Swipe view recycler
     @Override
     public void onItemRemoved(int count) {
+        setNudgeBtnEnabled();
         if (count == 3) {
             loadNextDataFromFirestore(count);
         }
@@ -302,5 +278,40 @@ public class FriendsFragment
 
     }
 
+
+    public void onNudgeBtnClick() {
+
+        /*TODO: Send Nudge data to firestore*/
+        List<Object> friendCards = mSwipeView.getAllResolvers();
+        if (friendCards.size() != 0) {
+            FriendsCard card = (FriendsCard) friendCards.get(0);
+
+            //Remove the card while showing nudge
+            mSwipeView.doSwipe(true);
+        }
+
+    }
+
+    public void onRejectBtnClick() {
+
+        if (mSwipeView != null) {
+            mSwipeView.doSwipe(false);
+        }
+        /*TODO: Send Reject Data to firestore*/
+
+    }
+
+    public void onCardSwipedIn(){}
+
+    public void onCardSwipedOut(){}
+
+    private void setNudgeBtnEnabled(){
+        List<Object> friendCards = mSwipeView.getAllResolvers();
+        if (friendCards.size() != 0) {
+            FriendsCard card = (FriendsCard) friendCards.get(0);
+            ContactsClass contact  = card.getProfile();
+//            mActionButtons.setNudgeBtnEnabled(contact.getOnNudge());
+        }
+    }
 
 }

@@ -92,7 +92,7 @@
 
         <!-- This is the Service declaration used in conjunction with FirebaseJobDispatcher -->
         <service
-            android:name=".Data.Network.FirebaseMessageJobSerivce"
+            android:name=".Data.Network.NudgeMessageJobSerivce"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>

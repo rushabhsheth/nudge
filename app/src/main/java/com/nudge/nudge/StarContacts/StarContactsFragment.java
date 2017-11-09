@@ -18,8 +18,6 @@ import android.widget.Toast;
 
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,10 +28,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
-import com.nudge.nudge.Data.Database.ContactsClass;
-import com.nudge.nudge.Data.Database.UserClass;
+import com.nudge.nudge.Data.Database.ContactsReadPhone;
+import com.nudge.nudge.Data.Database.ReferenceNames;
+import com.nudge.nudge.Data.Models.ContactsClass;
+import com.nudge.nudge.Data.Models.UserClass;
 import com.nudge.nudge.Data.Network.FirestoreAdapter;
 import com.nudge.nudge.R;
 
@@ -49,7 +48,7 @@ import butterknife.ButterKnife;
  */
 
 public class StarContactsFragment extends Fragment implements
-        StarContactsRead.ReturnLoadedDataListener,
+        ContactsReadPhone.ReturnLoadedDataListener,
         SearchActionClass.SearchQueryListener,
         StarContactsAdapter.onItemClickListener,
         EventListener<DocumentSnapshot>,
@@ -67,7 +66,6 @@ public class StarContactsFragment extends Fragment implements
     private List<ContactsClass> mStarContactsData_favourites;
     private StarContactsAdapter mStarContactsAdapter;
 
-    private StarContactsRead mStarContactsRead;
 
     private Toolbar searchtoolbar;
     private SearchActionClass mSearchAction;
@@ -131,7 +129,7 @@ public class StarContactsFragment extends Fragment implements
             // Get whatsapp friends
             mQuery = mUserRef
                     .collection("whatsapp_friends")
-                    .orderBy(contactsClass.CONTACT_NAME, Query.Direction.ASCENDING);
+                    .orderBy(ReferenceNames.CONTACT_NAME, Query.Direction.ASCENDING);
 
             mFirestoreAdapter = new FirestoreAdapter(mQuery, this) {
 
@@ -218,36 +216,36 @@ public class StarContactsFragment extends Fragment implements
 
     //Interface method of StarContactsAdapter
     public void onItemClicked(StarContactsAdapter.VHItem item, ContactsClass starContact, int position) {
-        int starPressed = starContact.getStarred();
-        DocumentReference friendRef = null;
-
-        for (int i = 0; i < mFirestoreAdapter.getItemCount(); i++) {
-            DocumentSnapshot snapshot = mFirestoreAdapter.getSnapshot(i);
-            ContactsClass contact = snapshot.toObject(ContactsClass.class);
-            if (contact.getContactId() == starContact.getContactId()) {
-                friendRef = mUserRef.collection(starContact.WHATSAPP_FRIENDS).document(snapshot.getId());
-                break;
-            }
-
-        }
-
-        if (starPressed == 0) {
-            item.getStarButton().setImageResource(R.drawable.ic_star_blue);
-            starContact.setStarred(1);
-
-            mStarContactsAdapter.addFavouriteItem(starContact);
-
-        } else {
-            item.getStarButton().setImageResource(R.drawable.ic_star_hollow);
-            starContact.setStarred(0);
-
-            //This is for database operations
-            mStarContactsAdapter.removeFavouriteItem(starContact, position);
-        }
-
-        if(friendRef!=null) {
-            changeStar(friendRef, starContact);
-        }
+//        int starPressed = starContact.getStarred();
+//        DocumentReference friendRef = null;
+//
+//        for (int i = 0; i < mFirestoreAdapter.getItemCount(); i++) {
+//            DocumentSnapshot snapshot = mFirestoreAdapter.getSnapshot(i);
+//            ContactsClass contact = snapshot.toObject(ContactsClass.class);
+//            if (contact.getContactId() == starContact.getContactId()) {
+//                friendRef = mUserRef.collection(starContact.WHATSAPP_FRIENDS).document(snapshot.getId());
+//                break;
+//            }
+//
+//        }
+//
+//        if (starPressed == 0) {
+//            item.getStarButton().setImageResource(R.drawable.ic_star_blue);
+//            starContact.setStarred(1);
+//
+//            mStarContactsAdapter.addFavouriteItem(starContact);
+//
+//        } else {
+//            item.getStarButton().setImageResource(R.drawable.ic_star_hollow);
+//            starContact.setStarred(0);
+//
+//            //This is for database operations
+//            mStarContactsAdapter.removeFavouriteItem(starContact, position);
+//        }
+//
+//        if(friendRef!=null) {
+//            changeStar(friendRef, starContact);
+//        }
 
     }
 
@@ -296,69 +294,21 @@ public class StarContactsFragment extends Fragment implements
 
 
 /*
-        StarContactsRead function when data is loaded from contacts
+        ContactsReadPhone function when data is loaded from contacts
 */
     public void returnLoadedData(List<ContactsClass> contactList) {
         mWhatsappContacts = contactList;
         Log.d(TAG, "Size of whatsapp contacts is "+ mWhatsappContacts.size());
-        firestoreUploadFriends();
+//        firestoreUploadFriends();
 //        mStarContactsAdapter.replaceAll(contactList);
 //        mRVstarcontacts.scrollToPosition(0);
     }
 
     private void onUploadFriendsClicked() {
-        mStarContactsRead = new StarContactsRead(this, getContext(), getLoaderManager());
-        mStarContactsRead.loadContacts(0);
+//        mStarContactsRead = new ContactsReadPhone(this, getContext(), getLoaderManager());
+//        mStarContactsRead.loadContacts(0);
     }
 
-    private void firestoreUploadFriends(){
-        if(mWhatsappContacts.size()>mFirestoreAdapter.getItemCount()) {
-
-            int batch_size = 25;
-            int total_items = mWhatsappContacts.size();
-            int batches = (int) Math.ceil((double) mWhatsappContacts.size() / batch_size);
-
-            for (int i = 0; i < batches; i++) {
-
-                WriteBatch batch = mFirestore.batch();
-                Log.d(TAG, " beginning batch write for contacts");
-                UserClass user = getUser(mUser);
-                Log.d(TAG, "FirebaseAuth user id: " + mUser.getEmail() + " , " + String.valueOf(mUser.getUid()));
-//            mUserRef = mFirestore.collection("users").document(user.getUserId());
-
-                //Add user
-                batch.set(mUserRef, user);
-
-                for (int j = 0; j < batch_size; j++) {
-                    int counter = i * batch_size + j;
-
-                    if (counter < total_items) {
-                        ContactsClass contact = mWhatsappContacts.get(i * batch_size + j);
-                        batch.set(mUserRef.collection("whatsapp_friends").document(), contact);
-                    }
-                }
-                batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "Write batch succeeded.");
-                        } else {
-                            Log.w(TAG, "write batch failed.", task.getException());
-                        }
-                    }
-                });
-            }
-        }
-
-    }
-
-    private UserClass getUser(FirebaseUser user){
-        UserClass mUser = new UserClass();
-        mUser.setUserId(user.getUid());
-        mUser.setUserIdentifier(user.getEmail());
-        mUser.setUserName(user.getDisplayName());
-        return mUser;
-    }
 
     /**
      * Listener for the Restaurant document ({@link #mUserRef}).
@@ -382,81 +332,28 @@ public class StarContactsFragment extends Fragment implements
     @Override
     public void onDataChanged() {
 
-        for(int i = 0; i< mFirestoreAdapter.getItemCount(); i++){
-            DocumentSnapshot snapshot = mFirestoreAdapter.getSnapshot(i);
-            ContactsClass contact = snapshot.toObject(ContactsClass.class);
-            mStarContactsData_allcontacts.add(contact);
-
-            if(contact.getStarred()==1){
-                mStarContactsAdapter.addFavouriteItem(contact);
-            }
-
-            //Updates whatsapp number if firestore doesnt have it
-            if(contact.getContactNumber()==null){
-                DocumentReference friendRef = mUserRef.collection(contact.WHATSAPP_FRIENDS).document(snapshot.getId());
-                for(int j=0;j<mWhatsappContacts.size();j++){
-                    ContactsClass mWhatsappContact = mWhatsappContacts.get(j);
-                    if(mWhatsappContact.getContactId()==contact.getContactId()) {
-                        addNumber(friendRef,mWhatsappContact);
-                    }
-                }
-
-            }
-        }
+//        for(int i = 0; i< mFirestoreAdapter.getItemCount(); i++){
+//            DocumentSnapshot snapshot = mFirestoreAdapter.getSnapshot(i);
+//            ContactsClass contact = snapshot.toObject(ContactsClass.class);
+//            mStarContactsData_allcontacts.add(contact);
+//
+//            if(contact.getStarred()==1){
+//                mStarContactsAdapter.addFavouriteItem(contact);
+//            }
+//
+//            //Updates whatsapp number if firestore doesnt have it
+//            if(contact.getContactNumber()==null){
+//                DocumentReference friendRef = mUserRef.collection(contact.WHATSAPP_FRIENDS).document(snapshot.getId());
+//                for(int j=0;j<mWhatsappContacts.size();j++){
+//                    ContactsClass mWhatsappContact = mWhatsappContacts.get(j);
+//                    if(mWhatsappContact.getContactId()==contact.getContactId()) {
+//                        addNumber(friendRef,mWhatsappContact);
+//                    }
+//                }
+//
+//            }
+//        }
         Log.d(TAG, "Number of items fetched: " + String.valueOf(mFirestoreAdapter.getItemCount()));
-    }
-
-    private Task<Void> changeStar(final DocumentReference friendRef, final ContactsClass contact) {
-        // Create reference for new rating, for use inside the transaction
-
-        // In a transaction, add the new rating and update the aggregate totals
-        return mFirestore.runTransaction(new Transaction.Function<Void>() {
-            @Override
-            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
-
-                // Commit to Firestore
-                transaction.update(friendRef, contact.STARRED, contact.getStarred());
-
-                return null;
-            }
-        }).addOnSuccessListener(getActivity(), new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "Contact starred / unstarred");
-            }
-        }).addOnFailureListener(getActivity(), new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Contact star could not be updated", e);
-                    }
-        });
-    }
-
-
-    private Task<Void> addNumber(final DocumentReference friendRef, final ContactsClass contact) {
-        // Create reference for new rating, for use inside the transaction
-
-        // In a transaction, add the new rating and update the aggregate totals
-        return mFirestore.runTransaction(new Transaction.Function<Void>() {
-            @Override
-            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
-
-                // Commit to Firestore
-                transaction.update(friendRef, contact.CONTACT_NUMBER, contact.getContactNumber());
-
-                return null;
-            }
-        }).addOnSuccessListener(getActivity(), new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "Contact number added");
-            }
-        }).addOnFailureListener(getActivity(), new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w(TAG, "Contact number could not be updated", e);
-            }
-        });
     }
 
 }

@@ -6,10 +6,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.firebase.jobdispatcher.Constraint;
+import com.firebase.jobdispatcher.Driver;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.Trigger;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -20,15 +25,18 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.Transaction;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.nudge.nudge.Data.Database.ContactsClass;
-import com.nudge.nudge.Data.Database.UserClass;
-import com.nudge.nudge.FriendsTab.FriendsCard;
+import com.nudge.nudge.Data.Database.ContactsReadPhone;
+import com.nudge.nudge.Data.Database.ReferenceNames;
+import com.nudge.nudge.Data.Models.ContactsClass;
+import com.nudge.nudge.Data.Models.UserClass;
 import com.nudge.nudge.R;
 import com.nudge.nudge.Utilities.AppExecutors;
 
+import java.sql.Ref;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -37,7 +45,8 @@ import java.util.concurrent.TimeUnit;
 
 public class FirebaseDataSource
         implements
-        FirestoreAdapter.DataReceivedListener{
+        FirestoreAdapter.DataReceivedListener,
+        ContactsReadPhone.ReturnLoadedDataListener{
 
     private static final String LOG_TAG = FirebaseDataSource.class.getSimpleName();
 
@@ -46,7 +55,7 @@ public class FirebaseDataSource
     private static final int SYNC_INTERVAL_HOURS = 24;
     private static final int SYNC_INTERVAL_SECONDS = (int) TimeUnit.HOURS.toSeconds(SYNC_INTERVAL_HOURS);
     private static final int SYNC_FLEXTIME_SECONDS = SYNC_INTERVAL_SECONDS / 3;
-    private static final String FIREBASE_SYNC_TAG = "firebase-sync";
+    private static final String CONTACTS_SYNC_TAG = "contacts-sync";
 
     // For Singleton instantiation
     private static final Object LOCK = new Object();
@@ -56,6 +65,9 @@ public class FirebaseDataSource
     // LiveData storing the latest downloaded weather forecasts
     private final AppExecutors mExecutors;
 
+    // Firestore tasks class instance
+    private final FirestoreTasks mFirestoreTasks;
+
     //Firebase instance variables
     private final FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
@@ -64,6 +76,7 @@ public class FirebaseDataSource
     //Firestore instance variables
     private final FirebaseFirestore mFirestore;
     private Query mQuery;
+    private FirebaseUser mUser;
     private DocumentReference mUserRef;
     private ListenerRegistration mUserRegistration;
     private FirestoreAdapter mFirestoreAdapter;
@@ -71,12 +84,15 @@ public class FirebaseDataSource
     private final MutableLiveData<ArrayList<DocumentSnapshot>> mFriendsData;
     private final MutableLiveData<ArrayList<DocumentSnapshot>> mNudgesData;
 
+    private ContactsReadPhone mContactsReadPhone;
+    private List<ContactsClass> mWhatsappContacts;
 
     private int fetchLimit = 20;
 
-    private FirebaseDataSource(Context context, AppExecutors executors) {
+    private FirebaseDataSource(Context context, AppExecutors executors, FirestoreTasks tasks) {
         mContext = context;
         mExecutors = executors;
+        mFirestoreTasks = tasks;
 
         mFirebaseUser = new MutableLiveData<>();
         mFirebaseAuth = FirebaseAuth.getInstance();
@@ -89,16 +105,18 @@ public class FirebaseDataSource
         mFriendsData = new MutableLiveData<>();
         mNudgesData = new MutableLiveData<>();
         initFirebaseAdapter();
+
+        mWhatsappContacts = new ArrayList<>();
     }
 
     /**
      * Get the singleton for this class
      */
-    public static FirebaseDataSource getInstance(Context context, AppExecutors executors) {
+    public static FirebaseDataSource getInstance(Context context, AppExecutors executors, FirestoreTasks tasks) {
         Log.d(LOG_TAG, "Getting the network data source");
         if (sInstance == null) {
             synchronized (LOCK) {
-                sInstance = new FirebaseDataSource(context.getApplicationContext(), executors);
+                sInstance = new FirebaseDataSource(context.getApplicationContext(), executors, tasks);
                 Log.d(LOG_TAG, "Made new network data source");
             }
         }
@@ -113,9 +131,12 @@ public class FirebaseDataSource
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
                 mExecutors.networkIO().execute(() -> {
-                    mFirebaseUser.postValue(firebaseAuth.getCurrentUser());
-                    initUserReference(firebaseAuth.getCurrentUser());
-                    startFetchFriendsService();
+                    mUser = firebaseAuth.getCurrentUser();
+                    mFirebaseUser.postValue(mUser);
+                    if (mUser != null) {
+                        initUserReference(mUser);
+                        startFetchFriendsService();
+                    }
                 });
 
             }
@@ -123,12 +144,12 @@ public class FirebaseDataSource
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
-    private void initUserReference(FirebaseUser user){
+    private void initUserReference(FirebaseUser user) {
         Log.d(LOG_TAG, "Initializing User Reference ");
         if (user != null) {
-            mUserRef = mFirestore.collection("users").document(user.getUid());
+            mUserRef = mFirestore.collection(ReferenceNames.USERS).document(user.getUid());
 
-            mUserRegistration = mUserRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            mUserRegistration = mUserRef.addSnapshotListener(mExecutors.networkIO(), new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
 
@@ -137,21 +158,21 @@ public class FirebaseDataSource
                         return;
                     }
 
-                    if (snapshot.exists() && snapshot != null ) {
-                            UserClass user = snapshot.toObject(UserClass.class);
-                            Log.d(LOG_TAG, "Fetching data for: " + user.getUserName() + ", id: " + user.getUserIdentifier());
-                            checkFCMtoken(user);
+                    if (snapshot.exists() && snapshot != null) {
+                        UserClass user = snapshot.toObject(UserClass.class);
+                        Log.d(LOG_TAG, "Fetching data for: " + user.getUserName() + ", id: " + user.getUserIdentifier());
+                        checkFCMtoken(user);
 
-                        } else {
-                            Log.d(LOG_TAG, " User reference is null");
-                        }
-
+                    } else {
+                        Log.d(LOG_TAG, " User reference is null");
                     }
-                });
+
+                }
+            });
         }
     }
 
-    private void initFirebaseAdapter(){
+    private void initFirebaseAdapter() {
         Log.d(LOG_TAG, "Initializing Firebase Adapter ");
         mQuery = null;
         mFirestoreAdapter = new FirestoreAdapter(mQuery, this) {
@@ -163,15 +184,15 @@ public class FirebaseDataSource
 
     }
 
-    public LiveData<FirebaseUser> getFirebaseUser(){
+    public LiveData<FirebaseUser> getFirebaseUser() {
         return mFirebaseUser;
     }
 
-    public void startSignOut(){
+    public void startSignOut() {
         mFirebaseAuth.signOut();
     }
 
-    public LiveData<ArrayList<DocumentSnapshot>> getFriendsViaQuery(){
+    public LiveData<ArrayList<DocumentSnapshot>> getFriendsViaQuery() {
         return mFriendsData;
     }
 
@@ -196,22 +217,22 @@ public class FirebaseDataSource
 
                 if (mFirestoreAdapter != null) {
 
-                    if(mUserRef!=null) {
+                    if (mUserRef != null) {
                         //Fetch more data
                         if (mFirestoreAdapter.getItemCount() != 0) {
                             DocumentSnapshot snapshot = mFirestoreAdapter.getSnapshot(mFirestoreAdapter.getItemCount() - 1);
 
                             mQuery = mUserRef
-                                    .collection("whatsapp_friends")
-                                    .orderBy("timesContacted", Query.Direction.DESCENDING)
+                                    .collection(ReferenceNames.WHATSAPP_FRIENDS)
+                                    .orderBy(ReferenceNames.TIMES_CONTACTED, Query.Direction.DESCENDING)
                                     .limit(fetchLimit)
                                     .startAfter(snapshot);
 
                         } else {
 
                             mQuery = mUserRef
-                                    .collection("whatsapp_friends")
-                                    .orderBy("timesContacted", Query.Direction.DESCENDING)
+                                    .collection(ReferenceNames.WHATSAPP_FRIENDS)
+                                    .orderBy(ReferenceNames.TIMES_CONTACTED, Query.Direction.DESCENDING)
                                     .limit(fetchLimit);
 
                         }
@@ -238,93 +259,79 @@ public class FirebaseDataSource
         });
     }
 
-    public void changeStar(DocumentSnapshot snapshot, ContactsClass contact){
+    public void changeStar(DocumentSnapshot snapshot, ContactsClass contact) {
 
-        DocumentReference friendRef = mUserRef.collection(contact.WHATSAPP_FRIENDS).document(snapshot.getId());
-        changeStar(friendRef,contact);
-    }
-
-    private Task<Void> changeStar(final DocumentReference friendRef, final ContactsClass contact) {
-        // Create reference for new rating, for use inside the transaction
-
-        // In a transaction, add the new rating and update the aggregate totals
-        return mFirestore.runTransaction(new Transaction.Function<Void>() {
-            @Override
-            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
-
-                // Commit to Firestore
-                transaction.update(friendRef, contact.STARRED, contact.getStarred());
-
-                return null;
-            }
-        }).addOnSuccessListener(mExecutors.networkIO(), new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(LOG_TAG, "Contact starred / unstarred");
-            }
-        }).addOnFailureListener(mExecutors.networkIO(), new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w(LOG_TAG, "Contact star could not be updated", e);
-            }
-        });
-
+        DocumentReference friendRef = mUserRef.collection(ReferenceNames.WHATSAPP_FRIENDS).document(snapshot.getId());
+        mFirestoreTasks.changeStar(mFirestore, friendRef, contact);
     }
 
 
     /*Check if FCM token for user is set*/
-    public void checkFCMtoken(UserClass user){
+    public void checkFCMtoken(UserClass user) {
 
         String token_value = FirebaseInstanceId.getInstance().getToken();
         String token_key = mContext.getResources().getString(R.string.firebase_cloud_messaging_token);
 
-        if(user.getUserFCMToken()==null || user.getUserFCMToken()!= token_value){
+        if (user.getUserFCMToken() == null || user.getUserFCMToken() != token_value) {
             /* Update user FCM token */
-            sendRegistrationToServer(token_key,token_value);
+            sendRegistrationToServer(token_key, token_value);
         }
 
     }
 
-    public void sendRegistrationToServer(String token_key, String token_value){
-        if(mUserRef!=null) {
-            sendRegistrationTokenToServer(mUserRef,token_key, token_value);
-        }
-        else {
+    public void sendRegistrationToServer(String token_key, String token_value) {
+        if (mUserRef != null) {
+            mFirestoreTasks.sendRegistrationTokenToServer(mFirestore, mUserRef, token_key, token_value);
+        } else {
             Log.d(LOG_TAG, "Could not set FCM token, user reference is null");
         }
     }
 
-    private Task<Void> sendRegistrationTokenToServer(DocumentReference reference, String token_key, String token_value){
 
-
-        // In a transaction, add the new rating and update the aggregate totals
-        return mFirestore.runTransaction(new Transaction.Function<Void>() {
-            @Override
-            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
-
-                // Commit to Firestore
-                transaction.update(reference,token_key , token_value);
-
-                return null;
-            }
-        }).addOnSuccessListener(mExecutors.networkIO(), new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(LOG_TAG, "FCM token updated");
-            }
-        }).addOnFailureListener(mExecutors.networkIO(), new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w(LOG_TAG, "Failed to update FCM Token for user", e);
-            }
-        });
-
-    }
-
-    public LiveData<ArrayList<DocumentSnapshot>> getNudges(){
+    public LiveData<ArrayList<DocumentSnapshot>> getNudges() {
         return mNudgesData;
     }
 
+
+    /**
+     * Schedules a repeating job service which fetches the weather.
+     */
+    public void scheduleRecurringContactsSync() {
+        Driver driver = new GooglePlayDriver(mContext);
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(driver);
+
+        // Create the Job to periodically sync Sunshine
+        Job syncContactsJob = dispatcher.newJobBuilder()
+                /* The Service that will be used to sync contacts's data */
+                .setService(FirebaseContanctsSyncJobService.class)
+                .setTag(CONTACTS_SYNC_TAG)
+                .setConstraints(Constraint.ON_ANY_NETWORK)
+                .setLifetime(Lifetime.FOREVER)
+                .setRecurring(true)
+                .setTrigger(Trigger.executionWindow(
+                        SYNC_INTERVAL_SECONDS,
+                        SYNC_INTERVAL_SECONDS + SYNC_FLEXTIME_SECONDS))
+                .setReplaceCurrent(true)
+                .build();
+
+        // Schedule the Job with the dispatcher
+        dispatcher.schedule(syncContactsJob);
+        Log.d(LOG_TAG, "Contacts sync job scheduled");
+    }
+
+    public void syncContacts() {
+        mContactsReadPhone = ContactsReadPhone.getInstance(mContext, mExecutors);
+        mContactsReadPhone.loadContacts(0, this); //Whatsapp contacts
+    }
+
+    /*
+        ContactsReadPhone function when data is loaded from contacts
+*/
+    public void returnLoadedData(List<ContactsClass> contactList) {
+        mWhatsappContacts = contactList;
+        Log.d(LOG_TAG, "Size of whatsapp contacts is " + mWhatsappContacts.size());
+        mFirestoreTasks.syncContacts(mFirestore,mUserRef, mUser, mWhatsappContacts);
+    }
 
 
 

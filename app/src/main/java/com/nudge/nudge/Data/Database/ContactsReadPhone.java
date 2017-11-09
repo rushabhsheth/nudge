@@ -1,4 +1,4 @@
-package com.nudge.nudge.StarContacts;
+package com.nudge.nudge.Data.Database;
 
 
 import android.content.ContentResolver;
@@ -7,13 +7,13 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
 
 
-import com.nudge.nudge.Data.Database.ContactsClass;
+import com.nudge.nudge.Data.Models.ContactsClass;
+import com.nudge.nudge.Utilities.AppExecutors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,17 +22,43 @@ import java.util.List;
  * Created by rushabh on 07/10/17.
  */
 
-public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
+public class ContactsReadPhone implements
+        Loader.OnLoadCompleteListener<Cursor> {
 
-    private static final String TAG = "StarContactsRead";
+    private static final String TAG = ContactsReadPhone.class.getSimpleName();
 
-    private Context mContext;
+    // For Singleton instantiation
+    private static final Object LOCK = new Object();
+    private static ContactsReadPhone sInstance;
+    private final Context mContext;
+
+    // LiveData storing the latest downloaded weather forecasts
+    private final AppExecutors mExecutors;
+
+
+    private ContactsReadPhone(Context context, AppExecutors executors) {
+        mContext = context;
+        mExecutors = executors;
+    }
+
+    /**
+     * Get the singleton for this class
+     */
+    public static ContactsReadPhone getInstance(Context context, AppExecutors executors) {
+//        Log.d(LOG_TAG, "Getting the network data source");
+        if (sInstance == null) {
+            synchronized (LOCK) {
+                sInstance = new ContactsReadPhone(context.getApplicationContext(), executors);
+//                Log.d(LOG_TAG, "Made new network data source");
+            }
+        }
+        return sInstance;
+    }
 
     List<ContactsClass> contactList;
-    LoaderManager mLoaderManager;
     ReturnLoadedDataListener mCallback;
-    StarContactsFragment mFragement;
     List<ContactsClass> mWhatsappContacts;
+    CursorLoader mCursorLoader;
 
     private static final Uri CONTENT_URI = ContactsContract.Contacts.CONTENT_URI;
 
@@ -55,28 +81,15 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
     };
 
 
-    StarContactsRead(StarContactsFragment fragment, Context context, LoaderManager loaderManager){
-        this.mContext = context;
-        this.mLoaderManager = loaderManager;
-        this.mFragement = fragment;
-
-        try {
-            mCallback = (ReturnLoadedDataListener) fragment;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(mContext.toString()
-                    + " must implement OnHeadlineSelectedListener");
-        }
-
-
-    }
-
-    public void loadContacts(int id){
+    public void loadContacts(int id, ReturnLoadedDataListener listener) {
+        mCallback = listener;
         contactList = new ArrayList<>();
         mWhatsappContacts = new ArrayList<>();
-        mLoaderManager.initLoader(id, null, this);
+        mCursorLoader = initLoader(id);
+        mCursorLoader.registerListener(id, this);
+        mCursorLoader.startLoading();
 
     }
-
 
 
     //Read whatsapp contacts
@@ -100,11 +113,10 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
             ContactsContract.RawContacts.ACCOUNT_TYPE,
     };
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+    public CursorLoader initLoader(int id) {
         CursorLoader loader;
         /*Id =0 is for loading whatsapp contact ids*/
-        if (id ==0){
+        if (id == 0) {
 
             //Whatsapp contacts
             loader = new CursorLoader(
@@ -119,20 +131,20 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
         /* Return all contacts from phone*/
         else {
             //All contacts
-        loader = new CursorLoader(
-                mContext,               //Context
-                CONTENT_URI,            //URI
-                PROJECTION_COLUMNS,                   //Projection
-                null,                   //Selection
-                null,                   //Selection Arguments
-                DISPLAY_NAME+" ASC");                  //Sort Order
+            loader = new CursorLoader(
+                    mContext,               //Context
+                    CONTENT_URI,            //URI
+                    PROJECTION_COLUMNS,                   //Projection
+                    null,                   //Selection
+                    null,                   //Selection Arguments
+                    DISPLAY_NAME + " ASC");                  //Sort Order
 
         }
-        return  loader;
+        return loader;
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+    public void onLoadComplete(Loader<Cursor> loader, Cursor cursor) {
         int id = loader.getId();
         switch (id) {
             case 0:
@@ -162,14 +174,11 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
                 break;
 
         }
+        onDestroy();
     }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
 
-    }
-
-    private ContactsClass getWhatsappContact(Cursor c){
+    private ContactsClass getWhatsappContact(Cursor c) {
         ContactsClass whatsapp_contact = new ContactsClass();
         try {
             whatsapp_contact.setContactName(c.getString(c.getColumnIndexOrThrow(ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY)));
@@ -188,39 +197,44 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
 
             String whatsappContactId = c.getString(c.getColumnIndex(ContactsContract.RawContacts.CONTACT_ID));
             final String[] selectionArgs = {
-                   whatsappContactId
+                    whatsappContactId
             };
 
             ContentResolver cr = mContext.getContentResolver();
-            Cursor cursor = cr.query(
-                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                    PROJECTION,
-                    selection,
-                    selectionArgs,
-                    null);
 
-            String normalized_number = null;
-            String number = null;
-            while (cursor.moveToNext()) {
+            mExecutors.diskIO().execute(() -> {
+
+                Cursor cursor = cr.query(
+                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                        PROJECTION,
+                        selection,
+                        selectionArgs,
+                        null);
+
+                String normalized_number = null;
+                String number = null;
+                while (cursor.moveToNext()) {
 //                normalized_number = cursor.getString(cursor.getColumnIndexOrThrow((ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER)));
-                number = cursor.getString(cursor.getColumnIndexOrThrow((ContactsContract.CommonDataKinds.Phone.NUMBER)));
-                whatsapp_contact.setContactNumber(number);
+                    number = cursor.getString(cursor.getColumnIndexOrThrow((ContactsContract.CommonDataKinds.Phone.NUMBER)));
+                    whatsapp_contact.setContactNumber(number);
 
-            }
+                }
 //            String name = c.getString(c.getColumnIndexOrThrow(ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY));
 //            Log.d(TAG, " Whatsapp name: "+ name + " , Whatsapp Number: " + number + " , Normalized number: " + normalized_number);
-            cursor.close();
+                cursor.close();
+
+            });
 
 
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             Log.d(TAG, " No whatsapp id found from raw contacts");
         }
         return whatsapp_contact;
     }
 
 
-    private ContactsClass getSingleContact (Cursor c){
-        ContactsClass mContactsClass =  new ContactsClass();
+    private ContactsClass getSingleContact(Cursor c) {
+        ContactsClass mContactsClass = new ContactsClass();
         mContactsClass.setContactName(c.getString(c.getColumnIndexOrThrow(DISPLAY_NAME)));
         mContactsClass.setContactId(c.getLong(c.getColumnIndexOrThrow(_ID)));
         mContactsClass.setTimesContacted(c.getInt(c.getColumnIndexOrThrow(TIMES_CONTACTED)));
@@ -231,8 +245,18 @@ public class StarContactsRead implements LoaderManager.LoaderCallbacks<Cursor>{
         return mContactsClass;
     }
 
-    public interface ReturnLoadedDataListener{
+    public interface ReturnLoadedDataListener {
         void returnLoadedData(List<ContactsClass> contactList);
+    }
+
+    public void onDestroy() {
+
+        // Stop the cursor loader
+        if (mCursorLoader != null) {
+            mCursorLoader.unregisterListener(this);
+            mCursorLoader.cancelLoad();
+            mCursorLoader.stopLoading();
+        }
     }
 
 

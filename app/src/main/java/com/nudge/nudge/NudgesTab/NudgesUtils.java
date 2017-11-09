@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.nudge.nudge.Data.Database.NudgeClass;
+import com.nudge.nudge.Data.Models.NudgeClass;
 
 import org.json.JSONArray;
 
@@ -26,7 +26,7 @@ public class NudgesUtils {
         try{
             GsonBuilder builder = new GsonBuilder();
             Gson gson = builder.create();
-            JSONArray array = new JSONArray(loadJSONFromAsset(context, "nudges.json"));
+            JSONArray array = new JSONArray(loadJSONFromAsset(context, "nudges2.json"));
             List<NudgeClass> nudgeList = new ArrayList<>();
             for(int i=0;i<array.length();i++){
                 NudgeClass nudge = gson.fromJson(array.getString(i), NudgeClass.class);

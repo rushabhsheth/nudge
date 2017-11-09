@@ -19,21 +19,21 @@
         android:id="@+id/rejectBtn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginRight="5dp"
+        android:layout_marginRight="@dimen/actionbutton_margin"
         android:background="@drawable/ic_cancel" />
 
     <ImageButton
         android:id="@+id/messageBtn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginRight="5dp"
+        android:layout_marginRight="@dimen/actionbutton_margin"
         android:background="@drawable/ic_message" />
 
     <ImageButton
         android:id="@+id/nudgeBtn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginRight="5dp"
+        android:layout_marginRight="0dp"
         android:background="@drawable/ic_nudge" />
 
     <!--<ImageButton-->

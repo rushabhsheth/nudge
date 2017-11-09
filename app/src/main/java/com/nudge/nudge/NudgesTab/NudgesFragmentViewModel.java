@@ -4,7 +4,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.nudge.nudge.Data.Database.ContactsClass;
 import com.nudge.nudge.Data.NudgeRepository;
 
 import java.util.ArrayList;

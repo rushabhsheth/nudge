@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.nudge.nudge.Data.Database.ContactsClass;
+import com.nudge.nudge.Data.Models.ContactsClass;
 import com.nudge.nudge.R;
 
 import java.util.ArrayList;

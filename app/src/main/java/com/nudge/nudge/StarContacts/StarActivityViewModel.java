@@ -2,7 +2,7 @@ package com.nudge.nudge.StarContacts;
 
 import android.arch.lifecycle.ViewModel;
 
-import com.nudge.nudge.Data.Database.ContactsClass;
+import com.nudge.nudge.Data.Models.ContactsClass;
 
 import java.util.ArrayList;
 import java.util.List;

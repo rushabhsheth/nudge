@@ -1,4 +1,4 @@
-package com.nudge.nudge.Data.Database;
+package com.nudge.nudge.Data.Models;
 
 import com.google.firebase.firestore.ServerTimestamp;
 
@@ -13,19 +13,7 @@ import java.util.List;
 
 public class ContactsClass {
 
-    private static final String TAG = "ContactsClass";
-
-    public static final String ACCOUNT_TYPE = "accountType";
-    public static final String CONTACT_ID = "contactId";
-    public static final String CONTACT_NAME = "contactName";
-    public static final String CONTACT_NUMBER = "contactNumber";
-    public static final String LAST_TIME_CONTACTED = "lastTimeContacted";
-    public static final String PROFILE_IMAGE_LIST = "profileImageList";
-    public static final String PROFILE_IMAGE_URI = "profileImageUri";
-    public static final String STARRED = "starred";
-    public static final String TIMES_CONTACTED = "timesContacted";
-    public static final String TIMESTAMP = "timestamp";
-    public static final String WHATSAPP_FRIENDS = "whatsapp_friends";
+    private static final String TAG = ContactsClass.class.getSimpleName();
 
     private String contact_name;
     private long contact_id;
@@ -33,6 +21,7 @@ public class ContactsClass {
     private int times_contacted;
     private long last_time_contacted;
     private int starred;
+    private boolean onNudge;
     private String profile_image_uri;
     private List<String> profile_image_list;
     private String account_type;
@@ -40,11 +29,11 @@ public class ContactsClass {
 
     public ContactsClass(){
 
-
         this.contact_id = 0;
         this.times_contacted = 0;
         this.last_time_contacted = 0;
         this.starred = 0;
+        this.onNudge = false;
         this.profile_image_uri = null;
         this.profile_image_list = new ArrayList<>();
         this.contact_name = null;
@@ -136,6 +125,14 @@ public class ContactsClass {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public boolean getOnNudge() {
+        return onNudge;
+    }
+
+    public void setOnNudge(boolean onNudge) {
+        this.onNudge = onNudge;
     }
 
     @Override

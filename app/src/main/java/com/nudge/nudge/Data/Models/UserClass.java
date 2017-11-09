@@ -1,4 +1,4 @@
-package com.nudge.nudge.Data.Database;
+package com.nudge.nudge.Data.Models;
 
 import com.google.firebase.firestore.ServerTimestamp;
 
@@ -13,7 +13,7 @@ public class UserClass {
     private String userName;
     private String userId;
     private String userIdentifier;
-    private String userFCMToken;
+    private String FCMToken;
     private @ServerTimestamp Date timestamp;
 
     public UserClass() {
@@ -44,12 +44,12 @@ public class UserClass {
         this.userIdentifier = userIdentifier;
     }
 
-    public String getUserFCMToken() {
-        return userFCMToken;
+    public String getFCMToken() {
+        return FCMToken;
     }
 
-    public void setUserFCMToken(String userFCMToken) {
-        this.userFCMToken = userFCMToken;
+    public void setFCMToken(String FCMToken) {
+        this.FCMToken = FCMToken;
     }
 
     public Date getTimestamp() {

@@ -1,4 +1,4 @@
-package com.nudge.nudge.Data.Database;
+package com.nudge.nudge.Data.Models;
 
 import com.google.firebase.firestore.ServerTimestamp;
 import com.google.gson.annotations.Expose;
@@ -38,13 +38,13 @@ public class NudgeClass {
 
     @SerializedName("timestamp")
     @Expose
-    private @ServerTimestamp Date timestamp;
+    private @ServerTimestamp String timestamp;
 
     @SerializedName("status")
     @Expose
     private String status;
 
-    public NudgeClass(String senderName, String senderImageUrl, String receiverName, String receiverImageUrl, String senderId, String receiverId, Date timestamp, String status) {
+    public NudgeClass(String senderName, String senderImageUrl, String receiverName, String receiverImageUrl, String senderId, String receiverId, String timestamp, String status) {
         this.senderName = senderName;
         this.senderImageUrl = senderImageUrl;
         this.receiverName = receiverName;
@@ -104,11 +104,11 @@ public class NudgeClass {
         this.receiverId = receiverId;
     }
 
-    public Date getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 

@@ -2,19 +2,18 @@ package com.nudge.nudge.Data.Network;
 
 import android.util.Log;
 
-
-import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
+import com.nudge.nudge.Utilities.InjectorUtils;
+import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.RetryStrategy;
 
 /**
- * Created by rushabh on 03/11/17.
- * Long running task called by {@link NudgeFirebaseMessagingService} to download data
+ * Created by rushabh on 09/11/17.
  */
 
-public class FirebaseMessageJobSerivce extends JobService {
-    private static final String LOG_TAG = FirebaseMessageJobSerivce.class.getSimpleName();
+public class FirebaseContanctsSyncJobService extends JobService {
+    private static final String LOG_TAG = FirebaseContanctsSyncJobService.class.getSimpleName();
 
     /**
      * The entry point to your Job. Implementations should offload work to another thread of
@@ -28,8 +27,15 @@ public class FirebaseMessageJobSerivce extends JobService {
      */
     @Override
     public boolean onStartJob(final JobParameters jobParameters) {
-        Log.d(LOG_TAG, "Performing long running task in scheduled job");
-        return false;
+        Log.d(LOG_TAG, "Contacts Sync job service started");
+
+        FirebaseDataSource networkDataSource =
+                InjectorUtils.provideFirebaseDataSource(this.getApplicationContext());
+        networkDataSource.syncContacts();
+
+        jobFinished(jobParameters, false);
+
+        return true;
     }
 
     /**
@@ -42,7 +48,6 @@ public class FirebaseMessageJobSerivce extends JobService {
      */
     @Override
     public boolean onStopJob(JobParameters jobParameters) {
-        return false;
+        return true;
     }
 }
-

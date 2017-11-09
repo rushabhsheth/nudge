@@ -46,7 +46,9 @@ public class MainActivityViewModel extends ViewModel {
     }
 
     public void setContactsPermissionGranted(boolean bool){
-        //TODO if true, start contacts sync with server
+        if(bool) {
+            mRepository.syncPhoneContactsWithServer();
+        }
     }
 
 }

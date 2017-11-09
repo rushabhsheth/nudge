@@ -35,5 +35,9 @@
     <string name="default_notification_channel_name" translatable="true">Nudge</string>
 
     <!--Shared Preference-->
-    <string name="firebase_cloud_messaging_token">fcm_token</string>
+    <string name="firebase_cloud_messaging_token">FCMtoken</string>
+
+    <string name="message_no_nudges">Send your first nudge to see it here.\nClick on the nudge button on the home tab</string>
+
+
 </resources>

@@ -8,6 +8,7 @@ import com.nudge.nudge.Utilities.InjectorUtils;
 
 /**
  * Created by rushabh on 02/11/17.
+ * Immidiate sync called by {@link FirebaseDataSource} to fetch friends from firestore via query
  */
 
 public class FirebaseSyncIntentService extends IntentService {

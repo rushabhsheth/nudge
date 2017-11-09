@@ -69,7 +69,7 @@ public class NudgeFirebaseMessagingService extends FirebaseMessagingService {
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
         //TODO: uncomment and implement method to get data from server
         Job myJob = dispatcher.newJobBuilder()
-                .setService(FirebaseMessageJobSerivce.class)
+                .setService(NudgeMessageJobSerivce.class)
                 .setTag(NUDGE_MESSAGE_SYNC_TAG)
                   /*
                  * Network constraints on which this Job should run. We choose to run on any
