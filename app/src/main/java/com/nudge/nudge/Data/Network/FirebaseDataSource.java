@@ -14,6 +14,7 @@ import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
+import com.firebase.ui.auth.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -71,15 +72,16 @@ public class FirebaseDataSource
     //Firebase instance variables
     private final FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private final MutableLiveData<FirebaseUser> mFirebaseUser;
+    private final MutableLiveData<FirebaseUser> mFirebaseUserLiveData;
 
     //Firestore instance variables
     private final FirebaseFirestore mFirestore;
     private Query mQuery;
-    private FirebaseUser mUser;
+    private FirebaseUser mFirebaseUser;
     private DocumentReference mUserRef;
     private ListenerRegistration mUserRegistration;
     private FirestoreAdapter mFirestoreAdapter;
+    private UserClass mUser;
 
     private final MutableLiveData<ArrayList<DocumentSnapshot>> mFriendsData;
     private final MutableLiveData<ArrayList<DocumentSnapshot>> mNudgesData;
@@ -94,7 +96,7 @@ public class FirebaseDataSource
         mExecutors = executors;
         mFirestoreTasks = tasks;
 
-        mFirebaseUser = new MutableLiveData<>();
+        mFirebaseUserLiveData = new MutableLiveData<>();
         mFirebaseAuth = FirebaseAuth.getInstance();
         initAuthListener();
 
@@ -131,11 +133,10 @@ public class FirebaseDataSource
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
                 mExecutors.networkIO().execute(() -> {
-                    mUser = firebaseAuth.getCurrentUser();
-                    mFirebaseUser.postValue(mUser);
-                    if (mUser != null) {
-                        initUserReference(mUser);
-                        startFetchFriendsService();
+                    mFirebaseUser = firebaseAuth.getCurrentUser();
+                    mFirebaseUserLiveData.postValue(mFirebaseUser);
+                    if (mFirebaseUser != null) {
+                        initUserReference(mFirebaseUser);
                     }
                 });
 
@@ -144,10 +145,10 @@ public class FirebaseDataSource
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
-    private void initUserReference(FirebaseUser user) {
+    private void initUserReference(FirebaseUser firebaseUser) {
         Log.d(LOG_TAG, "Initializing User Reference ");
-        if (user != null) {
-            mUserRef = mFirestore.collection(ReferenceNames.USERS).document(user.getUid());
+        if (firebaseUser != null) {
+            mUserRef = mFirestore.collection(ReferenceNames.USERS).document(firebaseUser.getUid());
 
             mUserRegistration = mUserRef.addSnapshotListener(mExecutors.networkIO(), new EventListener<DocumentSnapshot>() {
                 @Override
@@ -159,12 +160,13 @@ public class FirebaseDataSource
                     }
 
                     if (snapshot.exists() && snapshot != null) {
-                        UserClass user = snapshot.toObject(UserClass.class);
-                        Log.d(LOG_TAG, "Fetching data for: " + user.getUserName() + ", id: " + user.getUserIdentifier());
-                        checkFCMtoken(user);
+                        mUser = snapshot.toObject(UserClass.class);
+                        Log.d(LOG_TAG, "Fetching data for: " + mUser.getUserName() + ", id: " + mUser.getUserId());
+                        checkFCMtoken(mUser);
 
                     } else {
-                        Log.d(LOG_TAG, " User reference is null");
+                        Log.d(LOG_TAG, "User reference is null, creating new ");
+                        mFirestoreTasks.createUserReference(mFirestore,mUserRef,firebaseUser);
                     }
 
                 }
@@ -185,7 +187,7 @@ public class FirebaseDataSource
     }
 
     public LiveData<FirebaseUser> getFirebaseUser() {
-        return mFirebaseUser;
+        return mFirebaseUserLiveData;
     }
 
     public void startSignOut() {
@@ -272,7 +274,7 @@ public class FirebaseDataSource
         String token_value = FirebaseInstanceId.getInstance().getToken();
         String token_key = mContext.getResources().getString(R.string.firebase_cloud_messaging_token);
 
-        if (user.getUserFCMToken() == null || user.getUserFCMToken() != token_value) {
+        if (user.getFcmtoken() == null || user.getFcmtoken() != token_value) {
             /* Update user FCM token */
             sendRegistrationToServer(token_key, token_value);
         }
@@ -329,8 +331,11 @@ public class FirebaseDataSource
 */
     public void returnLoadedData(List<ContactsClass> contactList) {
         mWhatsappContacts = contactList;
-        Log.d(LOG_TAG, "Size of whatsapp contacts is " + mWhatsappContacts.size());
-        mFirestoreTasks.syncContacts(mFirestore,mUserRef, mUser, mWhatsappContacts);
+        Log.d(LOG_TAG, "Size of whatsapp contacts is " + mWhatsappContacts.size() + " mUser number of whatsapp friends: " + mUser.getNumberWhatsappFriends());
+
+        if(mUser.getNumberWhatsappFriends() == 0) {
+           mFirestoreTasks.syncContacts(mFirestore, mUserRef, mWhatsappContacts);
+        }
     }
 
 

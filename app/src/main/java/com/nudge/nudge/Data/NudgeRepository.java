@@ -59,7 +59,7 @@ public class NudgeRepository {
 
         // This method call triggers Sunshine to create its task to synchronize weather data
         // periodically.
-        mFirebaseDataSource.scheduleRecurringContactsSync();
+//        mFirebaseDataSource.scheduleRecurringContactsSync();
 
         mExecutors.diskIO().execute(() -> {
 

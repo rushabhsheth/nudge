@@ -148,29 +148,33 @@ public class ContactsReadPhone implements
         int id = loader.getId();
         switch (id) {
             case 0:
-                if (cursor != null && cursor.moveToFirst()) {
-                    while (!cursor.isAfterLast()) {
+                mExecutors.diskIO().execute(() -> {
+                    if (cursor != null && cursor.moveToFirst()) {
+                        while (!cursor.isAfterLast()) {
 
-                        ContactsClass singleWhatsappContact = getWhatsappContact(cursor);
-                        mWhatsappContacts.add(singleWhatsappContact);
-                        cursor.moveToNext();
+                            ContactsClass singleWhatsappContact = getWhatsappContact(cursor);
+                            mWhatsappContacts.add(singleWhatsappContact);
+                            cursor.moveToNext();
+                        }
+                        cursor.close();
+                        mCallback.returnLoadedData(mWhatsappContacts);
                     }
-                    cursor.close();
-                    mCallback.returnLoadedData(mWhatsappContacts);
-                }
+                });
                 break;
 
             default:
-                if (cursor != null && cursor.moveToFirst()) {
-                    while (!cursor.isAfterLast()) {
+                mExecutors.diskIO().execute(() -> {
+                    if (cursor != null && cursor.moveToFirst()) {
+                        while (!cursor.isAfterLast()) {
 
-                        ContactsClass singleContact = getSingleContact(cursor);
-                        contactList.add(singleContact);
-                        cursor.moveToNext();
+                            ContactsClass singleContact = getSingleContact(cursor);
+                            contactList.add(singleContact);
+                            cursor.moveToNext();
+                        }
+                        cursor.close();
+                        mCallback.returnLoadedData(contactList);
                     }
-                    cursor.close();
-                    mCallback.returnLoadedData(contactList);
-                }
+                });
                 break;
 
         }
@@ -202,28 +206,24 @@ public class ContactsReadPhone implements
 
             ContentResolver cr = mContext.getContentResolver();
 
-            mExecutors.diskIO().execute(() -> {
+            Cursor cursor = cr.query(
+                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    PROJECTION,
+                    selection,
+                    selectionArgs,
+                    null);
 
-                Cursor cursor = cr.query(
-                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                        PROJECTION,
-                        selection,
-                        selectionArgs,
-                        null);
-
-                String normalized_number = null;
-                String number = null;
-                while (cursor.moveToNext()) {
+            String normalized_number = null;
+            String number = null;
+            while (cursor.moveToNext()) {
 //                normalized_number = cursor.getString(cursor.getColumnIndexOrThrow((ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER)));
-                    number = cursor.getString(cursor.getColumnIndexOrThrow((ContactsContract.CommonDataKinds.Phone.NUMBER)));
-                    whatsapp_contact.setContactNumber(number);
+                number = cursor.getString(cursor.getColumnIndexOrThrow((ContactsContract.CommonDataKinds.Phone.NUMBER)));
+                whatsapp_contact.setContactNumber(number);
 
-                }
+            }
 //            String name = c.getString(c.getColumnIndexOrThrow(ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY));
 //            Log.d(TAG, " Whatsapp name: "+ name + " , Whatsapp Number: " + number + " , Normalized number: " + normalized_number);
-                cursor.close();
-
-            });
+            cursor.close();
 
 
         } catch (IllegalArgumentException e) {

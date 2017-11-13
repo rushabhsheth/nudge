@@ -20,6 +20,7 @@ import com.firebase.ui.auth.IdpResponse;
 import com.nudge.nudge.CameraFragment.CameraFragment;
 import com.nudge.nudge.FreeTab.FreeFragment;
 import com.nudge.nudge.FriendsTab.FriendsFragment;
+import com.nudge.nudge.Login.LoginActivity;
 import com.nudge.nudge.NudgesTab.NudgesFragment;
 import com.nudge.nudge.R;
 import com.nudge.nudge.UserProfile.UserProfileFragment;
@@ -35,9 +36,7 @@ public class MainActivity extends AppCompatActivity
                         implements UserProfileFragment.onSignOutListener{
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
-    private static final String KEY_ADAPTER_STATE = "com.nudge.nudge.KEY_ADAPTER_STATE";
 
-    private static final int RC_SIGN_IN = 9001;
     private static final int RC_PROFILE = 123;
 
     @BindView(com.nudge.nudge.R.id.tabs)
@@ -79,7 +78,7 @@ public class MainActivity extends AppCompatActivity
 
         createNotificationChannel();
         getNotificationClickIntent();
-        checkSignIn();
+        readContactsPersmission();
 
     }
 
@@ -115,18 +114,6 @@ public class MainActivity extends AppCompatActivity
         // [END handle_data_extras]
     }
 
-    private void checkSignIn(){
-
-        mViewModel.getFirebaseUser().observe(this, firebaseUser -> {
-            if (firebaseUser != null) {
-                // User is signed in
-                readContactsPersmission();
-                Log.d(LOG_TAG, "Sign in successful for " + firebaseUser.getDisplayName());
-            } else {
-                startSignIn();
-            }
-        });
-    }
 
     @Override
     public void onStart() {
@@ -225,54 +212,14 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private void startSignIn() {
-
-        AuthUI.IdpConfig facebookIdp = new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER)
-                .setPermissions(Arrays.asList("public_profile", "user_friends", "email"))
-                .build();
-
-        List<AuthUI.IdpConfig> providers = Arrays.asList(
-                facebookIdp,
-                new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()
-        );
-
-        // Sign in with FirebaseUI
-        Intent intent = AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setIsSmartLockEnabled(!com.nudge.nudge.BuildConfig.DEBUG)
-                .setProviders(providers)
-                .build();
-
-        startActivityForResult(intent, RC_SIGN_IN);
-        mViewModel.setIsSigningIn(true);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RC_SIGN_IN) {
-            IdpResponse response = IdpResponse.fromResultIntent(data);
-
-            if (resultCode == RESULT_OK) {
-                // Sign-in succeeded, set up the UI
-                mNudgeViewPager.setCurrentItem(0);
-                Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show();
-                mViewModel.setIsSigningIn(false);
-            } else {
-                if (resultCode == RESULT_CANCELED) {
-                    // Sign in was canceled by the user, finish the activity
-                    Toast.makeText(this, "Sign in canceled", Toast.LENGTH_SHORT).show();
-                    mViewModel.setIsSigningIn(false);
-                    finish();
-                }
-            }
-        }
-
-    }
-
     public void onSignOutClicked(){
         mViewModel.startSignOut();
+        startLoginActivity();
+    }
+
+    private void startLoginActivity(){
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(intent);
     }
 
     @Override

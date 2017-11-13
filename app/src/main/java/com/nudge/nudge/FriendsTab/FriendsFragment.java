@@ -129,6 +129,7 @@ public class FriendsFragment
                 mSwipeView.addView(new FriendsCard(this, mContext, listFriendsData.get(i)));
             }
             setNudgeBtnEnabled();
+            setMessageBtnEnabled();
             if (listFriendsData != null && listFriendsData.size() != 0) showFriendsDataView();
             else showLoading();
         });
@@ -236,6 +237,7 @@ public class FriendsFragment
     @Override
     public void onItemRemoved(int count) {
         setNudgeBtnEnabled();
+        setMessageBtnEnabled();
         if (count == 3) {
             loadNextDataFromFirestore(count);
         }
@@ -263,19 +265,21 @@ public class FriendsFragment
 
         FriendsCard card = (FriendsCard) mSwipeView.getAllResolvers().get(0);
         String number = card.getProfile().getContactNumber();
-        Log.d(TAG, "Contact name: " + card.getProfile().getContactName() + " , Contact number: " + number) ;
 
-        String toNumber = number.replace("+", "").replace(" ", "");
-        String finalMessage = message + getString(R.string.nudge_dynamic_link);
+        if(number!=null) {
+            Log.d(TAG, "Contact name: " + card.getProfile().getContactName() + " , Contact number: " + number);
 
-        Intent sendIntent = new Intent("android.intent.action.MAIN");
-        sendIntent.putExtra("jid", toNumber + "@s.whatsapp.net");
-        sendIntent.putExtra(Intent.EXTRA_TEXT, finalMessage);
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.setPackage("com.whatsapp");
-        sendIntent.setType("text/plain");
-        startActivity(sendIntent);
+            String toNumber = number.replace("+", "").replace(" ", "");
+            String finalMessage = message + getString(R.string.nudge_dynamic_link);
 
+            Intent sendIntent = new Intent("android.intent.action.MAIN");
+            sendIntent.putExtra("jid", toNumber + "@s.whatsapp.net");
+            sendIntent.putExtra(Intent.EXTRA_TEXT, finalMessage);
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.setPackage("com.whatsapp");
+            sendIntent.setType("text/plain");
+            startActivity(sendIntent);
+        }
     }
 
 
@@ -303,14 +307,32 @@ public class FriendsFragment
 
     public void onCardSwipedIn(){}
 
-    public void onCardSwipedOut(){}
+    public void onCardSwipedOut(){
+        mSwipeView.deactivatePutBack();
+    }
 
-    private void setNudgeBtnEnabled(){
+    private void setNudgeBtnEnabled() {
         List<Object> friendCards = mSwipeView.getAllResolvers();
         if (friendCards.size() != 0) {
             FriendsCard card = (FriendsCard) friendCards.get(0);
-            ContactsClass contact  = card.getProfile();
-//            mActionButtons.setNudgeBtnEnabled(contact.getOnNudge());
+            ContactsClass contact = card.getProfile();
+            mActionButtons.setNudgeBtnEnabled(contact.getOnNudge());
+            if(!contact.getOnNudge()){
+                mSwipeView.activatePutBack();
+            }
+        }
+    }
+
+    private void setMessageBtnEnabled() {
+        List<Object> friendCards = mSwipeView.getAllResolvers();
+        if (friendCards.size() != 0) {
+            FriendsCard card = (FriendsCard) friendCards.get(0);
+            ContactsClass contact = card.getProfile();
+            if (contact.getContactNumber()==null) {
+                mActionButtons.setMessageBtnEnable3d(false);
+            } else {
+                mActionButtons.setMessageBtnEnable3d(true);
+            }
         }
     }
 

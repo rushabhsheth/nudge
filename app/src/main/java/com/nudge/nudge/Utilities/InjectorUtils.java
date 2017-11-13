@@ -8,6 +8,7 @@ import com.nudge.nudge.Data.Network.FirebaseDataSource;
 import com.nudge.nudge.Data.Network.FirestoreTasks;
 import com.nudge.nudge.Data.NudgeRepository;
 import com.nudge.nudge.FriendsTab.FriendsFragmentViewModelFactory;
+import com.nudge.nudge.Login.LoginViewModelFactory;
 import com.nudge.nudge.MainActivityUtils.MainViewModelFactory;
 import com.nudge.nudge.NudgesTab.NudgesFragmentViewModel;
 import com.nudge.nudge.NudgesTab.NudgesFragmentViewModelFactory;
@@ -43,6 +44,11 @@ public class InjectorUtils {
     public static MainViewModelFactory provideMainActivityViewModelFactory(Context context) {
         NudgeRepository repository = provideRepository(context.getApplicationContext());
         return new MainViewModelFactory(repository);
+    }
+
+    public static LoginViewModelFactory provideLoginActivityViewModelFactory(Context context) {
+        NudgeRepository repository = provideRepository(context.getApplicationContext());
+        return new LoginViewModelFactory(repository);
     }
 
     public static FriendsFragmentViewModelFactory provideFriendsFragmentViewModelFactory(Context context) {

@@ -10,10 +10,12 @@ import java.util.Date;
 
 public class UserClass {
 
-    private String userName;
     private String userId;
-    private String userIdentifier;
-    private String FCMToken;
+    private String userName;
+    private String userEmail;
+    private String userPhone;
+    private String fcmtoken;
+    private int numberWhatsappFriends;
     private @ServerTimestamp Date timestamp;
 
     public UserClass() {
@@ -36,20 +38,28 @@ public class UserClass {
         this.userId = userId;
     }
 
-    public String getUserIdentifier() {
-        return userIdentifier;
+    public String getUserEmail() {
+        return userEmail;
     }
 
-    public void setUserIdentifier(String userIdentifier) {
-        this.userIdentifier = userIdentifier;
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 
-    public String getFCMToken() {
-        return FCMToken;
+    public String getUserPhone() {
+        return userPhone;
     }
 
-    public void setFCMToken(String FCMToken) {
-        this.FCMToken = FCMToken;
+    public void setUserPhone(String userPhone) {
+        this.userPhone = userPhone;
+    }
+
+    public String getFcmtoken() {
+        return fcmtoken;
+    }
+
+    public void setFcmtoken(String fcmtoken) {
+        this.fcmtoken = fcmtoken;
     }
 
     public Date getTimestamp() {
@@ -59,4 +69,13 @@ public class UserClass {
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
+
+    public int getNumberWhatsappFriends() {
+        return numberWhatsappFriends;
+    }
+
+    public void setNumberWhatsappFriends(int numberWhatsappFriends) {
+        this.numberWhatsappFriends = numberWhatsappFriends;
+    }
+
 }

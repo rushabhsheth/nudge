@@ -9,11 +9,13 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
 import com.nudge.nudge.Data.Database.ReferenceNames;
@@ -115,66 +117,47 @@ public class FirestoreTasks {
 
     }
 
-    public void syncContacts(FirebaseFirestore mFirestore, DocumentReference mUserRef, FirebaseUser mUser, List<ContactsClass> mWhatsappContacts) {
+    public void syncContacts(FirebaseFirestore mFirestore, DocumentReference mUserRef, List<ContactsClass> mWhatsappContacts) {
 
-        mUserRef.addSnapshotListener(mExecutors.networkIO(), new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
+        int batch_size = 25;
+        int total_items = mWhatsappContacts.size();
+        int batches = (int) Math.ceil((double) mWhatsappContacts.size() / batch_size);
 
-                if (e != null) {
-                    Log.w(LOG_TAG, "user:onEvent", e);
-                    return;
+        for (int i = 0; i < batches; i++) {
+
+            WriteBatch batch = mFirestore.batch();
+            Log.d(LOG_TAG, " beginning batch write for contacts");
+
+            for (int j = 0; j < batch_size; j++) {
+                int counter = i * batch_size + j;
+
+                if (counter < total_items) {
+                    ContactsClass contact = mWhatsappContacts.get(i * batch_size + j);
+                    batch.set(mUserRef.collection(ReferenceNames.WHATSAPP_FRIENDS).document(), contact);
                 }
-
-                if (!snapshot.exists() || snapshot == null) {
-
-                    int batch_size = 25;
-                    int total_items = mWhatsappContacts.size();
-                    int batches = (int) Math.ceil((double) mWhatsappContacts.size() / batch_size);
-
-                    for (int i = 0; i < batches; i++) {
-
-                        WriteBatch batch = mFirestore.batch();
-                        Log.d(LOG_TAG, " beginning batch write for contacts");
-                        UserClass user = getUser(mUser);
-                        Log.d(LOG_TAG, "FirebaseAuth user id: " + mUser.getEmail() + " , " + String.valueOf(mUser.getUid()));
-                        //Add user
-                        batch.set(mUserRef, user);
-
-                        for (int j = 0; j < batch_size; j++) {
-                            int counter = i * batch_size + j;
-
-                            if (counter < total_items) {
-                                ContactsClass contact = mWhatsappContacts.get(i * batch_size + j);
-                                batch.set(mUserRef.collection(ReferenceNames.WHATSAPP_FRIENDS).document(), contact);
-                            }
-                        }
-                        batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    Log.d(LOG_TAG, "Write batch succeeded.");
-                                } else {
-                                    Log.w(LOG_TAG, "write batch failed.", task.getException());
-                                }
-                            }
-                        });
-                    }
-
-                } else {
-                    Log.d(LOG_TAG, " User already exists is null");
-                }
-
             }
-        });
+            batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Log.d(LOG_TAG, "Write batch succeeded.");
+                    } else {
+                        Log.w(LOG_TAG, "write batch failed.", task.getException());
+                    }
+                }
+            });
+        }
+        mUserRef.update(ReferenceNames.NUMBER_WHATSAPP_FRIENDS,mWhatsappContacts.size());
+
 
     }
 
     private UserClass getUser(FirebaseUser user){
         UserClass mUser = new UserClass();
         mUser.setUserId(user.getUid());
-        mUser.setUserIdentifier(user.getEmail());
         mUser.setUserName(user.getDisplayName());
+        mUser.setUserEmail(user.getEmail());
+        mUser.setUserPhone(user.getPhoneNumber());
         return mUser;
     }
 
@@ -204,5 +187,21 @@ public class FirestoreTasks {
             }
         });
     }
+
+    public void createUserReference(FirebaseFirestore mFirestore, DocumentReference mUserRef, FirebaseUser mUser) {
+        UserClass user = getUser(mUser);
+        mUserRef.set(user).addOnSuccessListener(mExecutors.networkIO(), new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(LOG_TAG, "User Reference created for: " + user.getUserId());
+                    }
+                }).addOnFailureListener(mExecutors.networkIO(), new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(LOG_TAG, "Failed to create user reference for: " + user.getUserId(), e);
+            }
+        });
+    }
+
 
 }

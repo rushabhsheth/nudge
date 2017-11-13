@@ -17,6 +17,7 @@ public class ReferenceNames {
     public static final String TIMES_CONTACTED = "timesContacted";
     public static final String TIMESTAMP = "timestamp";
     public static final String WHATSAPP_FRIENDS = "WhatsappFriends";
+    public static final String NUMBER_WHATSAPP_FRIENDS = "numberWhatsappFriends";
     public static final String USERS = "users";
 
 }

@@ -127,6 +127,22 @@ public class ActionButtonsFragment extends Fragment{
 
     public void setNudgeBtnEnabled(boolean  enabled){
         nudge_btn.setEnabled(enabled);
+        if(enabled){
+            nudge_btn.setBackground(getResources().getDrawable(R.drawable.ic_nudge));
+        }
+        else {
+            nudge_btn.setBackground(getResources().getDrawable(R.drawable.ic_nudge_disabled));
+        }
+    }
+
+    public void setMessageBtnEnable3d(boolean enabled){
+        message_btn.setEnabled(enabled);
+        if(enabled){
+            message_btn.setBackground(getResources().getDrawable(R.drawable.ic_message));
+        }
+        else {
+            message_btn.setBackground(getResources().getDrawable(R.drawable.ic_message_disabled));
+        }
     }
 
     public interface onClickListener{

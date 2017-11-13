@@ -317,7 +317,7 @@ public class StarContactsFragment extends Fragment implements
     public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
         if(snapshot.exists()){
             UserClass user = snapshot.toObject(UserClass.class);
-            Log.d(TAG, "Fetching data for: " + user.getUserName() + ", id: " + user.getUserIdentifier());
+            Log.d(TAG, "Fetching data for: " + user.getUserName() + ", id: " + user.getUserEmail());
         } else {
             Log.d(TAG, " User reference is null");
         }

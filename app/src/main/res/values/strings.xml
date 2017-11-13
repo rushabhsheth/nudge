@@ -5,6 +5,7 @@
     <string name="activity_calendar">Calendar</string>
     <string name="action_settings">Settings</string>
     <string name="activity_starcontacts">Favourites</string>
+    <string name="activity_login">Login to Nudge</string>
     <string name="activity_friendprofile">Archana\'s Profile</string>
     <string name="fragment_actionbuttons">fragment_actionbuttons</string>
 
@@ -35,7 +36,7 @@
     <string name="default_notification_channel_name" translatable="true">Nudge</string>
 
     <!--Shared Preference-->
-    <string name="firebase_cloud_messaging_token">FCMtoken</string>
+    <string name="firebase_cloud_messaging_token">fcmtoken</string>
 
     <string name="message_no_nudges">Send your first nudge to see it here.\nClick on the nudge button on the home tab</string>
 
