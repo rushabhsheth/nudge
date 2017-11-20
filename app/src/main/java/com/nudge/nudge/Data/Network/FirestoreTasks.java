@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.firebase.ui.auth.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -20,6 +21,7 @@ import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
 import com.nudge.nudge.Data.Database.ReferenceNames;
 import com.nudge.nudge.Data.Models.ContactsClass;
+import com.nudge.nudge.Data.Models.NudgeClass;
 import com.nudge.nudge.Data.Models.UserClass;
 import com.nudge.nudge.Utilities.AppExecutors;
 
@@ -149,7 +151,6 @@ public class FirestoreTasks {
         }
         mUserRef.update(ReferenceNames.NUMBER_WHATSAPP_FRIENDS,mWhatsappContacts.size());
 
-
     }
 
     private UserClass getUser(FirebaseUser user){
@@ -163,8 +164,6 @@ public class FirestoreTasks {
 
 
     private Task<Void> addNumber(FirebaseFirestore mFirestore, final DocumentReference friendRef, final ContactsClass contact) {
-        // Create reference for new rating, for use inside the transaction
-
         // In a transaction, add the new rating and update the aggregate totals
         return mFirestore.runTransaction(new Transaction.Function<Void>() {
             @Override
@@ -188,6 +187,65 @@ public class FirestoreTasks {
         });
     }
 
+    /*
+  * Find friends on nudge given their phone numbers
+  * */
+    public void findFriendsOnNudge(FirebaseFirestore mFirestore, DocumentReference mUserRef, CollectionReference mUsers, DocumentSnapshot snapshot) {
+        Log.d(LOG_TAG, "Find friends on nudge started");
+        mExecutors.diskIO().execute(() -> {
+            try {
+                ContactsClass contact = snapshot.toObject(ContactsClass.class);
+                if (contact.getNudgeId() == null) {
+                    mUsers.whereEqualTo(ReferenceNames.USER_PHONE, contact.getContactNumber())
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        for (DocumentSnapshot document : task.getResult()) {
+//                                            UserClass user = document.toObject(UserClass.class);
+                                            DocumentReference friendRef = mUserRef.collection(ReferenceNames.WHATSAPP_FRIENDS).document(snapshot.getId());
+                                            addOnNudge(mFirestore, friendRef, document);
+
+                                        }
+                                    } else {
+                                        Log.d(LOG_TAG, "findFriendsOnNudge: Error finding friends ", task.getException());
+                                    }
+                                }
+                            });
+                }
+
+            } catch (Exception e) {
+                // Server probably invalid
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private Task<Void> addOnNudge(FirebaseFirestore mFirestore, final DocumentReference friendRef, DocumentSnapshot userDocument){
+        // In a transaction, add the new rating and update the aggregate totals
+        return mFirestore.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+
+                // Commit to Firestore
+                transaction.update(friendRef, ReferenceNames.NUDGE_ID, userDocument.getId());
+                return null;
+            }
+        }).addOnSuccessListener(mExecutors.networkIO(), new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(LOG_TAG, "On Nudge update to true");
+            }
+        }).addOnFailureListener(mExecutors.networkIO(), new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(LOG_TAG, "OnNudge could not be updated", e);
+            }
+        });
+
+    }
+
     public void createUserReference(FirebaseFirestore mFirestore, DocumentReference mUserRef, FirebaseUser mUser) {
         UserClass user = getUser(mUser);
         mUserRef.set(user).addOnSuccessListener(mExecutors.networkIO(), new OnSuccessListener<Void>() {
@@ -202,6 +260,51 @@ public class FirestoreTasks {
             }
         });
     }
+
+    public Task<Void> nudgeFriend(FirebaseFirestore mFirestore, DocumentReference mUserRef, UserClass mUser,  DocumentSnapshot snapshot) {
+        // Create reference for new rating, for use inside the transaction
+
+        // In a transaction, add the new rating and update the aggregate totals
+        return mFirestore.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+                NudgeClass nudge = getNudge(mUser,snapshot);
+                // Commit to Firestore
+                transaction.set(mUserRef.collection(ReferenceNames.NUDGES).document(),nudge);
+
+                return null;
+            }
+        }).addOnSuccessListener(mExecutors.networkIO(), new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(LOG_TAG, "Nudge added");
+            }
+        }).addOnFailureListener(mExecutors.networkIO(), new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(LOG_TAG, "Failed to add nudge to firestore", e);
+            }
+        });
+
+    }
+
+    private NudgeClass getNudge(UserClass mUser, DocumentSnapshot snapshot){
+        NudgeClass nudge = new NudgeClass();
+        ContactsClass friend = snapshot.toObject(ContactsClass.class);
+
+        nudge.setSenderId(mUser.getUserId());
+        nudge.setSenderName(mUser.getUserName());
+        nudge.setSenderImageUrl(mUser.getUserImage());
+
+        nudge.setReceiverId(friend.getNudgeId());
+        nudge.setReceiverName(friend.getContactName());
+        nudge.setSenderImageUrl(friend.getProfileImageUri());
+
+        return nudge;
+    }
+
+
+
 
 
 }

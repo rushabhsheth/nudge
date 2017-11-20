@@ -14,6 +14,7 @@ public class UserClass {
     private String userName;
     private String userEmail;
     private String userPhone;
+    private String userImage;
     private String fcmtoken;
     private int numberWhatsappFriends;
     private @ServerTimestamp Date timestamp;
@@ -76,6 +77,15 @@ public class UserClass {
 
     public void setNumberWhatsappFriends(int numberWhatsappFriends) {
         this.numberWhatsappFriends = numberWhatsappFriends;
+    }
+
+
+    public String getUserImage() {
+        return userImage;
+    }
+
+    public void setUserImage(String userImage) {
+        this.userImage = userImage;
     }
 
 }

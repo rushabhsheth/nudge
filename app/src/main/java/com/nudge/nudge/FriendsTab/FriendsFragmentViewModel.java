@@ -37,4 +37,8 @@ public class FriendsFragmentViewModel extends ViewModel{
         mRepository.changeStar(snapshot, contact);
     }
 
+    public void nudgeFriend(DocumentSnapshot snapshot){
+        mRepository.nudgeFriend(snapshot);
+    }
+
 }

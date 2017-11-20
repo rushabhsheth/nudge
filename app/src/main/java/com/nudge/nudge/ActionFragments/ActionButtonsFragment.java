@@ -135,7 +135,7 @@ public class ActionButtonsFragment extends Fragment{
         }
     }
 
-    public void setMessageBtnEnable3d(boolean enabled){
+    public void setMessageBtnEnabled(boolean enabled){
         message_btn.setEnabled(enabled);
         if(enabled){
             message_btn.setBackground(getResources().getDrawable(R.drawable.ic_message));

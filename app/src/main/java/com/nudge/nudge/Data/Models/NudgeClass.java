@@ -38,13 +38,13 @@ public class NudgeClass {
 
     @SerializedName("timestamp")
     @Expose
-    private @ServerTimestamp String timestamp;
+    private @ServerTimestamp Date timestamp;
 
     @SerializedName("status")
     @Expose
     private String status;
 
-    public NudgeClass(String senderName, String senderImageUrl, String receiverName, String receiverImageUrl, String senderId, String receiverId, String timestamp, String status) {
+    public NudgeClass(String senderName, String senderImageUrl, String receiverName, String receiverImageUrl, String senderId, String receiverId, Date timestamp, String status) {
         this.senderName = senderName;
         this.senderImageUrl = senderImageUrl;
         this.receiverName = receiverName;
@@ -53,6 +53,17 @@ public class NudgeClass {
         this.receiverId = receiverId;
         this.timestamp = timestamp;
         this.status = status;
+    }
+
+    public NudgeClass() {
+        this.senderName = null;
+        this.senderImageUrl = null;
+        this.receiverName = null;
+        this.receiverImageUrl = null;
+        this.senderId = null;
+        this.receiverId = null;
+        this.timestamp = null;
+        this.status = null;
     }
 
 
@@ -104,11 +115,11 @@ public class NudgeClass {
         this.receiverId = receiverId;
     }
 
-    public String getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 

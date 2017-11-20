@@ -17,7 +17,16 @@ public class ReferenceNames {
     public static final String TIMES_CONTACTED = "timesContacted";
     public static final String TIMESTAMP = "timestamp";
     public static final String WHATSAPP_FRIENDS = "WhatsappFriends";
-    public static final String NUMBER_WHATSAPP_FRIENDS = "numberWhatsappFriends";
     public static final String USERS = "users";
+    public static final String ON_NUDGE = "onNudge";
+    public static final String NUDGE_ID = "nudgeId";
 
+    public static final String USER_ID = "userId";
+    public static final String USER_NAME= "userName";
+    public static final String USER_EMAIL =  "userEmail";
+    public static final String USER_PHONE = "userPhone";
+    public static final String FCM_TOKEN = "fcmtoken";
+    public static final String NUMBER_WHATSAPP_FRIENDS = "numberWhatsappFriends";
+
+    public static final String NUDGES = "nudges";
 }

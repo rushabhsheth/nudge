@@ -18,12 +18,37 @@
         app:cardCornerRadius="7dp"
         app:cardElevation="2dp">
 
-        <ImageView
-            android:id="@+id/profileImageView"
+        <!--<ImageView-->
+            <!--android:id="@+id/profileImageView"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_marginBottom="80dp"-->
+            <!--android:scaleType="centerCrop" />-->
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="80dp"
-            android:scaleType="centerCrop" />
+            android:background="@color/background_holo_dark">
+
+            <EditText
+                android:id="@+id/friendcard_message_form"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_gravity="center"
+                android:hint="@string/hint_send_message"
+                android:textCursorDrawable="@drawable/color_cursor"
+                android:textStyle="bold"
+                android:theme="@style/AppTheme.EditText"
+                android:textColor="@color/colorWhite"/>
+
+            <ImageView
+                android:id="@+id/profileImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop" />
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

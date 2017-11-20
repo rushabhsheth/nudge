@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -77,8 +78,10 @@ public class FirebaseDataSource
     //Firestore instance variables
     private final FirebaseFirestore mFirestore;
     private Query mQuery;
+    private Query mQueryFindFriends;
     private FirebaseUser mFirebaseUser;
     private DocumentReference mUserRef;
+    private CollectionReference mUsers;
     private ListenerRegistration mUserRegistration;
     private FirestoreAdapter mFirestoreAdapter;
     private UserClass mUser;
@@ -106,7 +109,9 @@ public class FirebaseDataSource
         mFirestore = FirebaseFirestore.getInstance();
         mFriendsData = new MutableLiveData<>();
         mNudgesData = new MutableLiveData<>();
+
         initFirebaseAdapter();
+        initUsersCollectionReference();
 
         mWhatsappContacts = new ArrayList<>();
     }
@@ -183,7 +188,11 @@ public class FirebaseDataSource
                 Log.w(LOG_TAG, "initFirebaseAdapter: Error starting Firestoreadapter");
             }
         };
+    }
 
+
+    private void initUsersCollectionReference(){
+        mUsers = mFirestore.collection(ReferenceNames.USERS);
     }
 
     public LiveData<FirebaseUser> getFirebaseUser() {
@@ -215,7 +224,6 @@ public class FirebaseDataSource
         Log.d(LOG_TAG, "Fetch friends started");
         mExecutors.networkIO().execute(() -> {
             try {
-
 
                 if (mFirestoreAdapter != null) {
 
@@ -257,6 +265,7 @@ public class FirebaseDataSource
         mExecutors.networkIO().execute(() -> {
 
             mFriendsData.postValue(mFirestoreAdapter.getAllSnapshots());
+            checkFriendOnNudge(mFirestoreAdapter.getAllSnapshots());
 //            Log.d(LOG_TAG, "Number of items fetched: " + String.valueOf(mFirestoreAdapter.getItemCount()));
         });
     }
@@ -324,6 +333,7 @@ public class FirebaseDataSource
     public void syncContacts() {
         mContactsReadPhone = ContactsReadPhone.getInstance(mContext, mExecutors);
         mContactsReadPhone.loadContacts(0, this); //Whatsapp contacts
+
     }
 
     /*
@@ -333,11 +343,21 @@ public class FirebaseDataSource
         mWhatsappContacts = contactList;
         Log.d(LOG_TAG, "Size of whatsapp contacts is " + mWhatsappContacts.size() + " mUser number of whatsapp friends: " + mUser.getNumberWhatsappFriends());
 
+        /* Do this when starting app or once per day*/
         if(mUser.getNumberWhatsappFriends() == 0) {
            mFirestoreTasks.syncContacts(mFirestore, mUserRef, mWhatsappContacts);
         }
     }
 
+    private void checkFriendOnNudge(ArrayList<DocumentSnapshot> mSnapshots){
+        for(DocumentSnapshot snapshot: mSnapshots) {
+            mFirestoreTasks.findFriendsOnNudge(mFirestore, mUserRef, mUsers, snapshot);
+        }
+    }
 
+    public void nudgeFriend(DocumentSnapshot snapshot){
+
+        mFirestoreTasks.nudgeFriend(mFirestore, mUserRef, mUser, snapshot);
+    }
 
 }

@@ -5,7 +5,7 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/colorPrimary</item>
         <item name="android:windowBackground">@color/colorBackground</item>
 
         <!--<item name="android:actionButtonStyle">@style/myActionButtonStyle</item>-->
@@ -57,8 +57,13 @@
         <item name="android:textSize">20sp</item>
     </style>
 
+    <style name="AppTheme.Tabs">
+        <item name="colorAccent">@color/colorWhite</item>
+    </style>
+
+
     <style name="AppTheme.EditText">
-        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorWhite</item>
     </style>
 
     <style name="AppTheme.BlueAccent">

@@ -22,6 +22,7 @@ public class ContactsClass {
     private long last_time_contacted;
     private int starred;
     private boolean onNudge;
+    private String nudgeId;
     private String profile_image_uri;
     private List<String> profile_image_list;
     private String account_type;
@@ -34,6 +35,7 @@ public class ContactsClass {
         this.last_time_contacted = 0;
         this.starred = 0;
         this.onNudge = false;
+        this.nudgeId = null;
         this.profile_image_uri = null;
         this.profile_image_list = new ArrayList<>();
         this.contact_name = null;
@@ -133,6 +135,14 @@ public class ContactsClass {
 
     public void setOnNudge(boolean onNudge) {
         this.onNudge = onNudge;
+    }
+
+    public String getNudgeId() {
+        return nudgeId;
+    }
+
+    public void setNudgeId(String nudgeId) {
+        this.nudgeId = nudgeId;
     }
 
     @Override

@@ -105,4 +105,8 @@ public class NudgeRepository {
     public void syncPhoneContactsWithServer(){
         mFirebaseDataSource.syncContacts();
     }
+
+    public void nudgeFriend(DocumentSnapshot snapshot){
+        mFirebaseDataSource.nudgeFriend(snapshot);
+    }
 }

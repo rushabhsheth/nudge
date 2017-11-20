@@ -1,6 +1,7 @@
 package com.nudge.nudge.FriendsTab;
 
 import android.content.Context;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -44,6 +45,8 @@ public class FriendsCard {
     @View(R.id.friendcard_starbutton )
     private ImageButton starViewButton;
 
+    @View(R.id.friendcard_message_form)
+    private EditText mMessageEditText;
 
     private ContactsClass mProfile;
     private Context mContext;
@@ -137,9 +140,15 @@ public class FriendsCard {
         void onCardSwipedOut();
     }
 
+    public void setMessage(String message){
+        mMessageEditText.setText(message);
+    }
+
     public ContactsClass getProfile(){
         return this.mProfile;
     }
 
-
+    public DocumentSnapshot getDocumentSnapshot(){
+        return this.documentSnapshot;
+    }
 }

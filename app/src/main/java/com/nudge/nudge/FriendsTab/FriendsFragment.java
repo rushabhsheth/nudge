@@ -12,6 +12,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -92,11 +93,42 @@ public class FriendsFragment
         initActionButtons();
 
         mSwipeView.addItemRemoveListener(this);
-        setupSwipeView(rootView);
+//        setupSwipeView(rootView);
+
+        ViewTreeObserver viewTreeObserver = rootView.getViewTreeObserver();
+        if(viewTreeObserver.isAlive())
+        {
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    int viewWidth = rootView.getWidth();
+                    int viewHeight = rootView.getHeight();
+
+                    mSwipeDecor = new SwipeDecor()
+                            .setPaddingTop(20)
+                            .setViewGravity(Gravity.TOP)
+                            .setViewGravity(Gravity.CENTER_HORIZONTAL)
+                            .setRelativeScale(0.01f)
+                            .setSwipeInMsgLayoutId(R.layout.nudge_swipe_in_msg_view)
+                            .setSwipeOutMsgLayoutId(R.layout.nudge_swipe_out_msg_view)
+                            .setViewHeight(viewHeight - mActionButtonFrame.getHeight())
+                            .setViewWidth(viewWidth);
+
+                    mSwipeView.getBuilder()
+                            .setDisplayViewCount(2)
+                            .setIsUndoEnabled(false)
+                            .setSwipeDecor(mSwipeDecor);
+
+                }
+            });
+        }
 
         showLoading();
         return rootView;
     }
+
+
 
     private void setupSwipeView(View rootView) {
 
@@ -127,9 +159,11 @@ public class FriendsFragment
         mViewModel.getFriendsData().observe(this, listFriendsData -> {
             for (int i = 0; i < listFriendsData.size(); i++) {
                 mSwipeView.addView(new FriendsCard(this, mContext, listFriendsData.get(i)));
+                Log.d(TAG, " Friend id: " + listFriendsData.get(i).getId());
             }
             setNudgeBtnEnabled();
             setMessageBtnEnabled();
+            setInitialMessage();
             if (listFriendsData != null && listFriendsData.size() != 0) showFriendsDataView();
             else showLoading();
         });
@@ -238,6 +272,7 @@ public class FriendsFragment
     public void onItemRemoved(int count) {
         setNudgeBtnEnabled();
         setMessageBtnEnabled();
+        setInitialMessage();
         if (count == 3) {
             loadNextDataFromFirestore(count);
         }
@@ -282,6 +317,15 @@ public class FriendsFragment
         }
     }
 
+    private void setInitialMessage(){
+        List<Object> friendCards = mSwipeView.getAllResolvers();
+        if(friendCards.size()!=0) {
+            FriendsCard card = (FriendsCard) friendCards.get(0);
+            String name = card.getProfile().getContactName();
+            String message = "Hi " + name.split(" ")[0] + "! Whatsup?";
+            card.setMessage(message);
+        }
+    }
 
     public void onNudgeBtnClick() {
 
@@ -292,6 +336,7 @@ public class FriendsFragment
 
             //Remove the card while showing nudge
             mSwipeView.doSwipe(true);
+            mViewModel.nudgeFriend(card.getDocumentSnapshot());
         }
 
     }
@@ -316,10 +361,13 @@ public class FriendsFragment
         if (friendCards.size() != 0) {
             FriendsCard card = (FriendsCard) friendCards.get(0);
             ContactsClass contact = card.getProfile();
-            mActionButtons.setNudgeBtnEnabled(contact.getOnNudge());
-            if(!contact.getOnNudge()){
+            if(contact.getNudgeId()==null){
+                mActionButtons.setNudgeBtnEnabled(false);
                 mSwipeView.activatePutBack();
+            } else {
+                mActionButtons.setNudgeBtnEnabled(true);
             }
+
         }
     }
 
@@ -329,9 +377,9 @@ public class FriendsFragment
             FriendsCard card = (FriendsCard) friendCards.get(0);
             ContactsClass contact = card.getProfile();
             if (contact.getContactNumber()==null) {
-                mActionButtons.setMessageBtnEnable3d(false);
+                mActionButtons.setMessageBtnEnabled(false);
             } else {
-                mActionButtons.setMessageBtnEnable3d(true);
+                mActionButtons.setMessageBtnEnabled(true);
             }
         }
     }
