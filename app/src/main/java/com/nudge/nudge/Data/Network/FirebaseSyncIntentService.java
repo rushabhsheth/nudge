@@ -24,5 +24,6 @@ public class FirebaseSyncIntentService extends IntentService {
         FirebaseDataSource networkDataSource =
                 InjectorUtils.provideFirebaseDataSource(this.getApplicationContext());
         networkDataSource.fetchfriends();
+        networkDataSource.fetchNudges();
     }
 }

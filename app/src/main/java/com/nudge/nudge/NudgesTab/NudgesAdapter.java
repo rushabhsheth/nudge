@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.nudge.nudge.Data.Models.NudgeClass;
 import com.nudge.nudge.R;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,13 +28,14 @@ public class NudgesAdapter extends RecyclerView.Adapter<NudgesAdapter.ViewHolder
 
     Context mContext;
     private List<NudgeClass> mDataSet;
+    private OnMessageClickListener listener;
 
     //Viewholder to hold item_main
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final de.hdodenhof.circleimageview.CircleImageView nudges_contactImageView;
         private final TextView nudges_nameView;
         private final TextView nudges_timeView;
-        private final ImageButton nudges_nudgeBtn;
+        private final ImageButton nudges_messageBtn;
 
         public ViewHolder(View v) {
             super(v);
@@ -40,7 +43,7 @@ public class NudgesAdapter extends RecyclerView.Adapter<NudgesAdapter.ViewHolder
             nudges_contactImageView = (de.hdodenhof.circleimageview.CircleImageView) v.findViewById(R.id.nudges_contactImageView);
             nudges_nameView = (TextView) v.findViewById(R.id.nudges_nameTextView);
             nudges_timeView = (TextView) v.findViewById(R.id.nudges_timeTextView);
-            nudges_nudgeBtn = (ImageButton) v.findViewById(R.id.nudges_nudgeBtn);
+            nudges_messageBtn = (ImageButton) v.findViewById(R.id.nudges_messageBtn);
         }
 
         public de.hdodenhof.circleimageview.CircleImageView getNudges_contactImageView(){
@@ -58,16 +61,17 @@ public class NudgesAdapter extends RecyclerView.Adapter<NudgesAdapter.ViewHolder
             return nudges_timeView;
         }
 
-        public ImageButton getNudges_nudgeBtn(){
-            return nudges_nudgeBtn;
+        public ImageButton getNudges_messageBtn(){
+            return nudges_messageBtn;
         }
 
     }
 
     //Constructor
-    public NudgesAdapter(Context context, List<NudgeClass> dataSet) {
+    public NudgesAdapter(Context context, List<NudgeClass> dataSet, OnMessageClickListener listener) {
         this.mDataSet = dataSet;
         this.mContext = context;
+        this.listener = listener;
     }
 
     // Create new views (invoked by the layout manager)
@@ -94,11 +98,15 @@ public class NudgesAdapter extends RecyclerView.Adapter<NudgesAdapter.ViewHolder
             finalHolder.getNudges_nameView().setText(userName);
         }
 
-        String timestamp = nudgeClass.getTimestamp().toString();
+        Date date = nudgeClass.getTimestamp();
+        String timestamp = getNormalizedDate(date);
         if(timestamp != null){
             finalHolder.getNudges_timeView().setText(timestamp);
         }
 
+        Glide.with(context)
+                .load(R.drawable.ic_profile_grey)
+                .into(finalHolder.getNudges_contactImageView());
         String userProfileImage = nudgeClass.getReceiverImageUrl();
         if(userProfileImage!=null){
             Uri uri = Uri.parse(userProfileImage);
@@ -106,6 +114,14 @@ public class NudgesAdapter extends RecyclerView.Adapter<NudgesAdapter.ViewHolder
                     .load(uri)
                     .into(finalHolder.getNudges_contactImageView());
         }
+
+        finalHolder.getNudges_messageBtn().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onMessageClick(nudgeClass);
+            }
+        });
+
 
     }
 
@@ -123,6 +139,18 @@ public class NudgesAdapter extends RecyclerView.Adapter<NudgesAdapter.ViewHolder
     public void deleteView(int index) {
         mDataSet.remove(index);
         notifyItemRemoved(index);
+    }
+
+    public String getNormalizedDate(Date date){
+        String normalizedTime = "";
+        long timeNow = System.currentTimeMillis();
+        normalizedTime =
+                DateUtils.getRelativeTimeSpanString(date.getTime(), timeNow, DateUtils.MINUTE_IN_MILLIS).toString();
+        return normalizedTime;
+    }
+
+    public interface OnMessageClickListener {
+        void onMessageClick(NudgeClass nudge);
     }
 
 

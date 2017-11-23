@@ -78,13 +78,13 @@
             </LinearLayout>
 
 
-            <ImageButton
-                android:id="@+id/nudges_nudgeBtn"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center_vertical|right"
-                android:layout_marginRight="20dp"
-                android:background="@drawable/ic_nudge_plain" />
+            <!--<ImageButton-->
+                <!--android:id="@+id/nudges_nudgeBtn"-->
+                <!--android:layout_width="25dp"-->
+                <!--android:layout_height="25dp"-->
+                <!--android:layout_gravity="center_vertical|right"-->
+                <!--android:layout_marginRight="20dp"-->
+                <!--android:background="@drawable/ic_nudge_plain" />-->
 
 
             <ImageButton

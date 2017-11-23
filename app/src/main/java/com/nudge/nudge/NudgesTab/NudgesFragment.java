@@ -2,6 +2,7 @@ package com.nudge.nudge.NudgesTab;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,7 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.nudge.nudge.ActionFragments.MessageDialogFragment;
 import com.nudge.nudge.Data.Models.NudgeClass;
+import com.nudge.nudge.FriendsTab.FriendsCard;
 import com.nudge.nudge.R;
 import com.nudge.nudge.Utilities.InjectorUtils;
 
@@ -25,7 +28,9 @@ import butterknife.ButterKnife;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class NudgesFragment extends Fragment {
+public class NudgesFragment extends Fragment
+        implements NudgesAdapter.OnMessageClickListener,
+                    MessageDialogFragment.SendListener{
 
     private static final String TAG = "NudgesFragment";
 
@@ -44,6 +49,7 @@ public class NudgesFragment extends Fragment {
     private android.support.v7.widget.LinearLayoutManager mLayoutManager;
     private List<NudgeClass> mNudgesData;
     private NudgesAdapter mNudgesAdapter;
+    private MessageDialogFragment mMessageDialog;
 
     private NudgesFragmentViewModel mViewModel;
 
@@ -60,6 +66,10 @@ public class NudgesFragment extends Fragment {
         mContext = this.getContext();
         NudgesFragmentViewModelFactory factory = InjectorUtils.provideNudgesFragmentViewModelFactory(mContext);
         mViewModel = ViewModelProviders.of(this, factory).get(NudgesFragmentViewModel.class);
+
+        mMessageDialog = new MessageDialogFragment();
+        mMessageDialog.setSendListener(this);
+
         getNudgesData();
 
     }
@@ -84,12 +94,8 @@ public class NudgesFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.scrollToPosition(scrollPosition);
 
-        mNudgesAdapter = new NudgesAdapter(getContext(),mNudgesData);
+        mNudgesAdapter = new NudgesAdapter(getContext(),mNudgesData, this);
         mRecyclerView.setAdapter(mNudgesAdapter);
-
-//        SnapHelper snapHelper = new LinearSnapHelper();
-//        snapHelper.attachToRecyclerView(mRecyclerView);
-
     }
 
     private void loadSampleData(){
@@ -107,7 +113,8 @@ public class NudgesFragment extends Fragment {
 
         mViewModel.getNudgesData().observe(this, listNudgesData -> {
             for (int i = 0; i < listNudgesData.size(); i++) {
-                //TODO: add views for each nudge
+                NudgeClass nudge = listNudgesData.get(i).toObject(NudgeClass.class);
+                mNudgesAdapter.addView(nudge,i);
             }
 
             if (listNudgesData != null && listNudgesData.size() != 0) showNudgesDataView();
@@ -147,5 +154,33 @@ public class NudgesFragment extends Fragment {
         mLoadingIndicator.setVisibility(View.GONE);
     }
 
+    public void onMessageClick(NudgeClass nudge){
+        String name = nudge.getReceiverName();
+//        Log.d(TAG, "Contact name " + name);
+        mMessageDialog.setMessageDialogText("Hi " + name.split(" ")[0] + "! How are you doing?");
+        mMessageDialog.show(getActivity().getSupportFragmentManager(), MessageDialogFragment.TAG);
+    }
+
+    //Send message clicked in Message Dialog Fragment
+    public void onSendClickedMessageDialog(String message) {
+
+//        FriendsCard card = (FriendsCard) mSwipeView.getAllResolvers().get(0);
+//        String number = card.getProfile().getContactNumber();
+//
+//        if(number!=null) {
+//            Log.d(TAG, "Contact name: " + card.getProfile().getContactName() + " , Contact number: " + number);
+//
+//            String toNumber = number.replace("+", "").replace(" ", "");
+//            String finalMessage = message + getString(R.string.nudge_dynamic_link);
+//
+//            Intent sendIntent = new Intent("android.intent.action.MAIN");
+//            sendIntent.putExtra("jid", toNumber + "@s.whatsapp.net");
+//            sendIntent.putExtra(Intent.EXTRA_TEXT, finalMessage);
+//            sendIntent.setAction(Intent.ACTION_SEND);
+//            sendIntent.setPackage("com.whatsapp");
+//            sendIntent.setType("text/plain");
+//            startActivity(sendIntent);
+//        }
+    }
 
 }

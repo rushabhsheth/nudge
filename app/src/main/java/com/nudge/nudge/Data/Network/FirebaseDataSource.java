@@ -78,12 +78,13 @@ public class FirebaseDataSource
     //Firestore instance variables
     private final FirebaseFirestore mFirestore;
     private Query mQuery;
-    private Query mQueryFindFriends;
+    private Query mNudgesQuery;
     private FirebaseUser mFirebaseUser;
     private DocumentReference mUserRef;
     private CollectionReference mUsers;
     private ListenerRegistration mUserRegistration;
     private FirestoreAdapter mFirestoreAdapter;
+    private FirestoreAdapter mNudgeAdapter;
     private UserClass mUser;
 
     private final MutableLiveData<ArrayList<DocumentSnapshot>> mFriendsData;
@@ -111,6 +112,7 @@ public class FirebaseDataSource
         mNudgesData = new MutableLiveData<>();
 
         initFirebaseAdapter();
+        initNudgeAdapter();
         initUsersCollectionReference();
 
         mWhatsappContacts = new ArrayList<>();
@@ -190,6 +192,24 @@ public class FirebaseDataSource
         };
     }
 
+    private void initNudgeAdapter() {
+        Log.d(LOG_TAG, "Initializing Nudge Adapter ");
+        mNudgesQuery = null;
+        mNudgeAdapter = new FirestoreAdapter(mQuery, new FirestoreAdapter.DataReceivedListener() {
+            @Override
+            public void onDataChanged() {
+                mExecutors.networkIO().execute(() -> {
+                    mNudgesData.postValue(mNudgeAdapter.getAllSnapshots());
+                });
+            }
+        }) {
+            @Override
+            protected void onError(FirebaseFirestoreException e) {
+                Log.w(LOG_TAG, "initNudgeAdapter: Error starting Firestoreadapter");
+            }
+        };
+    }
+
 
     private void initUsersCollectionReference(){
         mUsers = mFirestore.collection(ReferenceNames.USERS);
@@ -210,7 +230,7 @@ public class FirebaseDataSource
     /**
      * Starts an intent service to fetch the weather.
      */
-    public void startFetchFriendsService() {
+    public void startFirestoreFetchService() {
         Intent intentToFetch = new Intent(mContext, FirebaseSyncIntentService.class);
         mContext.startService(intentToFetch);
         Log.d(LOG_TAG, "Fetch Friends service created");
@@ -250,6 +270,47 @@ public class FirebaseDataSource
 
                     Log.d(LOG_TAG, "Fetch Friends, setting query");
                     mFirestoreAdapter.setQuery(mQuery);
+                }
+            } catch (Exception e) {
+                // Server probably invalid
+                e.printStackTrace();
+            }
+        });
+    }
+
+    /**
+     * Gets the newest weather
+     */
+    void fetchNudges() {
+        Log.d(LOG_TAG, "Fetch nudges started");
+        mExecutors.networkIO().execute(() -> {
+            try {
+
+                if (mNudgeAdapter != null) {
+
+                    if (mUserRef != null) {
+                        //Fetch more data
+                        if (mNudgeAdapter.getItemCount() != 0) {
+                            DocumentSnapshot snapshot = mFirestoreAdapter.getSnapshot(mFirestoreAdapter.getItemCount() - 1);
+
+                            mNudgesQuery = mUserRef
+                                    .collection(ReferenceNames.NUDGES)
+                                    .orderBy(ReferenceNames.TIMESTAMP, Query.Direction.DESCENDING)
+                                    .limit(fetchLimit)
+                                    .startAfter(snapshot);
+
+                        } else {
+
+                            mNudgesQuery = mUserRef
+                                    .collection(ReferenceNames.NUDGES)
+                                    .orderBy(ReferenceNames.TIMESTAMP, Query.Direction.DESCENDING)
+                                    .limit(fetchLimit);
+
+                        }
+                    } else Log.d(LOG_TAG, "fetchNudges, user reference is null ");
+
+                    Log.d(LOG_TAG, "Fetch Nudges, setting query");
+                    mNudgeAdapter.setQuery(mNudgesQuery);
                 }
             } catch (Exception e) {
                 // Server probably invalid

@@ -117,7 +117,7 @@ public class FriendsFragment
 
                     mSwipeView.getBuilder()
                             .setDisplayViewCount(2)
-                            .setIsUndoEnabled(false)
+                            .setIsUndoEnabled(true)
                             .setSwipeDecor(mSwipeDecor);
 
                 }
@@ -339,6 +339,13 @@ public class FriendsFragment
             mViewModel.nudgeFriend(card.getDocumentSnapshot());
         }
 
+    }
+
+    public void onPutbackBtnClick(){
+        mSwipeView.undoLastSwipe();
+        setNudgeBtnEnabled();
+        setMessageBtnEnabled();
+        setInitialMessage();
     }
 
     public void onRejectBtnClick() {

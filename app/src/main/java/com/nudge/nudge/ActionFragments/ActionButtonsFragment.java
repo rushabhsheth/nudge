@@ -39,6 +39,7 @@ public class ActionButtonsFragment extends Fragment{
     private ImageButton reject_btn;
     private ImageButton nudge_btn;
     private ImageButton message_btn;
+    private ImageButton putback_btn;
 
     private SwipePlaceHolderView mSwipeView;
 
@@ -61,6 +62,7 @@ public class ActionButtonsFragment extends Fragment{
         View rootView = inflater.inflate(R.layout.fragment_actionbuttons, container, false);
 
 //        ButterKnife.bind(this, rootView);
+        putback_btn = rootView.findViewById(R.id.putbackBtn);
         nudge_btn = rootView.findViewById(R.id.nudgeBtn);
         reject_btn = rootView.findViewById(R.id.rejectBtn);
         message_btn = rootView.findViewById(R.id.messageBtn);
@@ -91,6 +93,13 @@ public class ActionButtonsFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 mOnClickListener.onMessageBtnClick();
+            }
+        });
+
+        putback_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOnClickListener.onPutbackBtnClick();
             }
         });
 
@@ -149,6 +158,7 @@ public class ActionButtonsFragment extends Fragment{
         void onMessageBtnClick();
         void onNudgeBtnClick();
         void onRejectBtnClick();
+        void onPutbackBtnClick();
     }
 
 }

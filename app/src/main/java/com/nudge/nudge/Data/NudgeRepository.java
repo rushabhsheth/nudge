@@ -87,7 +87,7 @@ public class NudgeRepository {
      */
 
     private void startFetchFriendsService() {
-        mFirebaseDataSource.startFetchFriendsService();
+        mFirebaseDataSource.startFirestoreFetchService();
     }
 
     public void requestMoreFriends(){

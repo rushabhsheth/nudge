@@ -8,12 +8,12 @@
     android:gravity="center"
     android:orientation="horizontal">
 
-    <!--<ImageButton-->
-        <!--android:id="@+id/callBtn"-->
-        <!--android:layout_width="50dp"-->
-        <!--android:layout_height="50dp"-->
-        <!--android:layout_marginRight="5dp"-->
-        <!--android:background="@drawable/ic_call" />-->
+    <ImageButton
+        android:id="@+id/putbackBtn"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/ic_putback" />
 
     <ImageButton
         android:id="@+id/rejectBtn"
